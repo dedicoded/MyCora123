@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAccount } from "wagmi"
+import { useAccount } from "../app/providers"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Input } from "./ui/input"
