@@ -7,7 +7,7 @@
 **Framework:** React.js
 
 ### Folder Layout:
-```
+\`\`\`
 src/
   components/      # Reusable UI components (Header, Footer, Button)
   pages/           # Page-level components (HomePage, Dashboard)
@@ -17,7 +17,7 @@ src/
   assets/          # Images, fonts, etc.
   App.js           # Main application component
   index.js         # Entry point
-```
+\`\`\`
 
 - **Styling:** Tailwind CSS
 - **State Management:** React Context API or Redux
@@ -31,7 +31,7 @@ src/
 **Framework:** Node.js + Express.js
 
 ### Folder Layout:
-```
+\`\`\`
 src/
   controllers/     # Route business logic
   models/          # Database schemas (MongoDB/Mongoose)
@@ -41,7 +41,7 @@ src/
   config/          # Configuration (env variables)
   app.js           # Express app setup
   server.js        # Entry point
-```
+\`\`\`
 
 - **Database:** MongoDB (Atlas)
 - **Authentication:** JWT
@@ -123,7 +123,7 @@ src/
 - Settings `/settings`
 
 **Routing:**
-```javascript
+\`\`\`javascript
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import OnboardingFlow from './pages/OnboardingFlow';
@@ -149,7 +149,7 @@ function App() {
   );
 }
 export default App;
-```
+\`\`\`
 
 ---
 

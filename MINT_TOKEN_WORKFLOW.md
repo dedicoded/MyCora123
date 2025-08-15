@@ -13,14 +13,14 @@ This guide enables users to:
 Deploy your ERC-721 (or ERC-20) contract on Base or supported chain.
 
 **Sample ERC-721 Mint Function:**
-```solidity
+\`\`\`solidity
 function mintToken(address to, string memory metadataURI) public returns (uint256) {
     uint256 tokenId = _tokenIdCounter++;
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, metadataURI);
     return tokenId;
 }
-```
+\`\`\`
 - Deploy with Hardhat or Foundry.
 - Verify on BaseScan.
 
@@ -29,7 +29,7 @@ function mintToken(address to, string memory metadataURI) public returns (uint25
 ## 2. 🖥️ Frontend Integration (wagmi + RainbowKit)
 
 **Connect to Contract:**
-```jsx
+\`\`\`jsx
 import { useContractWrite } from 'wagmi';
 import { abi } from './YourContractABI';
 
@@ -38,14 +38,14 @@ const { write: mintToken } = useContractWrite({
   abi,
   functionName: 'mintToken',
 });
-```
+\`\`\`
 
 **Trigger Mint:**
-```jsx
+\`\`\`jsx
 <button onClick={() => mintToken({ args: [userAddress, metadataURI] })}>
   Mint Token
 </button>
-```
+\`\`\`
 - Use RainbowKit for wallet connect UI.
 
 ---
@@ -53,7 +53,7 @@ const { write: mintToken } = useContractWrite({
 ## 3. 🚀 Replit Backend (Optional, Powerful)
 
 **Express API for Minting:**
-```javascript name=backend/server.js
+\`\`\`javascript name=backend/server.js
 const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
@@ -72,16 +72,16 @@ app.post('/mint', async (req, res) => {
 });
 
 app.listen(3001, () => console.log('Mint API running'));
-```
+\`\`\`
 
 **Frontend Call:**
-```javascript
+\`\`\`javascript
 await fetch('/mint', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ walletAddress, metadataURI }),
 });
-```
+\`\`\`
 - Backend can validate uploads, handle IPFS pinning, and sign transactions.
 
 ---
@@ -89,7 +89,7 @@ await fetch('/mint', {
 ## 4. 🖼️ Display Minted Tokens
 
 **Read Token URI:**
-```jsx
+\`\`\`jsx
 import { useContractRead } from 'wagmi';
 
 const { data: tokenURI } = useContractRead({
@@ -98,7 +98,7 @@ const { data: tokenURI } = useContractRead({
   functionName: 'tokenURI',
   args: [tokenId],
 });
-```
+\`\`\`
 - Render token metadata/image in dashboard.
 
 ---

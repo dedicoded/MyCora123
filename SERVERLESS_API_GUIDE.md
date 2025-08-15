@@ -11,7 +11,7 @@
 
 ## 🛠️ Example Structure
 
-```
+\`\`\`
 mycora-app/
 ├── pages/
 │   └── index.tsx
@@ -24,13 +24,13 @@ mycora-app/
 │   └── MintSecurityToken.tsx
 ├── package.json
 └── ...
-```
+\`\`\`
 
 ---
 
 ## 📦 Example API Endpoint (`/api/mint-utility.ts`)
 
-```typescript
+\`\`\`typescript
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ethers } from 'ethers';
 
@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).end();
   }
 }
-```
+\`\`\`
 
 ---
 

@@ -12,14 +12,14 @@
   - Jurisdictional compliance
 
 **Example Solidity (simplified compliance ERC-20):**
-```solidity
+\`\`\`solidity
 mapping(address => bool) public isWhitelisted;
 
 function mint(address to, uint256 amount) public onlyOwner {
     require(isWhitelisted[to], "Not whitelisted");
     _mint(to, amount);
 }
-```
+\`\`\`
 
 - **Deployment:** Ethereum mainnet or Sepolia testnet.
 
@@ -47,7 +47,7 @@ function mint(address to, uint256 amount) public onlyOwner {
 - Calls `mint()` on correct contract
 
 **Mint Security Token Example:**
-```javascript name=server.js
+\`\`\`javascript name=server.js
 app.post('/mint-security', async (req, res) => {
   const { walletAddress, amount } = req.body;
   // Whitelist check
@@ -57,16 +57,16 @@ app.post('/mint-security', async (req, res) => {
   const tx = await contract.mint(walletAddress, amount);
   res.json({ txHash: tx.hash });
 });
-```
+\`\`\`
 
 **Mint Utility Token Example:**
-```javascript name=server.js
+\`\`\`javascript name=server.js
 app.post('/mint-utility', async (req, res) => {
   const { walletAddress, metadataURI } = req.body;
   const tx = await utilityContract.mint(walletAddress, metadataURI);
   res.json({ txHash: tx.hash });
 });
-```
+\`\`\`
 
 ---
 
