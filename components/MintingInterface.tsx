@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useAccount } from "../app/providers"
+import { useState, useEffect } from "react"
+import { useAccount } from "wagmi"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Input } from "./ui/input"
@@ -9,6 +9,12 @@ import { Label } from "./ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 export function MintingInterface() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const { address, isConnected } = useAccount()
   const [amount, setAmount] = useState("")
   const [tokenType, setTokenType] = useState("")
@@ -45,6 +51,19 @@ export function MintingInterface() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!mounted) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Mint Tokens</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="animate-pulse bg-gray-200 h-32 rounded"></div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

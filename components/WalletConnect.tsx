@@ -1,14 +1,34 @@
 "use client"
 
-import { useAccount, useBalance, useConnect, useDisconnect } from "../app/providers"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useAccount, useBalance } from "wagmi"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { Button } from "./ui/button"
+import { useEffect, useState } from "react"
 
 export function WalletConnect() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const { address, isConnected } = useAccount()
-  const { data: balance } = useBalance()
-  const { connect } = useConnect()
-  const { disconnect } = useDisconnect()
+  const { data: balance } = useBalance({
+    address: address,
+  })
+
+  if (!mounted) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Wallet Connection</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="animate-pulse bg-gray-200 h-10 rounded"></div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="w-full max-w-md">
@@ -16,15 +36,7 @@ export function WalletConnect() {
         <CardTitle>Wallet Connection</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {!isConnected ? (
-          <Button onClick={connect} className="w-full">
-            Connect Wallet
-          </Button>
-        ) : (
-          <Button onClick={disconnect} variant="outline" className="w-full bg-transparent">
-            Disconnect
-          </Button>
-        )}
+        <ConnectButton />
 
         {isConnected && address && (
           <div className="space-y-2">
