@@ -78,34 +78,89 @@ class ContractDiscovery {
       /FiatRailsController/g,
     ]
 
-    const filesToScan = ["app/**/*.tsx", "app/**/*.ts", "components/**/*.tsx", "lib/**/*.ts", "contracts/**/*.sol"]
+    const filesToScan = this.getAllFiles(
+      ["app", "components", "lib", "contracts", "scripts"],
+      [".tsx", ".ts", ".js", ".sol"],
+    )
 
-    // Simulate file scanning (in real implementation, would use glob)
-    const foundContracts = [
-      "MyCoraCoin",
-      "TrustToken",
-      "MyCoraSecurityToken",
-      "MyCoraUtilityToken",
-      "PuffPassRewards",
-      "PaymentProcessor",
-      "ComplianceRegistry",
-      "BadgeRegistry",
-      "MCCStaking",
-      "FiatRailsController",
-    ]
+    const foundContracts = new Set()
+    const contractUsage = new Map()
 
-    foundContracts.forEach((contract) => {
+    filesToScan.forEach((filePath) => {
+      try {
+        if (fs.existsSync(filePath)) {
+          const content = fs.readFileSync(filePath, "utf8")
+
+          contractPatterns.forEach((pattern) => {
+            const matches = content.match(pattern)
+            if (matches) {
+              const contractName = pattern.source
+              foundContracts.add(contractName)
+
+              if (!contractUsage.has(contractName)) {
+                contractUsage.set(contractName, [])
+              }
+              contractUsage.get(contractName).push(filePath)
+            }
+          })
+        }
+      } catch (error) {
+        console.log(`[v0] Could not scan ${filePath}: ${error.message}`)
+      }
+    })
+
+    Array.from(foundContracts).forEach((contract) => {
       this.contracts.set(contract, {
         name: contract,
         found: true,
         deployed: false,
         address: null,
         network: null,
+        usedIn: contractUsage.get(contract) || [],
       })
     })
 
-    console.log(`[v0] Found ${foundContracts.length} contract references`)
-    return foundContracts
+    console.log(`[v0] Found ${foundContracts.size} contract references in ${filesToScan.length} files`)
+    return Array.from(foundContracts)
+  }
+
+  getAllFiles(directories, extensions) {
+    const files = []
+
+    directories.forEach((dir) => {
+      if (fs.existsSync(dir)) {
+        const dirFiles = this.scanDirectory(dir, extensions)
+        files.push(...dirFiles)
+      }
+    })
+
+    return files
+  }
+
+  scanDirectory(directory, extensions) {
+    const files = []
+
+    try {
+      const items = fs.readdirSync(directory)
+
+      items.forEach((item) => {
+        const fullPath = path.join(directory, item)
+        const stat = fs.statSync(fullPath)
+
+        if (stat.isDirectory()) {
+          files.push(...this.scanDirectory(fullPath, extensions))
+        } else if (stat.isFile()) {
+          const ext = path.extname(fullPath)
+          if (extensions.includes(ext)) {
+            files.push(fullPath)
+          }
+        }
+      })
+    } catch (error) {
+      console.log(`[v0] Could not scan directory ${directory}: ${error.message}`)
+    }
+
+    return files
   }
 
   // Check existing deployment files
@@ -239,9 +294,37 @@ class ContractDiscovery {
     const deploymentFile = path.join("deployments", `${network}.json`)
 
     if (fs.existsSync(deploymentFile)) {
-      const deploymentData = JSON.parse(fs.readFileSync(deploymentFile, "utf8"))
-      if (deploymentData[contractName]) {
-        return deploymentData[contractName].address
+      try {
+        const deploymentData = JSON.parse(fs.readFileSync(deploymentFile, "utf8"))
+
+        if (deploymentData[contractName]) {
+          const contractData = deploymentData[contractName]
+
+          // Validate deployment integrity
+          if (contractData.integrityHash) {
+            const currentHash = crypto
+              .createHash("sha256")
+              .update(
+                JSON.stringify({
+                  address: contractData.address,
+                  contractName: contractData.contractName,
+                  network: contractData.network,
+                  constructorArgs: contractData.constructorArgs,
+                }),
+              )
+              .digest("hex")
+
+            if (currentHash !== contractData.integrityHash.substring(0, 64)) {
+              console.warn(`[v0] Integrity check failed for ${contractName}, redeploying...`)
+              return null
+            }
+          }
+
+          console.log(`[v0] Found existing deployment: ${contractName} at ${contractData.address}`)
+          return contractData.address
+        }
+      } catch (error) {
+        console.warn(`[v0] Error reading deployment file ${deploymentFile}:`, error.message)
       }
     }
 
@@ -403,9 +486,9 @@ class ContractDiscovery {
     const envLines = []
     const networks = ["ethereum", "polygon", "base", "sepolia"]
 
-    // Add network-specific addresses
+    // Add network-specific addresses (backend only)
     networks.forEach((network) => {
-      envLines.push(`# ${network.toUpperCase()} Network Contracts`)
+      envLines.push(`# ${network.toUpperCase()} Network Contracts (Backend Only)`)
 
       this.contracts.forEach((contractInfo, contractName) => {
         const key = `${network}_${contractName}`
@@ -417,79 +500,146 @@ class ContractDiscovery {
       envLines.push("")
     })
 
-    // Add frontend-accessible addresses (using current network)
-    envLines.push("# Frontend-Accessible Addresses (Current Network)")
+    envLines.push("# Network Configuration (Frontend Safe)")
     envLines.push(`NEXT_PUBLIC_NETWORK=${this.network}`)
+    envLines.push(`NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here`)
 
-    this.contracts.forEach((contractInfo, contractName) => {
-      const address = resolvedAddresses.get(`${this.network}_${contractName}`)
-      const envVar = `NEXT_PUBLIC_${contractName.toUpperCase()}_ADDRESS`
-      envLines.push(`${envVar}=${address}`)
-    })
-
-    // Add additional required variables
     envLines.push("")
-    envLines.push("# Additional Configuration")
-    envLines.push("NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here")
+    envLines.push("# Backend-Only Configuration (Secure)")
     envLines.push("BICONOMY_API_KEY=your_biconomy_key_here")
     envLines.push("CYBRID_API_KEY=your_cybrid_key_here")
+    envLines.push("CYBRID_ENVIRONMENT=sandbox")
     envLines.push("PRIVY_APP_ID=your_privy_app_id_here")
     envLines.push("PRIVY_APP_SECRET=your_privy_secret_here")
+    envLines.push("COMPLIANCE_REGISTRY_API_KEY=your_compliance_key_here")
+    envLines.push("STRIPE_SECRET_KEY=your_stripe_key_here")
+    envLines.push("WEB3_STORAGE_TOKEN=your_web3_storage_token_here")
+
+    envLines.push("")
+    envLines.push("# Deployment Metadata")
+    envLines.push(`DEPLOYMENT_TIMESTAMP=${new Date().toISOString()}`)
+    envLines.push(`DEPLOYMENT_NETWORK=${this.network}`)
+    envLines.push(`DEPLOYMENT_VERSION=1.0.0`)
 
     const envContent = envLines.join("\n")
 
     // Write to .env.production
     fs.writeFileSync(".env.production", envContent)
-    console.log("[v0] Generated .env.production with all contract addresses")
+    console.log("[v0] Generated .env.production with secure backend-only addresses")
+
+    this.generateDeploymentSummary(resolvedAddresses)
 
     return envContent
   }
 
-  generateSummaryReport(resolvedAddresses) {
-    console.log("\n=== CONTRACT ADDRESS SUMMARY ===")
+  generateDeploymentSummary(resolvedAddresses) {
+    const summary = {
+      deploymentInfo: {
+        timestamp: new Date().toISOString(),
+        network: this.network,
+        deployer: "MyCora Contract Discovery System",
+        version: "1.0.0",
+      },
+      contracts: {},
+      deploymentLog: this.deploymentLog,
+      productionReadiness: {
+        totalContracts: this.contracts.size,
+        deployedContracts: this.deploymentLog.length,
+        readinessPercentage: Math.round((this.deploymentLog.length / this.contracts.size) * 100),
+      },
+    }
 
+    // Add contract addresses by network
     const networks = ["ethereum", "polygon", "base", "sepolia"]
-    let deployedCount = 0
-    let totalCount = 0
-
     networks.forEach((network) => {
-      console.log(`\n${network.toUpperCase()} Network:`)
-
+      summary.contracts[network] = {}
       this.contracts.forEach((contractInfo, contractName) => {
         const address = resolvedAddresses.get(`${network}_${contractName}`)
-        totalCount++
-
-        if (address && address.startsWith("0x") && address.length === 42) {
-          deployedCount++
-          console.log(`  ${contractName}: ${address} (DEPLOYED)`)
-        } else {
-          console.log(`  ${contractName}: NOT DEPLOYED`)
+        summary.contracts[network][contractName] = {
+          address: address || "NOT_DEPLOYED",
+          status: address ? "DEPLOYED" : "PENDING",
         }
       })
     })
 
-    if (this.deploymentLog.length > 0) {
-      console.log(`\n=== DEPLOYMENT LOG ===`)
-      this.deploymentLog.forEach((entry) => {
-        const status = entry.verified ? "VERIFIED" : "DEPLOYED"
-        console.log(`${entry.contract}: ${entry.address} (${status})`)
-        console.log(`  Network: ${entry.network}`)
-        console.log(`  TX Hash: ${entry.txHash}`)
-        console.log(`  Deployed: ${entry.deployedAt}`)
+    // Write deployment summary
+    const summaryPath = `deployments/${this.network}-deployment-summary.json`
+    fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2))
+    console.log(`[v0] Generated deployment summary: ${summaryPath}`)
+  }
+
+  generateSummaryReport(resolvedAddresses) {
+    console.log("[v0] Generating comprehensive summary report...")
+
+    const report = {
+      executionInfo: {
+        timestamp: new Date().toISOString(),
+        network: this.network,
+        dryRun: this.dryRun,
+        totalContracts: this.contracts.size,
+        successfulDeployments: this.deploymentLog.length,
+      },
+      contractDiscovery: {
+        foundContracts: Array.from(this.contracts.keys()),
+        contractUsage: {},
+      },
+      deploymentStatus: {},
+      environmentVariables: {
+        backend: [],
+        frontend: [],
+      },
+      productionReadiness: {
+        percentage: Math.round((this.deploymentLog.length / this.contracts.size) * 100),
+        missingContracts: [],
+        readyForProduction: false,
+      },
+    }
+
+    this.contracts.forEach((contractInfo, contractName) => {
+      report.contractDiscovery.contractUsage[contractName] = contractInfo.usedIn || []
+    })
+
+    const networks = ["ethereum", "polygon", "base", "sepolia"]
+    networks.forEach((network) => {
+      report.deploymentStatus[network] = {}
+
+      this.contracts.forEach((contractInfo, contractName) => {
+        const address = resolvedAddresses.get(`${network}_${contractName}`)
+        report.deploymentStatus[network][contractName] = {
+          address: address || "NOT_DEPLOYED",
+          status: address ? "DEPLOYED" : "MISSING",
+        }
+
+        if (!address) {
+          report.productionReadiness.missingContracts.push(`${network}:${contractName}`)
+        }
       })
-    }
+    })
 
-    console.log(`\n=== DEPLOYMENT SUMMARY ===`)
-    console.log(`Deployed Contracts: ${deployedCount}`)
-    console.log(`Total Required: ${totalCount}`)
-    console.log(`Production Readiness: ${Math.round((deployedCount / totalCount) * 100)}%`)
+    this.contracts.forEach((contractInfo, contractName) => {
+      networks.forEach((network) => {
+        const backendVar = `${network.toUpperCase()}_${contractName.toUpperCase()}_ADDRESS`
+        report.environmentVariables.backend.push(backendVar)
+      })
+    })
 
-    if (deployedCount === totalCount) {
-      console.log("\n✅ All contracts deployed successfully!")
-      console.log("System is production-ready.")
+    report.environmentVariables.frontend = ["NEXT_PUBLIC_NETWORK", "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID"]
+
+    report.productionReadiness.readyForProduction = report.productionReadiness.missingContracts.length === 0
+
+    const reportPath = `deployments/${this.network}-comprehensive-report.json`
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
+
+    console.log(`[v0] Generated comprehensive report: ${reportPath}`)
+    console.log(`[v0] Production Readiness: ${report.productionReadiness.percentage}%`)
+
+    if (report.productionReadiness.readyForProduction) {
+      console.log("[v0] ✅ MyCora platform is PRODUCTION READY!")
     } else {
-      console.log(`\n⚠️  ${totalCount - deployedCount} contracts still need deployment.`)
+      console.log(`[v0] ⚠️  Missing contracts: ${report.productionReadiness.missingContracts.join(", ")}`)
     }
+
+    return report
   }
 
   async execute() {
