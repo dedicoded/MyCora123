@@ -4,101 +4,93 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.99 0.005 120); /* Soft white with subtle green tint */
-  --foreground: oklch(0.18 0.02 85); /* Deep charcoal with warm undertone */
-  --card: oklch(0.96 0.008 120); /* Light grey-green for cards */
-  --card-foreground: oklch(0.18 0.02 85);
-  --popover: oklch(0.99 0.005 120);
-  --popover-foreground: oklch(0.18 0.02 85);
-  --primary: oklch(0.45 0.12 135); /* Earthy green - MyCora's primary brand color */
-  --primary-foreground: oklch(0.99 0.005 120);
-  --secondary: oklch(0.78 0.15 85); /* Glowing gold accent */
-  --secondary-foreground: oklch(0.18 0.02 85);
-  --muted: oklch(0.94 0.01 120); /* Muted earth tone */
-  --muted-foreground: oklch(0.45 0.12 135);
-  --accent: oklch(0.78 0.15 85); /* Glowing gold for highlights */
-  --accent-foreground: oklch(0.18 0.02 85);
-  --destructive: oklch(0.55 0.18 25); /* Warm red for errors */
-  --destructive-foreground: oklch(0.99 0.005 120);
-  --border: oklch(0.88 0.01 120); /* Subtle earth-toned borders */
-  --input: oklch(0.99 0.005 120);
-  --ring: oklch(0.45 0.12 135 / 0.5); /* Primary green with transparency */
+  --background: #ffffff; /* Clean and inviting background */
+  --foreground: #4b5563; /* Primary text color for readability */
+  --card: #fffbeb; /* Light card background for a soft touch */
+  --card-foreground: #4b5563; /* Text color for card contents */
+  --popover: #ffffff; /* Popover background for clarity */
+  --popover-foreground: #4b5563; /* Popover text for legibility */
+  --primary: #ea580c; /* Primary action color - orange-600 */
+  --primary-foreground: #ffffff; /* Text on primary buttons */
+  --secondary: #f97316; /* Accent color for notifications */
+  --secondary-foreground: #ffffff; /* Text on secondary elements */
+  --muted: #fef2f2; /* Muted backgrounds for secondary content */
+  --muted-foreground: #374151; /* Muted text for less prominent information */
+  --accent: #f97316; /* Accent color for highlights */
+  --accent-foreground: #ffffff; /* Text on accent elements */
+  --destructive: #dc2626; /* Color for error messages or destructive actions */
+  --destructive-foreground: #ffffff; /* Text on destructive elements */
+  --border: #e5e7eb; /* Light border for separation */
+  --input: #fefce8; /* Input field background */
+  --ring: rgba(234, 88, 12, 0.5); /* Ring color for focused elements */
 
-  /* Updated chart colors to reflect organic, earthy palette */
-  --chart-1: oklch(0.45 0.12 135); /* Primary earthy green */
-  --chart-2: oklch(0.78 0.15 85); /* Glowing gold */
-  --chart-3: oklch(0.35 0.08 160); /* Deep moss green */
-  --chart-4: oklch(0.55 0.18 25); /* Warm red for alerts */
-  --chart-5: oklch(0.65 0.1 110); /* Sage green */
+  --chart-1: #ea580c; /* Chart color 1 for branding */
+  --chart-2: #f97316; /* Chart color 2 for variety */
+  --chart-3: #dc2626; /* Chart color 3 for alerts */
+  --chart-4: #f59e0b; /* Chart color 4 for secondary charts */
+  --chart-5: #4b5563; /* Chart color 5 for neutral elements */
 
-  --radius: 0.5rem; /* Organic rounded corners */
+  --radius: 0.5rem; /* Rounded corners for a friendly, approachable interface */
 
-  /* Updated sidebar colors for mycelium network theme */
-  --sidebar: oklch(0.97 0.008 120); /* Light earth tone */
-  --sidebar-foreground: oklch(0.18 0.02 85);
-  --sidebar-primary: oklch(0.45 0.12 135);
-  --sidebar-primary-foreground: oklch(0.99 0.005 120);
-  --sidebar-accent: oklch(0.78 0.15 85);
-  --sidebar-accent-foreground: oklch(0.18 0.02 85);
-  --sidebar-border: oklch(0.88 0.01 120);
-  --sidebar-ring: oklch(0.45 0.12 135 / 0.5);
+  --sidebar: #ffffff; /* Sidebar background */
+  --sidebar-foreground: #4b5563; /* Sidebar text color */
+  --sidebar-primary: #ea580c; /* Primary action color in sidebar */
+  --sidebar-primary-foreground: #ffffff; /* Text on sidebar primary actions */
+  --sidebar-accent: #f97316; /* Accent color in sidebar */
+  --sidebar-accent-foreground: #ffffff; /* Text on sidebar accent actions */
+  --sidebar-border: #e5e7eb; /* Border for sidebar separation */
+  --sidebar-ring: rgba(234, 88, 12, 0.5); /* Ring color for focused sidebar elements */
 
-  /* Added MyCora-specific design tokens for organic theme */
-  --mycora-network-glow: oklch(0.78 0.15 85 / 0.3); /* Glowing network connections */
-  --mycora-trust-high: oklch(0.45 0.12 135); /* High trust indicator */
-  --mycora-trust-medium: oklch(0.65 0.1 110); /* Medium trust indicator */
-  --mycora-trust-low: oklch(0.75 0.08 60); /* Low trust indicator */
-  --mycora-compliance-pass: oklch(0.45 0.12 135); /* Compliance success */
-  --mycora-compliance-warning: oklch(0.78 0.15 85); /* Compliance warning */
-  --mycora-compliance-fail: oklch(0.55 0.18 25); /* Compliance failure */
+  --puffpass-claim-glow: rgba(234, 88, 12, 0.3); /* Glowing claim card effect */
+  --puffpass-reward-bronze: #cd7c2f; /* Bronze tier color */
+  --puffpass-reward-silver: #9ca3af; /* Silver tier color */
+  --puffpass-reward-gold: #f59e0b; /* Gold tier color */
+  --puffpass-success: #10b981; /* Success state color */
+  --puffpass-warning: #f59e0b; /* Warning state color */
 }
 
 .dark {
-  --background: oklch(0.12 0.02 85); /* Deep underground darkness */
-  --foreground: oklch(0.92 0.01 120); /* Soft light text */
-  --card: oklch(0.15 0.02 85); /* Dark earth cards */
-  --card-foreground: oklch(0.92 0.01 120);
-  --popover: oklch(0.12 0.02 85);
-  --popover-foreground: oklch(0.92 0.01 120);
-  --primary: oklch(0.65 0.15 135); /* Brighter earthy green for dark mode */
-  --primary-foreground: oklch(0.12 0.02 85);
-  --secondary: oklch(0.85 0.18 85); /* Brighter glowing gold */
-  --secondary-foreground: oklch(0.12 0.02 85);
-  --muted: oklch(0.18 0.02 85); /* Dark muted earth */
-  --muted-foreground: oklch(0.65 0.15 135);
-  --accent: oklch(0.85 0.18 85); /* Bright glowing accent */
-  --accent-foreground: oklch(0.12 0.02 85);
-  --destructive: oklch(0.65 0.2 25); /* Brighter red for dark mode */
-  --destructive-foreground: oklch(0.92 0.01 120);
-  --border: oklch(0.22 0.02 85); /* Subtle dark borders */
-  --input: oklch(0.18 0.02 85);
-  --ring: oklch(0.65 0.15 135 / 0.5);
+  --background: #1f2937; /* Dark background */
+  --foreground: #f9fafb; /* Light text for dark mode */
+  --card: #374151; /* Dark card background */
+  --card-foreground: #f9fafb;
+  --popover: #1f2937;
+  --popover-foreground: #f9fafb;
+  --primary: #f97316; /* Brighter orange for dark mode visibility */
+  --primary-foreground: #1f2937;
+  --secondary: #fb923c; /* Brighter secondary for dark mode */
+  --secondary-foreground: #1f2937;
+  --muted: #374151; /* Dark muted background */
+  --muted-foreground: #9ca3af;
+  --accent: #fb923c; /* Bright accent for dark mode */
+  --accent-foreground: #1f2937;
+  --destructive: #ef4444; /* Brighter red for dark mode */
+  --destructive-foreground: #f9fafb;
+  --border: #4b5563; /* Dark borders */
+  --input: #374151;
+  --ring: rgba(249, 115, 22, 0.5);
 
-  /* Dark mode chart colors with enhanced visibility */
-  --chart-1: oklch(0.65 0.15 135); /* Bright earthy green */
-  --chart-2: oklch(0.85 0.18 85); /* Bright glowing gold */
-  --chart-3: oklch(0.55 0.12 160); /* Bright moss green */
-  --chart-4: oklch(0.65 0.2 25); /* Bright warning red */
-  --chart-5: oklch(0.75 0.12 110); /* Bright sage green */
+  --chart-1: #f97316;
+  --chart-2: #fb923c;
+  --chart-3: #ef4444;
+  --chart-4: #fbbf24;
+  --chart-5: #9ca3af;
 
-  /* Dark sidebar with underground network feel */
-  --sidebar: oklch(0.1 0.02 85); /* Deep underground sidebar */
-  --sidebar-foreground: oklch(0.92 0.01 120);
-  --sidebar-primary: oklch(0.65 0.15 135);
-  --sidebar-primary-foreground: oklch(0.12 0.02 85);
-  --sidebar-accent: oklch(0.85 0.18 85);
-  --sidebar-accent-foreground: oklch(0.12 0.02 85);
-  --sidebar-border: oklch(0.22 0.02 85);
-  --sidebar-ring: oklch(0.65 0.15 135 / 0.5);
+  --sidebar: #111827;
+  --sidebar-foreground: #f9fafb;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #1f2937;
+  --sidebar-accent: #fb923c;
+  --sidebar-accent-foreground: #1f2937;
+  --sidebar-border: #4b5563;
+  --sidebar-ring: rgba(249, 115, 22, 0.5);
 
-  /* Enhanced dark mode MyCora tokens with glowing effects */
-  --mycora-network-glow: oklch(0.85 0.18 85 / 0.4); /* Brighter network glow */
-  --mycora-trust-high: oklch(0.65 0.15 135);
-  --mycora-trust-medium: oklch(0.75 0.12 110);
-  --mycora-trust-low: oklch(0.85 0.1 60);
-  --mycora-compliance-pass: oklch(0.65 0.15 135);
-  --mycora-compliance-warning: oklch(0.85 0.18 85);
-  --mycora-compliance-fail: oklch(0.65 0.2 25);
+  --puffpass-claim-glow: rgba(249, 115, 22, 0.4);
+  --puffpass-reward-bronze: #d97706;
+  --puffpass-reward-silver: #d1d5db;
+  --puffpass-reward-gold: #fbbf24;
+  --puffpass-success: #34d399;
+  --puffpass-warning: #fbbf24;
 }
 
 @theme inline {
@@ -148,7 +140,44 @@
     @apply bg-background text-foreground;
   }
 
-  /* Added organic animations and mycelium network effects */
+  @keyframes puffpass-bounce {
+    0%,
+    20%,
+    53%,
+    80%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    40%,
+    43% {
+      transform: translate3d(0, -8px, 0);
+    }
+    70% {
+      transform: translate3d(0, -4px, 0);
+    }
+    90% {
+      transform: translate3d(0, -2px, 0);
+    }
+  }
+
+  @keyframes puffpass-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 5px var(--puffpass-claim-glow);
+    }
+    50% {
+      box-shadow: 0 0 20px var(--puffpass-claim-glow), 0 0 30px var(--puffpass-claim-glow);
+    }
+  }
+
+  .puffpass-bounce {
+    animation: puffpass-bounce 2s infinite;
+  }
+
+  .puffpass-claim-glow {
+    animation: puffpass-glow 2s ease-in-out infinite;
+  }
+
   @keyframes mycora-pulse {
     0%,
     100% {
@@ -192,43 +221,41 @@
     background: linear-gradient(
       -45deg,
       var(--background),
-      var(--mycora-network-glow),
+      var(--puffpass-claim-glow),
       var(--background),
-      var(--mycora-network-glow)
+      var(--puffpass-claim-glow)
     );
     background-size: 400% 400%;
     animation: mycora-network-flow 8s ease infinite;
   }
 
-  /* Trust level indicators with organic styling */
   .trust-indicator-high {
-    background: var(--mycora-trust-high);
-    box-shadow: 0 0 20px var(--mycora-trust-high);
+    background: var(--puffpass-success);
+    box-shadow: 0 0 20px var(--puffpass-success);
   }
 
   .trust-indicator-medium {
-    background: var(--mycora-trust-medium);
-    box-shadow: 0 0 15px var(--mycora-trust-medium);
+    background: var(--puffpass-warning);
+    box-shadow: 0 0 15px var(--puffpass-warning);
   }
 
   .trust-indicator-low {
-    background: var(--mycora-trust-low);
-    box-shadow: 0 0 10px var(--mycora-trust-low);
+    background: var(--destructive);
+    box-shadow: 0 0 10px var(--destructive);
   }
 
-  /* Compliance status styling */
   .compliance-pass {
-    color: var(--mycora-compliance-pass);
-    border-color: var(--mycora-compliance-pass);
+    color: var(--puffpass-success);
+    border-color: var(--puffpass-success);
   }
 
   .compliance-warning {
-    color: var(--mycora-compliance-warning);
-    border-color: var(--mycora-compliance-warning);
+    color: var(--puffpass-warning);
+    border-color: var(--puffpass-warning);
   }
 
   .compliance-fail {
-    color: var(--mycora-compliance-fail);
-    border-color: var(--mycora-compliance-fail);
+    color: var(--destructive);
+    border-color: var(--destructive);
   }
 }
