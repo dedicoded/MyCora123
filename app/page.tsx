@@ -39,17 +39,34 @@ export default function Page() {
   const [missingVars, setMissingVars] = useState<string[]>([])
 
   useEffect(() => {
-    const requiredVars = ["NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID", "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS"]
+    const requiredVars = [
+      "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+      "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS",
+      "NEXT_PUBLIC_NETWORK",
+    ]
+
+    const optionalVars: string[] = []
 
     const missing = requiredVars.filter((varName) => !process.env[varName])
+    const missingOptional = optionalVars.filter((varName) => !process.env[varName])
 
     if (missing.length > 0 && !isPreview) {
-      console.warn("[v0] Missing environment variables:", missing)
-      setMissingVars(missing)
+      console.warn("[v0] Missing critical environment variables:", missing)
+      if (missingOptional.length > 0) {
+        console.warn("[v0] Missing optional environment variables:", missingOptional)
+      }
+      setMissingVars([...missing, ...missingOptional])
       setEnvStatus("missing")
     } else {
       setEnvStatus("ready")
     }
+
+    console.log("[v0] Environment status:", {
+      envStatus: missing.length > 0 ? "missing" : "ready",
+      isPreview,
+      missingRequired: missing,
+      missingOptional,
+    })
   }, [])
 
   const handleBeginJourney = () => {
@@ -241,7 +258,7 @@ export default function Page() {
           <CardContent className="p-6">
             <div className="flex items-center space-x-3">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mycora-sage"></div>
-              <span className="text-mycora-earth">Initializing platform...</span>
+              <span className="text-mycora-earth">Initializing MyCora platform...</span>
             </div>
           </CardContent>
         </Card>
@@ -249,29 +266,63 @@ export default function Page() {
     }
 
     if (envStatus === "missing") {
+      const criticalVars = missingVars.filter((v) => v.includes("WALLETCONNECT") || v.includes("MCC_CONTRACT"))
+      const optionalVars = missingVars.filter((v) => !criticalVars.includes(v))
+
       return (
         <Card className="bg-red-50 border-red-200 mb-8">
           <CardHeader>
-            <CardTitle className="text-red-800">⚠️ Configuration Required</CardTitle>
+            <CardTitle className="text-red-800">⚠️ Deployment Configuration Required</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-red-700 mb-4">
-              The following environment variables need to be configured for full functionality:
+              Your MyCora deployment needs environment variables configured in Vercel:
             </p>
-            <ul className="list-disc list-inside space-y-1 text-red-600 mb-4">
-              {missingVars.map((varName) => (
-                <li key={varName}>
-                  <code className="bg-red-100 px-2 py-1 rounded">{varName}</code>
-                </li>
-              ))}
-            </ul>
-            <Button
-              onClick={() => setEnvStatus("ready")}
-              variant="outline"
-              className="border-red-300 text-red-700 hover:bg-red-50"
-            >
-              Continue in Demo Mode
-            </Button>
+
+            {criticalVars.length > 0 && (
+              <div className="mb-4">
+                <p className="font-semibold text-red-800 mb-2">Critical (required for core functionality):</p>
+                <ul className="list-disc list-inside space-y-1 text-red-600 mb-2">
+                  {criticalVars.map((varName) => (
+                    <li key={varName}>
+                      <code className="bg-red-100 px-2 py-1 rounded text-xs">{varName}</code>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {optionalVars.length > 0 && (
+              <div className="mb-4">
+                <p className="font-semibold text-red-700 mb-2">Optional (enhanced features):</p>
+                <ul className="list-disc list-inside space-y-1 text-red-500 mb-2">
+                  {optionalVars.map((varName) => (
+                    <li key={varName}>
+                      <code className="bg-red-50 px-2 py-1 rounded text-xs">{varName}</code>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="bg-red-100 p-3 rounded-lg mb-4">
+              <p className="text-red-800 text-sm">
+                <strong>Fix:</strong> Go to Vercel Dashboard → Project Settings → Environment Variables
+              </p>
+            </div>
+
+            <div className="flex space-x-3">
+              <Button
+                onClick={() => setEnvStatus("ready")}
+                variant="outline"
+                className="border-red-300 text-red-700 hover:bg-red-50"
+              >
+                Continue in Demo Mode
+              </Button>
+              <Button onClick={() => window.location.reload()} className="bg-red-600 hover:bg-red-700 text-white">
+                Retry After Configuration
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )
@@ -281,18 +332,38 @@ export default function Page() {
       return (
         <Card className="bg-blue-50 border-blue-200 mb-8">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <Badge variant="outline" className="border-blue-300 text-blue-700">
-                Preview Mode
-              </Badge>
-              <span className="text-blue-700 text-sm">Using mock data for demonstration</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Badge variant="outline" className="border-blue-300 text-blue-700">
+                  Preview Mode
+                </Badge>
+                <span className="text-blue-700 text-sm">Using mock contracts for demonstration</span>
+              </div>
+              <div className="text-xs text-blue-600">
+                {Object.entries(mockContracts).map(([key, contract]) => (
+                  <div key={key}>
+                    {contract.name}: {contract.address}
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
       )
     }
 
-    return null
+    return (
+      <Card className="bg-green-50 border-green-200 mb-8">
+        <CardContent className="p-4">
+          <div className="flex items-center space-x-3">
+            <Badge variant="outline" className="border-green-300 text-green-700">
+              ✅ Production Ready
+            </Badge>
+            <span className="text-green-700 text-sm">All environment variables configured</span>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   const renderUserDashboard = () => (

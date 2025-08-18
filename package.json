@@ -16,6 +16,9 @@
     "test:contracts": "npx hardhat test",
     "validate": "tsx scripts/production-validation.ts",
     "validate:compile": "tsc scripts/production-validation.ts && node scripts/production-validation.js",
+    "validate:deployment": "node scripts/deployment-verification.js",
+    "validate:env": "node scripts/production-validation.js",
+    "validate:ui": "node scripts/deployment-ui-validation.js",
     "verify:all": "npx hardhat run scripts/verify-contracts.ts"
   },
   "dependencies": {
@@ -62,6 +65,7 @@
     "@types/chai": "latest",
     "@types/debug": "latest",
     "@types/mocha": "latest",
+    "@vercel/kv": "latest",
     "@vitest/browser": "latest",
     "@vitest/ui": "latest",
     "autoprefixer": "^10.4.20",
