@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { WalletConnect } from "@/components/WalletConnect"
 import { MintingInterface } from "@/components/MintingInterface"
 import { SecurityVerification } from "@/components/ui/security-verification"
@@ -21,6 +21,13 @@ interface UserSession {
   complianceStatus: string
 }
 
+const isPreview = process.env.NODE_ENV === "development" && !process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+const mockContracts = {
+  mcc: { address: "0x1234...5678", name: "MyCora Coin (Preview)" },
+  security: { address: "0x5678...9012", name: "Security Token (Preview)" },
+  utility: { address: "0x9012...3456", name: "Utility Token (Preview)" },
+}
+
 export default function Page() {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [userType, setUserType] = useState<"individual" | "business" | null>(null)
@@ -28,6 +35,22 @@ export default function Page() {
   const [userSession, setUserSession] = useState<UserSession | null>(null)
   const [walletConnected, setWalletConnected] = useState(false)
   const [userEmail, setUserEmail] = useState("")
+  const [envStatus, setEnvStatus] = useState<"loading" | "ready" | "missing">("loading")
+  const [missingVars, setMissingVars] = useState<string[]>([])
+
+  useEffect(() => {
+    const requiredVars = ["NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID", "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS"]
+
+    const missing = requiredVars.filter((varName) => !process.env[varName])
+
+    if (missing.length > 0 && !isPreview) {
+      console.warn("[v0] Missing environment variables:", missing)
+      setMissingVars(missing)
+      setEnvStatus("missing")
+    } else {
+      setEnvStatus("ready")
+    }
+  }, [])
 
   const handleBeginJourney = () => {
     setShowOnboarding(true)
@@ -77,6 +100,10 @@ export default function Page() {
   }
 
   const handleWalletConnection = (connected: boolean) => {
+    if (!connected && envStatus === "missing") {
+      console.warn("[v0] Wallet connection failed - missing environment variables")
+      return
+    }
     setWalletConnected(connected)
   }
 
@@ -207,12 +234,80 @@ export default function Page() {
     </div>
   )
 
+  const renderEnvironmentStatus = () => {
+    if (envStatus === "loading") {
+      return (
+        <Card className="bg-yellow-50 border-yellow-200 mb-8">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mycora-sage"></div>
+              <span className="text-mycora-earth">Initializing platform...</span>
+            </div>
+          </CardContent>
+        </Card>
+      )
+    }
+
+    if (envStatus === "missing") {
+      return (
+        <Card className="bg-red-50 border-red-200 mb-8">
+          <CardHeader>
+            <CardTitle className="text-red-800">⚠️ Configuration Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700 mb-4">
+              The following environment variables need to be configured for full functionality:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-red-600 mb-4">
+              {missingVars.map((varName) => (
+                <li key={varName}>
+                  <code className="bg-red-100 px-2 py-1 rounded">{varName}</code>
+                </li>
+              ))}
+            </ul>
+            <Button
+              onClick={() => setEnvStatus("ready")}
+              variant="outline"
+              className="border-red-300 text-red-700 hover:bg-red-50"
+            >
+              Continue in Demo Mode
+            </Button>
+          </CardContent>
+        </Card>
+      )
+    }
+
+    if (isPreview) {
+      return (
+        <Card className="bg-blue-50 border-blue-200 mb-8">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-3">
+              <Badge variant="outline" className="border-blue-300 text-blue-700">
+                Preview Mode
+              </Badge>
+              <span className="text-blue-700 text-sm">Using mock data for demonstration</span>
+            </div>
+          </CardContent>
+        </Card>
+      )
+    }
+
+    return null
+  }
+
   const renderUserDashboard = () => (
     <div className="max-w-7xl mx-auto space-y-8">
+      {renderEnvironmentStatus()}
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-mycora-earth">Your MyCora Dashboard</h2>
           <p className="text-mycora-sage">Manage your tokens, compliance, and network connections</p>
+          {isPreview && (
+            <Badge variant="outline" className="mt-2 border-blue-300 text-blue-700">
+              Demo Mode - Mock Data
+            </Badge>
+          )}
         </div>
         <div className="flex items-center space-x-4">
           <TrustIndicator level="verified" />
@@ -229,8 +324,23 @@ export default function Page() {
               <CardTitle className="text-mycora-earth">Wallet & Tokens</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <WalletConnect onConnectionChange={handleWalletConnection} />
-              {walletConnected && <MintingInterface />}
+              {envStatus === "ready" ? (
+                <>
+                  <WalletConnect onConnectionChange={handleWalletConnection} />
+                  {walletConnected && <MintingInterface />}
+                </>
+              ) : (
+                <div className="p-6 border-2 border-dashed border-mycora-sage/30 rounded-lg text-center">
+                  <p className="text-mycora-sage mb-4">
+                    {isPreview
+                      ? "Wallet connection available in production mode"
+                      : "Configure environment variables to enable wallet connection"}
+                  </p>
+                  <Button variant="outline" disabled>
+                    Connect Wallet (Disabled)
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -239,7 +349,13 @@ export default function Page() {
               <CardTitle className="text-mycora-earth">Payment Processing</CardTitle>
             </CardHeader>
             <CardContent>
-              <PaymentForm />
+              {envStatus === "ready" ? (
+                <PaymentForm />
+              ) : (
+                <div className="p-6 border-2 border-dashed border-mycora-sage/30 rounded-lg text-center">
+                  <p className="text-mycora-sage">Payment processing available with full configuration</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -299,7 +415,6 @@ export default function Page() {
               <stop offset="100%" stopColor="var(--mycora-sage)" stopOpacity="0" />
             </radialGradient>
           </defs>
-          {/* Mycelial network nodes */}
           {[...Array(8)].map((_, i) => (
             <circle
               key={i}
@@ -311,7 +426,6 @@ export default function Page() {
               style={{ animationDelay: `${i * 0.3}s` }}
             />
           ))}
-          {/* Connection lines */}
           {[...Array(7)].map((_, i) => (
             <path
               key={i}
@@ -326,7 +440,12 @@ export default function Page() {
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
-        {currentStep === "welcome" && renderWelcomeScreen()}
+        {currentStep === "welcome" && (
+          <>
+            {renderEnvironmentStatus()}
+            {renderWelcomeScreen()}
+          </>
+        )}
 
         {currentStep === "userType" && renderUserTypeSelection()}
 
