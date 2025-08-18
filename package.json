@@ -10,7 +10,6 @@
     "deploy:sepolia": "npx hardhat run scripts/deploy-all-contracts.ts --network sepolia",
     "deployment:status": "cat DEPLOYMENT_STATUS_TRACKER.md",
     "dev": "next dev",
-    "export": "next export",
     "lint": "next lint",
     "start": "next start",
     "test:contracts": "npx hardhat test",
