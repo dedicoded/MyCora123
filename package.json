@@ -13,6 +13,7 @@
     "lint": "next lint",
     "start": "next start",
     "test:contracts": "npx hardhat test",
+    "test:deployment": "node scripts/test-deployment.js",
     "validate": "tsx scripts/production-validation.ts",
     "validate:compile": "tsc scripts/production-validation.ts && node scripts/production-validation.js",
     "validate:deployment": "node scripts/deployment-verification.js",
