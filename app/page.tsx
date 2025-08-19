@@ -490,8 +490,8 @@ export default function Page() {
             <circle
               key={i}
               cx={200 + i * 120}
-              cy={150 + Math.sin(i) * 50}
-              r={3 + (i % 3) + 1}
+              cy={150 + Math.sin(i * 0.5) * 30}
+              r={4}
               fill="url(#nodeGlow)"
               className="animate-pulse"
               style={{ animationDelay: `${i * 0.3}s` }}
@@ -500,7 +500,7 @@ export default function Page() {
           {[...Array(7)].map((_, i) => (
             <path
               key={i}
-              d={`M${200 + i * 120},${150 + Math.sin(i) * 50} Q${260 + i * 120},${120 + Math.sin(i + 0.5) * 30} ${320 + i * 120},${150 + Math.sin(i + 1) * 50}`}
+              d={`M${200 + i * 120},${150 + Math.sin(i * 0.5) * 30} Q${260 + i * 120},${120 + Math.sin((i + 0.5) * 0.5) * 20} ${320 + i * 120},${150 + Math.sin((i + 1) * 0.5) * 30}`}
               stroke="var(--mycora-sage)"
               strokeWidth="1"
               fill="none"

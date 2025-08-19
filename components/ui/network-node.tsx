@@ -25,14 +25,16 @@ export function NetworkNode({
   }
 
   return (
-    <div 
+    <button
+      type="button"
       className={clsx(
-        "relative inline-flex items-center justify-center cursor-pointer",
+        "relative inline-flex items-center justify-center cursor-pointer bg-transparent border-0 p-0",
         className
       )}
       onClick={onClick}
       data-active={active ? "true" : undefined}
       aria-pressed={active}
+      disabled={!onClick}
     >
       <div
         className={clsx(
@@ -51,7 +53,7 @@ export function NetworkNode({
             )}
           />
         )}
-      </div>
+      </button>
       {label && (
         <span className="ml-2 text-sm text-mycora-earth">
           {label}
