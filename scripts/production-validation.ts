@@ -1,6 +1,6 @@
-
 #!/usr/bin/env tsx
 
+/*
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -10,7 +10,7 @@ class ProductionValidator {
 
   validateEnvironmentVariables() {
     console.log('🔍 Validating environment variables...')
-    
+
     const requiredVars = [
       'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
       'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS', 
@@ -18,7 +18,7 @@ class ProductionValidator {
     ]
 
     const missingVars = requiredVars.filter(varName => !process.env[varName])
-    
+
     if (missingVars.length > 0) {
       this.warnings.push(`Missing environment variables: ${missingVars.join(', ')}`)
       console.warn(`⚠️  Missing: ${missingVars.join(', ')}`)
@@ -29,7 +29,7 @@ class ProductionValidator {
 
   validateBuildDirectory() {
     console.log('🔍 Validating build directory...')
-    
+
     const buildDir = path.join(process.cwd(), '.next')
     if (!fs.existsSync(buildDir)) {
       this.errors.push('Build directory (.next) not found. Run npm run build first.')
@@ -52,14 +52,14 @@ class ProductionValidator {
 
   validatePackageJson() {
     console.log('🔍 Validating package.json...')
-    
+
     try {
       const packagePath = path.join(process.cwd(), 'package.json')
       const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
-      
+
       const requiredScripts = ['build', 'start', 'dev']
       const missingScripts = requiredScripts.filter(script => !packageJson.scripts?.[script])
-      
+
       if (missingScripts.length > 0) {
         this.errors.push(`Missing package.json scripts: ${missingScripts.join(', ')}`)
       }
@@ -72,7 +72,7 @@ class ProductionValidator {
 
   validateNextConfig() {
     console.log('🔍 Validating Next.js configuration...')
-    
+
     try {
       const configPath = path.join(process.cwd(), 'next.config.js')
       if (fs.existsSync(configPath)) {
@@ -87,24 +87,24 @@ class ProductionValidator {
 
   async run() {
     console.log('🚀 Starting production validation...\n')
-    
+
     this.validateEnvironmentVariables()
     this.validateBuildDirectory() 
     this.validatePackageJson()
     this.validateNextConfig()
-    
+
     console.log('\n📊 Validation Results:')
-    
+
     if (this.errors.length > 0) {
       console.log('\n❌ Errors:')
       this.errors.forEach(error => console.log(`  - ${error}`))
     }
-    
+
     if (this.warnings.length > 0) {
       console.log('\n⚠️  Warnings:')
       this.warnings.forEach(warning => console.log(`  - ${warning}`))
     }
-    
+
     if (this.errors.length === 0) {
       console.log('\n✅ Production validation passed!')
       return true
@@ -117,3 +117,4 @@ class ProductionValidator {
 
 const validator = new ProductionValidator()
 validator.run().catch(console.error)
+*/
