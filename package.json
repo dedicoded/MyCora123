@@ -125,6 +125,7 @@
     "vitest": "latest",
     "wagmi": "latest",
     "web3.storage": "latest",
+    "webpack": "^5.101.3",
     "zod": "3.25.67"
   },
   "devDependencies": {
