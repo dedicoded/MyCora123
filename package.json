@@ -152,5 +152,6 @@
       "path": ".next/static/js/*.js",
       "limit": "200 KB"
     }
-  ]
+  ],
+  "type": "module"
 }

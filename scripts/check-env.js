@@ -1,6 +1,4 @@
 
-#!/usr/bin/env node
-
 console.log('🔍 Environment Check for MyCora\n');
 
 const required = [
