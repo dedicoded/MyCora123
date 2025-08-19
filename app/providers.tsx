@@ -21,7 +21,11 @@ const config = getDefaultConfig({
   // Fix storage configuration for SSR compatibility
   storage: typeof window !== 'undefined' ? 
     window.localStorage : 
-    undefined,
+    {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+    },
 })
 
 const queryClient = new QueryClient({
@@ -32,11 +36,17 @@ const queryClient = new QueryClient({
   },
 })
 
+// Singleton pattern to prevent multiple initializations
+let isInitialized = false
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
-    setMounted(true)
+    if (!isInitialized) {
+      setMounted(true)
+      isInitialized = true
+    }
   }, [])
 
   if (!mounted) {
