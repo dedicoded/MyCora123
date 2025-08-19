@@ -18,10 +18,10 @@ const config = getDefaultConfig({
   projectId: projectId || "demo-project-id", // Use demo ID if not configured
   chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
   ssr: true,
-  // Add storage configuration to handle SSR
+  // Fix storage configuration for SSR compatibility
   storage: typeof window !== 'undefined' ? 
-    () => window.localStorage : 
-    () => ({ getItem: () => null, setItem: () => {}, removeItem: () => {} }),
+    window.localStorage : 
+    undefined,
 })
 
 const queryClient = new QueryClient({
