@@ -24,6 +24,30 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  
+  // Cache control headers
+  async headers() {
+    return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ]
+  },
 
   webpack: (config, { isServer, dev }) => {
     if (!isServer) {
@@ -57,19 +81,40 @@ const nextConfig = {
           cacheUnaffected: true,
           splitChunks: {
             chunks: 'all',
-            maxSize: 244000,
+            maxSize: 200000,
+            minSize: 20000,
             cacheGroups: {
+              default: {
+                minChunks: 2,
+                priority: -20,
+                reuseExistingChunk: true,
+              },
               vendor: {
                 test: /[\\/]node_modules[\\/]/,
                 name: 'vendors',
+                priority: -10,
                 chunks: 'all',
+                enforce: true,
               },
               web3: {
                 test: /[\\/]node_modules[\\/](wagmi|viem|@rainbow-me|@walletconnect)[\\/]/,
                 name: 'web3',
+                priority: 10,
                 chunks: 'all',
+                enforce: true,
+              },
+              react: {
+                test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+                name: 'react',
+                priority: 20,
+                chunks: 'all',
+                enforce: true,
               },
             },
+          },
+          // Add runtime chunk optimization
+          runtimeChunk: {
+            name: 'runtime',
           },
         }
       }

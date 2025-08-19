@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Providers } from "./providers"
+import { ChunkErrorRecovery } from "@/components/ChunkErrorRecovery"
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
@@ -18,8 +19,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <ChunkErrorRecovery />
         <Providers>{children}</Providers>
       </body>
     </html>
