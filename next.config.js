@@ -27,6 +27,8 @@ const nextConfig = {
           },
         },
       }
+      // Disable usedExports to avoid conflicts with cacheUnaffected
+      config.optimization.usedExports = false
     }
 
     return config
