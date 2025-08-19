@@ -60,20 +60,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pkill -f \"next dev\" || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "fuser -k 3000/tcp 2>/dev/null || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "rm -rf .next"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm cache clean --force"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev:clean"
