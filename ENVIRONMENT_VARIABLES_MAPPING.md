@@ -1,5 +1,13 @@
 # MyCora Environment Variables - Complete Mapping
 
+## 🔐 Replit Secrets Mapping
+
+| Secret Key | Used In | Purpose |
+|------------|---------|---------|
+| NEXT_PUBLIC_MCC_CONTRACT_ADDRESS | lib/env-config.ts, WalletConnect UI | MyCora Coin contract address |
+| NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID | WalletConnect modal | WalletConnect project ID for wallet connections |
+| NEXT_PUBLIC_NETWORK | lib/env-config.ts, Hardhat scripts | Target blockchain network |
+
 ## 🔑 Required Variables for Vercel Deployment
 
 ### Blockchain Configuration
