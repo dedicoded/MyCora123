@@ -7,10 +7,10 @@ import { mainnet, polygon, optimism, arbitrum, base, sepolia } from "wagmi/chain
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import "@rainbow-me/rainbowkit/styles.css"
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "1c711e0584ef1a9b8f4e34aa99c21658"
 
-if (!projectId) {
-  console.warn("[v0] WalletConnect Project ID not found. Wallet functionality will be limited.")
+if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
+  console.warn("[v0] Using fallback WalletConnect Project ID. Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID for production.")
 }
 
 const config = getDefaultConfig({
