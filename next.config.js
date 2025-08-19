@@ -15,9 +15,6 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // Tree shaking optimization
-    config.optimization.usedExports = true
-
     // Reduce bundle size by splitting chunks
     if (!isServer) {
       config.optimization.splitChunks = {
