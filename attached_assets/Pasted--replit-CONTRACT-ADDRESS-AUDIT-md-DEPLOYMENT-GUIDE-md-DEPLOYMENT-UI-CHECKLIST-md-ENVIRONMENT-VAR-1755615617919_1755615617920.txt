@@ -1,0 +1,65 @@
+.replit
+CONTRACT_ADDRESS_AUDIT.md
+DEPLOYMENT_GUIDE.md
+DEPLOYMENT_UI_CHECKLIST.md
+ENVIRONMENT_VARIABLES_MAPPING.md
+lib/env-config.ts
+package.json
+QUICK_DEPLOYMENT_GUIDE.md
+scripts/check-env.js
+scripts/deploy-to-market.js
+scripts/deployment-verification.js
+scripts/sync-env-to-vercel.js
+scripts/update-frontend-addresses.js
+VERCEL_DEPLOYMENT_GUIDE.md
+Perfect! I can see the syntax error in the check-env.js script and the need to set up Replit Secrets properly. Let me help you lock this down with a clean, contributor-friendly setup.
+
+Step 1: Use Replit Secrets
+Secrets
+Store sensitive information (like API keys) securely in your App
+You'll need to add these three secrets in the Secrets tab:
+
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = Get from cloud.reown.com
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS = Your deployed contract address
+NEXT_PUBLIC_NETWORK = sepolia
+Step 2: Fix the Environment Check Script
+The script has a syntax error. Let me fix it and make it fail loudly:
+
+scripts/check-env.js
+Step 3: Add Clean Development Script
+package.json
+Step 4: Update Development Workflow
+Let me update the existing "Clean Dev Server" workflow to use the new script:
+
+Set
+Clean Dev Server
+to run
+npm run dev:clean
+Step 5: Test the Setup
+Now you can test the complete flow:
+
+node scripts/check-env.js
+Verification Flow
+Once you've added the secrets in Replit:
+
+Add secrets in the Secrets tab (lock icon)
+Run clean restart: Use the "Clean Dev Server" workflow or npm run dev:clean
+Verify setup: Should see ✅ All required environment variables are set
+Confirm clean logs: No more [v0] Missing critical environment variables in console
+This setup ensures:
+
+🔒 Secure: No accidental commits of sensitive data
+🧹 Clean: Automatic cleanup of stale processes and cache
+👥 Contributor-friendly: One command to get running
+🔍 Validated: Environment check runs before dev server starts
+The environment check now runs automatically before npm run dev, so any missing secrets will be caught immediately with clear instructions on how to fix them.
+
+Apply all:
+Edit file
+scripts/check-env.js
+Edit file
+package.json
+Configure
+workflow
+Run shell command:
+node scripts/check-env.js
