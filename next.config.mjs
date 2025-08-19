@@ -1,6 +1,5 @@
 
 import withBundleAnalyzer from "@next/bundle-analyzer";
-import { createRequire } from 'module';
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true" && process.env.NODE_ENV !== "production",
