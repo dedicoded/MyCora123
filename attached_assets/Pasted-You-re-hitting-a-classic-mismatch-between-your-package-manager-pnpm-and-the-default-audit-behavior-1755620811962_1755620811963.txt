@@ -1,0 +1,63 @@
+You're hitting a classic mismatch between your package manager (pnpm) and the default audit behavior (npm audit), which expects a package-lock.json. Since you're using pnpm-lock.yaml, here's how to resolve this cleanly and keep your deployment frictionless inside Replit:
+
+🛠️ Root Cause
+- npm audit fails because there's no package-lock.json
+- Your build process uses pnpm, so npm audit is irrelevant
+- The prepare script is triggering npm audit, causing the deployment to exit with code 1
+
+✅ Fix Strategy
+1️⃣ Remove or Replace prepare Script
+In package.json, replace this:
+"prepare": "npm run audit"
+
+
+With one of these safer options:
+Option A: Skip Audit in Deployment
+"prepare": "echo 'Skipping prepare script in deployment'"
+
+
+Option B: Use pnpm audit (if you want to keep audit checks)
+"scripts": {
+  "audit": "pnpm audit --audit-level=high && npx size-limit && node scripts/validate-env.js",
+  "prepare": "npm run audit"
+}
+
+
+✅ This ensures you're using the correct lockfile format and avoids the ENOLOCK error.
+
+
+2️⃣ Confirm Replit Build Settings
+Your [deployment] block should look like this:
+[deployment]
+run = ["sh", "-c", "node server.js"]
+build = ["sh", "-c", "npm install --ignore-scripts && npm run build"]
+
+[env]
+REPLIT_DISABLE_PACKAGE_LAYER = "1"
+
+
+This disables Replit’s package layer and avoids lifecycle script conflicts during install.
+
+
+3️⃣ Optional: Add validate:replit Script
+In package.json:
+"scripts": {
+  "validate:replit": "node scripts/check-env.js && node scripts/validate-env.js"
+}
+
+
+Then alias start to:
+"start": "npm run validate:replit && npm run dev:clean"
+
+
+
+🧩 Summary
+| Fix | Result | 
+| Replace prepare script | Prevents audit-related build failures | 
+| Use pnpm audit or skip audit | Aligns with your lockfile format | 
+| Disable Replit package layer | Avoids lifecycle script conflicts | 
+| Add validate:replit | Ensures secrets and env vars are hydrated | 
+
+
+
+Let me know if you want to fully remove audit from your build flow or keep a lightweight version for local dev only. I can help you split that logic cleanly.
