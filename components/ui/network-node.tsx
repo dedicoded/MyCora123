@@ -1,68 +1,62 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
 
-const networkNodeVariants = cva(
-  "relative rounded-full border-2 transition-all duration-500 cursor-pointer mycora-grow hover:scale-110",
-  {
-    variants: {
-      status: {
-        active: "bg-primary border-primary shadow-lg shadow-primary/30 mycora-pulse",
-        connected: "bg-secondary border-secondary shadow-md shadow-secondary/20",
-        inactive: "bg-muted border-border shadow-sm",
-        pending: "bg-background border-dashed border-muted-foreground/50",
-      },
-      size: {
-        sm: "h-8 w-8",
-        default: "h-12 w-12",
-        lg: "h-16 w-16",
-        xl: "h-20 w-20",
-      },
-    },
-    defaultVariants: {
-      status: "inactive",
-      size: "default",
-    },
-  },
-)
+"use client"
 
-export interface NetworkNodeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof networkNodeVariants> {
+import clsx from "clsx"
+
+interface NetworkNodeProps {
+  size?: "sm" | "md" | "lg"
+  active?: boolean
   label?: string
-  connections?: number
-  trustScore?: number
+  onClick?: () => void
+  className?: string
 }
 
-const NetworkNode = React.forwardRef<HTMLDivElement, NetworkNodeProps>(
-  ({ className, status, size, label, connections, trustScore, ...props }, ref) => {
-    return (
-      <div className="relative inline-flex flex-col items-center gap-2">
-        <div
-          className={cn(networkNodeVariants({ status, size, className }))}
-          ref={ref}
-          title={`${label || "Network Node"}${trustScore ? ` (Trust: ${trustScore})` : ""}${connections ? ` - ${connections} connections` : ""}`}
-          {...props}
-        >
-          {/* Inner glow effect */}
-          <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/20 to-transparent" />
+export function NetworkNode({ 
+  size = "md", 
+  active = false, 
+  label, 
+  onClick, 
+  className 
+}: NetworkNodeProps) {
+  const sizeClasses = {
+    sm: "w-3 h-3",
+    md: "w-4 h-4", 
+    lg: "w-6 h-6"
+  }
 
-          {/* Connection indicator */}
-          {connections && connections > 0 && (
-            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-accent text-xs flex items-center justify-center text-accent-foreground font-bold">
-              {connections > 9 ? "9+" : connections}
-            </div>
-          )}
-        </div>
-
-        {/* Node label */}
-        {label && (
-          <span className="text-xs font-medium text-muted-foreground text-center max-w-20 truncate">{label}</span>
+  return (
+    <div 
+      className={clsx(
+        "relative inline-flex items-center justify-center cursor-pointer",
+        className
+      )}
+      onClick={onClick}
+      data-active={active ? "true" : undefined}
+      aria-pressed={active}
+    >
+      <div
+        className={clsx(
+          "rounded-full border-2 transition-all duration-300",
+          sizeClasses[size],
+          active 
+            ? "bg-mycora-sage border-mycora-sage shadow-lg shadow-mycora-sage/30" 
+            : "bg-mycora-earth/20 border-mycora-sage/40 hover:border-mycora-sage"
+        )}
+      >
+        {active && (
+          <div 
+            className={clsx(
+              "absolute inset-0 rounded-full animate-ping",
+              "bg-mycora-sage/60"
+            )}
+          />
         )}
       </div>
-    )
-  },
-)
-NetworkNode.displayName = "NetworkNode"
-
-export { NetworkNode, networkNodeVariants }
+      {label && (
+        <span className="ml-2 text-sm text-mycora-earth">
+          {label}
+        </span>
+      )}
+    </div>
+  )
+}

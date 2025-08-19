@@ -491,7 +491,7 @@ export default function Page() {
               key={i}
               cx={200 + i * 120}
               cy={150 + Math.sin(i) * 50}
-              r={3 + Math.random() * 3}
+              r={3 + (i % 3) + 1}
               fill="url(#nodeGlow)"
               className="animate-pulse"
               style={{ animationDelay: `${i * 0.3}s` }}
