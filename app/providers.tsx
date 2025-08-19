@@ -13,20 +13,14 @@ if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
   console.warn("[v0] Using fallback WalletConnect Project ID. Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID for production.")
 }
 
-const config = getDefaultConfig({
-  appName: "MyCora",
-  projectId: projectId || "demo-project-id", // Use demo ID if not configured
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
-  ssr: true,
-  // Fix storage configuration for SSR compatibility
-  storage: typeof window !== 'undefined' ? 
-    window.localStorage : 
-    {
-      getItem: () => null,
-      setItem: () => {},
-      removeItem: () => {},
-    },
-})
+const config = typeof window !== 'undefined' 
+  ? getDefaultConfig({
+      appName: "MyCora",
+      projectId: projectId || "demo-project-id",
+      chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+      ssr: true,
+    })
+  : null
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,13 +37,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && typeof window !== 'undefined') {
       setMounted(true)
       isInitialized = true
     }
   }, [])
 
-  if (!mounted) {
+  if (!mounted || !config) {
     return <>{children}</>
   }
 
