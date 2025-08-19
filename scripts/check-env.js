@@ -17,13 +17,20 @@ const optionalVars = [
 ];
 
 let hasIssues = false;
+const missingVars = [];
 
 console.log('📋 Required Variables:');
 requiredVars.forEach(varName => {
   const value = process.env[varName];
-  const status = value ? '✅' : '❌';
-  console.log(`${status} ${varName}: ${value ? 'Set' : 'Missing'}`);
-  if (!value) hasIssues = true;
+  const isPlaceholder = value && (value.includes('your_') || value.includes('0x0000000000000000000000000000000000000000'));
+  
+  if (!value || isPlaceholder) {
+    console.log(`❌ ${varName}: ${!value ? 'Missing' : 'Placeholder value detected'}`);
+    missingVars.push(varName);
+    hasIssues = true;
+  } else {
+    console.log(`✅ ${varName}: Set (${value.substring(0, 10)}...)`);
+  }
 });
 
 console.log('\n📋 Optional Variables:');
@@ -36,11 +43,19 @@ optionalVars.forEach(varName => {
 console.log('\n🎯 Summary:');
 if (hasIssues) {
   console.log('❌ Missing required environment variables');
-  console.log('💡 Add them to your Replit Secrets or .env.local file');
+  console.log('\n🔧 To fix in Replit:');
+  console.log('1. Click the lock icon (Secrets) in the left toolbar');
+  console.log('2. Add each missing variable:');
+  missingVars.forEach(varName => {
+    console.log(`   - ${varName}`);
+  });
+  console.log('3. Restart dev server: run "Clean Dev Server" workflow');
+  console.log('\n💡 After adding secrets, this [v0] Missing critical environment variables log will disappear');
 } else {
   console.log('✅ All required environment variables are set');
+  console.log('✅ Runtime checks should pass now');
 }
 
 console.log('\n🔗 For WalletConnect Project ID:');
-console.log('   Visit: https://cloud.walletconnect.com/');
+console.log('   Visit: https://cloud.reown.com/');
 console.log('   Create a project and copy the Project ID');
