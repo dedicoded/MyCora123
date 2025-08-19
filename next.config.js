@@ -78,7 +78,6 @@ const nextConfig = {
       if (!dev) {
         config.optimization = {
           ...config.optimization,
-          cacheUnaffected: true,
           splitChunks: {
             chunks: 'all',
             maxSize: 200000,
