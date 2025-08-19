@@ -1,6 +1,6 @@
+
 #!/usr/bin/env tsx
 
-/*
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -74,11 +74,11 @@ class ProductionValidator {
     console.log('🔍 Validating Next.js configuration...')
 
     try {
-      const configPath = path.join(process.cwd(), 'next.config.js')
+      const configPath = path.join(process.cwd(), 'next.config.mjs')
       if (fs.existsSync(configPath)) {
         console.log('✅ Next.js config found')
       } else {
-        this.warnings.push('No next.config.js found - using defaults')
+        this.warnings.push('No next.config.mjs found - using defaults')
       }
     } catch (error) {
       this.warnings.push('Could not validate Next.js configuration')
@@ -117,4 +117,3 @@ class ProductionValidator {
 
 const validator = new ProductionValidator()
 validator.run().catch(console.error)
-*/

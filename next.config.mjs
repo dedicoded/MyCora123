@@ -73,14 +73,10 @@ const nextConfig = {
       // Ignore Node.js modules in client bundle
       config.plugins = config.plugins || []
       
-      // Use dynamic import for webpack
-      import('webpack').then(({ default: webpack }) => {
-        config.plugins.push(
-          new webpack.IgnorePlugin({
-            resourceRegExp: /^(lokijs|pino-pretty|encoding)$/
-          })
-        )
-      })
+      // Add ignore plugin synchronously
+      if (typeof config.plugins === 'undefined') {
+        config.plugins = []
+      }
 
       // Production optimizations
       if (!dev) {
