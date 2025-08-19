@@ -66,6 +66,12 @@
 - [x] WalletConnect modal loads with correct project ID
 - [x] Contract address available in frontend
 
+### 6.5. Replit Integration ✅
+- [x] `validate:replit` script added
+- [x] `start` script aliased to run validation + dev server
+- [x] Secrets confirmed via Replit Secrets tool
+- [x] Clean startup confirmed on Replit boot
+
 ### 7. Infrastructure ✅
 - [ ] Frontend deployed to Vercel
 - [ ] All environment variables configured

@@ -8,6 +8,19 @@
 | NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID | WalletConnect modal | WalletConnect project ID for wallet connections |
 | NEXT_PUBLIC_NETWORK | lib/env-config.ts, Hardhat scripts | Target blockchain network |
 
+## 🚀 Replit Startup Flow
+
+- **Script**: `npm start`
+- **Purpose**: Validate secrets and launch clean dev server
+
+### Components
+
+| Step | Description |
+|------|-------------|
+| `check-env.js` | Validates required Replit secrets |
+| `validate-env.js` | Confirms runtime and build-time variables |
+| `dev:clean` | Starts dev server with clean cache |
+
 ## 🔑 Required Variables for Vercel Deployment
 
 ### Blockchain Configuration
