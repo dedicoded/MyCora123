@@ -19,7 +19,9 @@ const config = getDefaultConfig({
   chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
   ssr: true,
   // Add storage configuration to handle SSR
-  storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  storage: typeof window !== 'undefined' ? 
+    () => window.localStorage : 
+    () => ({ getItem: () => null, setItem: () => {}, removeItem: () => {} }),
 })
 
 const queryClient = new QueryClient({

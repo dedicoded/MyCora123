@@ -1,50 +1,18 @@
-// Replit Express Backend for MyCora Token Minting
+const express = require('express');
+const next = require('next');
 
-import express from "express"
-import bodyParser from "body-parser"
-import { ethers } from "ethers"
-import cors from "cors"
-import dotenv from "dotenv"
+const app = next({ dev: false });
+const handle = app.getRequestHandler();
 
-// Load environment variables
-dotenv.config()
-const app = express()
-app.use(cors())
-app.use(bodyParser.json())
+app.prepare().then(() => {
+  const server = express();
 
-import { SECURITY_ABI } from "./SECURITY_ABI.js"
-import { UTILITY_ABI } from "./UTILITY_ABI.js"
+  server.get('*', (req, res) => {
+    return handle(req, res);
+  });
 
-// Ethereum provider and signer
-const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL)
-const signer = new ethers.Wallet(process.env.ETH_PRIVATE_KEY, provider)
-
-// Contracts
-const securityToken = new ethers.Contract(process.env.SECURITY_TOKEN_ADDRESS, SECURITY_ABI, signer)
-const utilityToken = new ethers.Contract(process.env.UTILITY_TOKEN_ADDRESS, UTILITY_ABI, signer)
-
-// Mint Security Token (ERC-1400 style)
-app.post("/mint-security", async (req, res) => {
-  const { walletAddress, amount } = req.body
-  try {
-    const whitelisted = await securityToken.isWhitelisted(walletAddress)
-    if (!whitelisted) return res.status(403).send("User not whitelisted")
-    const tx = await securityToken.mint(walletAddress, amount)
-    res.json({ txHash: tx.hash })
-  } catch (err) {
-    res.status(500).send(err.message)
-  }
-})
-
-// Mint Utility Token (ERC-721 or ERC-20)
-app.post("/mint-utility", async (req, res) => {
-  const { walletAddress, metadataURI } = req.body
-  try {
-    const tx = await utilityToken.mint(walletAddress, metadataURI)
-    res.json({ txHash: tx.hash })
-  } catch (err) {
-    res.status(500).send(err.message)
-  }
-})
-
-app.listen(3000, () => console.log("MyCora backend running on port 3000"))
+  server.listen(5000, '0.0.0.0', (err) => {
+    if (err) throw err;
+    console.log('> Ready on http://localhost:5000');
+  });
+});
