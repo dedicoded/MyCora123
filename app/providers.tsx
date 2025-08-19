@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { WagmiProvider } from "wagmi"
 import { mainnet, polygon, optimism, arbitrum, base, sepolia } from "wagmi/chains"
@@ -18,6 +18,8 @@ const config = getDefaultConfig({
   projectId: projectId || "demo-project-id", // Use demo ID if not configured
   chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
   ssr: true,
+  // Add storage configuration to handle SSR
+  storage: typeof window !== 'undefined' ? window.localStorage : undefined,
 })
 
 const queryClient = new QueryClient({
@@ -29,6 +31,16 @@ const queryClient = new QueryClient({
 })
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <>{children}</>
+  }
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
