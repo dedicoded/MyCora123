@@ -1,0 +1,112 @@
+One‑shot reset script
+Paste this into the Replit shell to perform your full reset, end‑to‑end.
+# 0) Sanity: print versions
+node -v && pnpm -v && npx next -v || true
+
+# 1) Stop any dev servers
+pkill -f "next dev" || true
+pkill -f "node .*next" || true
+fuser -k 3000/tcp 2>/dev/null || true
+
+# 2) Purge build + caches
+rm -rf .next
+rm -rf node_modules/.cache
+rm -rf node_modules
+rm -rf pnpm-lock.yaml # optional if you want a strict re-resolve; keep if you want exact lock
+
+# 3) Clean install
+pnpm install --frozen-lockfile || pnpm install
+
+# 4) Optional: prune pnpm store (sometimes helps in Replit)
+pnpm store prune || true
+
+# 5) Build from scratch
+pnpm build
+
+# 6) Start dev fresh
+pnpm dev
+
+
+Tip: After dev boots, hard refresh the browser (Ctrl/Cmd + Shift + R) to wipe stale runtime chunks.
+
+
+Fixing the boolean attribute warning in components/ui/network-node.tsx
+This warning usually happens when a non‑standard boolean prop (e.g., active, selected, highlighted) is forwarded to a DOM element, or when boolean attributes are passed as strings. The fix is to use data-/aria- attributes for nonstandard flags and ensure booleans stay booleans.
+Minimal, safe pattern
+// components/ui/network-node.tsx
+"use client";
+
+import clsx from "clsx";
+
+type NetworkNodeProps = {
+  label: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+};
+
+export function NetworkNode({ label, active = false, disabled = false, onClick }: NetworkNodeProps) {
+  // Use data- and aria-; never pass custom boolean props to plain DOM nodes
+  return (
+    <button
+      type="button"
+      className={clsx(
+        "network-node",
+        active && "network-node--active",
+        disabled && "opacity-50 cursor-not-allowed"
+      )}
+      data-active={active ? "true" : undefined}
+      aria-pressed={active}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+
+Common “gotchas” to remove
+- Nonstandard boolean prop:
+Replace
+<div className="network-node" active={active}>...</div>
+- with
+<div className="network-node" data-active={active ? "true" : undefined} aria-pressed={active}>...</div>
+- String booleans:
+Replace
+<button disabled={"false"} />
+<div spellCheck={"false"} />
+- with
+<button disabled={false} />
+<div spellCheck={false} />
+- Boolean on non‑interactive element:
+Use aria-disabled on a div, and reserve disabled for button/input.
+<div aria-disabled={disabled} />
+Hydration mismatch hardening checklist- Guard client‑only APIs:
+const isClient = typeof window !== "undefined";
+// or
+const [mounted, setMounted] = useState(false);
+useEffect(() => setMounted(true), []);
+if (!mounted) return null; // or a stable skeleton
+- Avoid server/client divergence:
+- Don’t render values from Date.now(), Math.random(), or localStorage during SSR. Move them into useEffect or hydrate with a stable placeholder.
+- Keep initial classNames/layout identical on server and client; apply dynamic class toggles after mount if necessary.
+- Dynamic imports for client‑only widgets:
+const ClientOnlyWidget = dynamic(() => import("./client-only-widget"), { ssr: false });
+- Stable keys:
+Ensure list keys are deterministic and don’t depend on client‑only data.
+Chunk loading failure checks- Service worker/stale cache: If you use next‑pwa or any SW, temporarily disable it and unregister in the browser Application tab. Then hard refresh.
+- Version skew: Pin exact versions of next/react/react‑dom. After your reset, confirm next, react, and react-dom are on matching majors/minors.
+- assetPrefix/basePath: If configured, ensure runtime URLs match the dev origin in Replit. Misconfigured prefixes can lead to 404 on chunks.
+- HMR leftovers: The reset script already kills stray dev servers and frees port 3000 to avoid old HMR endpoints lingering.
+Optional: add a one‑command deep resetAdd these scripts to package.json for repeatability.{
+  "scripts": {
+    "clean:deep": "pkill -f 'next dev' || true && rm -rf .next node_modules node_modules/.cache && pnpm install --frozen-lockfile && pnpm build",
+    "dev:clean": "pnpm run clean:deep && pnpm dev"
+  }
+}
+If you paste the reset script and update network-node as above, you should see the chunk errors disappear and the hydration warnings go quiet. If anything lingers, share:- next, react, react-dom versions
+- next.config.js
+- the exact hydration warning text
+- whether a service worker is active
+I’ll zero in on the remaining edge cases.
