@@ -3,6 +3,9 @@ import { ethers } from "ethers"
 
 interface BiconomyConfig {
   apiKey: string
+  projectId: string
+  bundlerUrl?: string
+  originUrl?: string
   debug: boolean
   networkId: number
   walletProvider: any
@@ -23,6 +26,9 @@ export class GaslessTransactionService {
   constructor(config: BiconomyConfig) {
     this.biconomy = new Biconomy(config.walletProvider, {
       apiKey: config.apiKey,
+      projectId: config.projectId,
+      bundlerUrl: config.bundlerUrl,
+      originUrl: config.originUrl,
       debug: config.debug,
       contractAddresses: [
         process.env.SECURITY_TOKEN_ADDRESS,
@@ -151,12 +157,18 @@ let gaslessService: GaslessTransactionService | null = null
 
 export function initializeGaslessService(walletProvider: any): GaslessTransactionService {
   if (!gaslessService) {
-    gaslessService = new GaslessTransactionService({
+    const biconomyConfig: BiconomyConfig = {
       apiKey: process.env.BICONOMY_API_KEY!,
+      projectId: process.env.BICONOMY_PROJECT_ID!,
+      bundlerUrl: process.env.BICONOMY_BUNDLER_URL || "",
+      originUrl: process.env.NEXT_PUBLIC_VERCEL_URL
+        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+        : "https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3001",
       debug: process.env.NODE_ENV === "development",
       networkId: Number.parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "1"),
       walletProvider,
-    })
+    }
+    gaslessService = new GaslessTransactionService(biconomyConfig)
   }
   return gaslessService
 }

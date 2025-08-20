@@ -10,6 +10,7 @@ const required = [
 const optional = [
   'CYBRID_API_KEY',
   'BICONOMY_API_KEY',
+  'BICONOMY_PROJECT_ID',
   'SUPABASE_URL',
   'SUPABASE_ANON_KEY'
 ];
