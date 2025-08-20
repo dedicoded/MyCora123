@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Providers } from "./providers"
 import dynamic from 'next/dynamic'
+import { EnvStatus } from '@/components/ui/env-status'
 
 const ChunkErrorRecovery = dynamic(() => import('@/components/ChunkErrorRecovery').then(mod => ({ default: mod.ChunkErrorRecovery })), {
   ssr: false
@@ -26,6 +27,9 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ChunkErrorRecovery />
+        <div className="fixed top-4 right-4 z-50">
+          <EnvStatus />
+        </div>
         <Providers>{children}</Providers>
       </body>
     </html>
