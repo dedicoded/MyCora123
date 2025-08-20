@@ -25,6 +25,8 @@
     "prepare": "echo 'Skipping prepare script in deployment'",
     "size-check": "npx size-limit",
     "start": "npm run validate:replit && npm run dev:clean",
+    "restart": "pkill -f 'next dev' || true && npm run dev",
+    "check-env": "node scripts/check-env.js",
     "test:contracts": "npx hardhat test",
     "test:deployment": "node scripts/test-deployment.js",
     "validate": "tsx scripts/production-validation.ts",
