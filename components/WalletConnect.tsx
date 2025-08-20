@@ -4,6 +4,47 @@ import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useAccount, useBalance } from "wagmi"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { useEffect, useState } from "react"
+import { getDefaultConfig } from "@rainbow-me/rainbowkit"
+import { sepolia, mainnet } from "wagmi/chains"
+
+// Validate environment variables
+const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+const network = process.env.NEXT_PUBLIC_NETWORK
+
+if (!walletConnectProjectId) {
+  console.warn("[WalletConnect] Missing NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID")
+  console.warn("[WalletConnect] Add your Project ID to Replit Secrets")
+  console.warn("[WalletConnect] Get one at: https://cloud.reown.com/")
+}
+
+// Handle Replit dynamic URLs
+const getAppInfo = () => {
+  if (typeof window === 'undefined') {
+    return {
+      appName: "MyCora",
+      appDescription: "Blockchain Trust Network",
+      appUrl: "https://mycora.com",
+      appIcon: "/placeholder-logo.svg"
+    }
+  }
+
+  const isReplit = window.location.hostname.includes('replit.dev')
+  const baseUrl = isReplit ? window.location.origin : "https://mycora.com"
+
+  return {
+    appName: "MyCora",
+    appDescription: "Blockchain Trust Network",
+    appUrl: baseUrl,
+    appIcon: `${baseUrl}/placeholder-logo.svg`
+  }
+}
+
+export const config = getDefaultConfig({
+  ...getAppInfo(),
+  projectId: walletConnectProjectId || "demo",
+  chains: network === "mainnet" ? [mainnet] : [sepolia],
+  ssr: true,
+})
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false)

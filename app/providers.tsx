@@ -1,57 +1,49 @@
 "use client"
 
-import React from "react"
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import React, { useEffect } from "react"
 import { WagmiProvider } from "wagmi"
-import { mainnet, polygon, optimism, arbitrum, base, sepolia } from "wagmi/chains"
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
-import "@rainbow-me/rainbowkit/styles.css"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { ThemeProvider } from "next-themes"
+import { config } from "../components/WalletConnect"
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "1c711e0584ef1a9b8f4e34aa99c21658"
+const queryClient = new QueryClient()
 
-if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
-  console.warn("[v0] Using fallback WalletConnect Project ID. Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID for production.")
-}
+function EnvironmentValidator() {
+  useEffect(() => {
+    // Only run client-side after hydration
+    const required = [
+      'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
+      'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS',
+      'NEXT_PUBLIC_NETWORK'
+    ]
 
-const config = typeof window !== 'undefined' 
-  ? getDefaultConfig({
-      appName: "MyCora",
-      projectId: projectId || "demo-project-id",
-      chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
-      ssr: true,
+    const missing = required.filter(key => {
+      const value = process.env[key]
+      return !value || value === '' || value === 'undefined'
     })
-  : null
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false, // Disable retries to prevent excessive error logging
-    },
-  },
-})
-
-// Singleton pattern to prevent multiple initializations
-let isInitialized = false
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    if (!isInitialized && typeof window !== 'undefined') {
-      setMounted(true)
-      isInitialized = true
+    if (missing.length > 0) {
+      console.warn('[v0] Missing critical environment variables:', missing)
+    } else {
+      console.log('[v0] ✅ All environment variables loaded successfully')
     }
   }, [])
 
-  if (!mounted || !config) {
-    return <>{children}</>
-  }
+  return null
+}
 
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider modalSize="compact">{children}</RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
+            <EnvironmentValidator />
+            {children}
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ThemeProvider>
   )
 }
