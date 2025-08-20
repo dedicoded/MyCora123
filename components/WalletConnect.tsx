@@ -17,6 +17,17 @@ export function WalletConnect() {
     address: address,
   })
 
+  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
+
+  // Configure allowed origins for WalletConnect
+  const metadata = {
+    name: 'MyCora',
+    description: 'MyCora Blockchain Platform',
+    url: 'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',
+    icons: ['https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev/placeholder-logo.svg']
+  };
+
+
   if (!mounted) {
     return (
       <Card className="w-full max-w-md">

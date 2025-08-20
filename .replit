@@ -74,3 +74,16 @@ args = "pkill -f \"next dev\" || true"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev:clean"
+
+[[workflows.workflow]]
+name = "Quick Restart"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"next dev\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
