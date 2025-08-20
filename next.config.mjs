@@ -77,14 +77,16 @@ const nextConfig = {
         config.plugins = []
       }
 
-      // Production optimizations
+      // Production optimizations with chunk error resilience
       if (!dev) {
         config.optimization = {
           ...config.optimization,
           splitChunks: {
             chunks: 'all',
-            maxSize: 200000,
-            minSize: 20000,
+            maxSize: 180000, // Reduced to prevent timeout errors
+            minSize: 15000,
+            maxAsyncRequests: 20,
+            maxInitialRequests: 10,
             cacheGroups: {
               default: {
                 minChunks: 2,
@@ -114,11 +116,18 @@ const nextConfig = {
               },
             },
           },
-          // Add runtime chunk optimization
+          // Add runtime chunk optimization with better error handling
           runtimeChunk: {
             name: 'runtime',
           },
         }
+      }
+
+      // Add chunk loading timeout configuration
+      config.output = {
+        ...config.output,
+        chunkLoadTimeout: 30000, // 30 seconds instead of default 120
+        crossOriginLoading: 'anonymous',
       }
     }
 
