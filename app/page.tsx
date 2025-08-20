@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { WalletConnect } from "@/components/WalletConnect"
-import { MintingInterface } from "@/components/MintingInterface"
+import dynamic from 'next/dynamic'
 import { SecurityVerification } from "@/components/ui/security-verification"
 import { RewardsDashboard } from "@/components/ui/rewards-dashboard"
 import { PaymentForm } from "@/components/ui/payment-form"
@@ -12,6 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { TrustIndicator } from "@/components/ui/trust-indicator"
 import { ComplianceBadge } from "@/components/ui/compliance-badge"
 import { NetworkNode } from "@/components/ui/network-node"
+
+const WalletConnect = dynamic(() => import('@/components/WalletConnect').then(mod => ({ default: mod.WalletConnect })), {
+  ssr: false
+})
+const MintingInterface = dynamic(() => import('@/components/MintingInterface'), {
+  ssr: false
+})
 
 interface UserSession {
   sessionId: string

@@ -19,7 +19,10 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ['fs'],
+    esmExternals: 'loose',
   },
+  // Replit optimization
+  output: 'standalone',
   env: {
     WEB3_STORAGE_TOKEN: process.env.WEB3_STORAGE_TOKEN,
   },
