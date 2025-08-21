@@ -38,7 +38,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "pnpm run dev"
 
 [[workflows.workflow]]
 name = "Deploy Ready Check"
@@ -64,7 +64,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev:clean"
+args = "pnpm run dev:clean"
 
 [[workflows.workflow]]
 name = "Restart Dev Server"

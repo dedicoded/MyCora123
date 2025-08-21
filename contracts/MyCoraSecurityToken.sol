@@ -1,83 +1,4 @@
-# MyCora Token Ecosystem Analysis
 
-## Token Hierarchy & Utility Assessment
-
-### 🟢 ESSENTIAL TOKENS (Keep & Enhance)
-
-#### 1. **MyCoraCoin (MCC)** - ERC-20 Stablecoin
-- **Purpose**: Core ecosystem currency, USD-pegged
-- **Utility**: Fiat on/off-ramps, payments, staking rewards
-- **Status**: ✅ Essential - Primary value transfer mechanism
-- **Contract**: `/contracts/MyCoraCoin.sol`
-
-#### 2. **PuffPassRewards** - ERC-1155 Loyalty System
-- **Purpose**: Invisible NFT rewards for dispensaries/retail
-- **Utility**: Tier-based loyalty, purchase tracking, soulbound benefits
-- **Status**: ✅ Essential - Unique value proposition for B2B customers
-- **Contract**: `/contracts/PuffPassRewards.sol`
-
-### 🟡 CONSOLIDATION CANDIDATES (Merge or Simplify)
-
-#### 3. **MyCoraSecurityToken** - ERC-20 Compliance Token ✅ CONSOLIDATED
-- **Purpose**: All compliance, KYC, and regulatory features
-- **Status**: ✅ Enhanced with former TrustToken functionality
-- **Action**: ✅ COMPLETE - Single compliance token with full feature set
-
-#### 4. **MyCoraUtilityToken** - ERC-721 NFT
-- **Purpose**: Access passes, premium features
-- **Issue**: Overlaps with PuffPass functionality
-- **Recommendation**: Repurpose for platform governance/access only
-- **Action**: Simplify to focus on platform utilities, not loyalty
-
-### 🔴 REDUNDANT/DEPRECATED (Remove or Archive)
-
-#### 5. **Duplicate PuffPass Implementations**
-- **Issue**: Multiple PuffPass contracts found in user context
-- **Action**: Keep only the enhanced soulbound version
-
-## Recommended Token Architecture
-
-\`\`\`
-MyCora Ecosystem
-├── MyCoraCoin (MCC) - ERC-20 Stablecoin
-│   ├── Fiat backing via Cybrid
-│   ├── Staking rewards (MCCStaking contract)
-│   └── Primary payment currency
-│
-├── MyCoraSecurityToken (MCST) - ERC-20 Compliance Token  
-│   ├── Enhanced with TrustToken features
-│   ├── KYC/AML integration
-│   ├── Jurisdiction controls
-│   └── Regulatory compliance
-│
-├── PuffPassRewards - ERC-1155 Loyalty System
-│   ├── Soulbound NFTs (non-transferable)
-│   ├── Tier progression (Green/Gold/Black)
-│   └── B2B loyalty solution
-│
-└── MyCoraUtilityToken (MCUT) - ERC-721 Platform Access
-    ├── Governance participation
-    ├── Premium feature access
-    └── Platform utilities only
-\`\`\`
-
-## Implementation Priority
-
-1. **Consolidate Security Tokens**: Merge TrustToken features into MyCoraSecurityToken
-2. **Simplify Utility Token**: Remove loyalty features, focus on platform access
-3. **Enhance Stablecoin**: Add more DeFi features to MCC
-4. **Optimize PuffPass**: Ensure single, robust implementation
-
-## Smart Contract Status
-
-- ✅ MyCoraCoin: Complete with Cybrid integration
-- ✅ PuffPassRewards: Complete soulbound implementation  
-- ✅ MyCoraSecurityToken: Complete with consolidated compliance features
-- 🔄 MyCoraUtilityToken: Simplified for platform access only
-- ✅ TrustToken: Removed - features merged into MyCoraSecurityToken
-\`\`\`
-
-```solidity file="contracts/MyCoraSecurityToken.sol"
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
@@ -86,50 +7,69 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+interface IComplianceRegistry {
+    function isCompliant(address user, string memory jurisdiction) external view returns (bool);
+    function getKYCLevel(address user) external view returns (uint8);
+}
+
 /**
  * @title MyCoraSecurityToken (MCST)
- * @dev Enhanced security token with compliance features merged from TrustToken
- * Consolidates all compliance functionality into single contract
+ * @dev Consolidated security token with all compliance features
+ * Replaces TrustToken with enhanced functionality
  */
 contract MyCoraSecurityToken is ERC20, ERC20Pausable, AccessControl, ReentrancyGuard {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant COMPLIANCE_ROLE = keccak256("COMPLIANCE_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
-    // <CHANGE> Enhanced compliance features from TrustToken integration
+    IComplianceRegistry public complianceRegistry;
+    
     struct ComplianceData {
         bool kycVerified;
-        uint256 jurisdiction; // ISO country code
+        uint256 jurisdiction;
         uint256 maxHolding;
         uint256 lastTransfer;
         bool frozen;
+        bool whitelisted;
     }
 
     mapping(address => ComplianceData) public compliance;
     mapping(uint256 => bool) public allowedJurisdictions;
+    mapping(string => bool) public supportedJurisdictions;
     
     uint256 public maxSupply = 1000000000 * 10**18; // 1B tokens
     uint256 public transferCooldown = 1 hours;
+    uint8 public constant MIN_KYC_LEVEL = 2;
     
     event ComplianceUpdated(address indexed account, bool kycVerified, uint256 jurisdiction);
     event AccountFrozen(address indexed account, bool frozen);
     event JurisdictionUpdated(uint256 jurisdiction, bool allowed);
+    event Whitelisted(address indexed user, uint256 maxHolding);
+    event ComplianceRegistryUpdated(address indexed newRegistry);
+    event ComplianceViolation(address indexed user, string reason);
 
-    constructor() ERC20("MyCora Security Token", "MCST") {
+    constructor(address _complianceRegistry) ERC20("MyCora Security Token", "MCST") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(COMPLIANCE_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         
-        // <CHANGE> Initialize common jurisdictions
+        complianceRegistry = IComplianceRegistry(_complianceRegistry);
+        
+        // Initialize supported jurisdictions
         allowedJurisdictions[840] = true; // USA
         allowedJurisdictions[124] = true; // Canada
         allowedJurisdictions[826] = true; // UK
+        
+        supportedJurisdictions["US"] = true;
+        supportedJurisdictions["EU"] = true;
+        supportedJurisdictions["UK"] = true;
     }
 
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
-        require(totalSupply() + amount &lt;= maxSupply, "Exceeds max supply");
+        require(totalSupply() + amount <= maxSupply, "Exceeds max supply");
         require(compliance[to].kycVerified, "Recipient not KYC verified");
+        require(compliance[to].whitelisted, "Recipient not whitelisted");
         _mint(to, amount);
     }
 
@@ -137,17 +77,22 @@ contract MyCoraSecurityToken is ERC20, ERC20Pausable, AccessControl, ReentrancyG
         address account,
         bool kycVerified,
         uint256 jurisdiction,
-        uint256 maxHolding
+        uint256 maxHolding,
+        bool whitelisted
     ) external onlyRole(COMPLIANCE_ROLE) {
         compliance[account] = ComplianceData({
             kycVerified: kycVerified,
             jurisdiction: jurisdiction,
             maxHolding: maxHolding,
             lastTransfer: block.timestamp,
-            frozen: compliance[account].frozen
+            frozen: compliance[account].frozen,
+            whitelisted: whitelisted
         });
         
         emit ComplianceUpdated(account, kycVerified, jurisdiction);
+        if (whitelisted) {
+            emit Whitelisted(account, maxHolding);
+        }
     }
 
     function freezeAccount(address account, bool frozen) external onlyRole(COMPLIANCE_ROLE) {
@@ -160,6 +105,25 @@ contract MyCoraSecurityToken is ERC20, ERC20Pausable, AccessControl, ReentrancyG
         emit JurisdictionUpdated(jurisdiction, allowed);
     }
 
+    function updateComplianceRegistry(address _newRegistry) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        complianceRegistry = IComplianceRegistry(_newRegistry);
+        emit ComplianceRegistryUpdated(_newRegistry);
+    }
+
+    function addJurisdiction(string memory jurisdiction) external onlyRole(COMPLIANCE_ROLE) {
+        supportedJurisdictions[jurisdiction] = true;
+    }
+
+    function removeFromWhitelist(address user) external onlyRole(COMPLIANCE_ROLE) {
+        compliance[user].whitelisted = false;
+        compliance[user].maxHolding = 0;
+    }
+
+    function emergencyFreeze() external onlyRole(PAUSER_ROLE) {
+        _pause();
+        emit ComplianceViolation(msg.sender, "Emergency freeze activated");
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -168,11 +132,12 @@ contract MyCoraSecurityToken is ERC20, ERC20Pausable, AccessControl, ReentrancyG
         super._beforeTokenTransfer(from, to, amount);
         
         if (from != address(0) && to != address(0)) {
-            // <CHANGE> Enhanced compliance checks
+            // Enhanced compliance checks
             require(!compliance[from].frozen, "Sender account frozen");
             require(!compliance[to].frozen, "Recipient account frozen");
             require(compliance[from].kycVerified, "Sender not KYC verified");
             require(compliance[to].kycVerified, "Recipient not KYC verified");
+            require(compliance[to].whitelisted, "Recipient not whitelisted");
             require(allowedJurisdictions[compliance[from].jurisdiction], "Sender jurisdiction not allowed");
             require(allowedJurisdictions[compliance[to].jurisdiction], "Recipient jurisdiction not allowed");
             require(
@@ -183,9 +148,14 @@ contract MyCoraSecurityToken is ERC20, ERC20Pausable, AccessControl, ReentrancyG
             // Check max holding limits
             if (compliance[to].maxHolding > 0) {
                 require(
-                    balanceOf(to) + amount &lt;= compliance[to].maxHolding,
+                    balanceOf(to) + amount <= compliance[to].maxHolding,
                     "Exceeds max holding limit"
                 );
+            }
+            
+            // Large transfer enhanced KYC check
+            if (amount > 10000 * 10**18) {
+                require(complianceRegistry.getKYCLevel(to) >= 3, "Large transfer requires enhanced KYC");
             }
         }
     }

@@ -7,9 +7,7 @@ import { Providers } from "./providers"
 import dynamic from 'next/dynamic'
 import { EnvStatus } from '@/components/ui/env-status'
 
-const ChunkErrorRecovery = dynamic(() => import('@/components/ChunkErrorRecovery').then(mod => ({ default: mod.ChunkErrorRecovery })), {
-  ssr: false
-})
+const ChunkErrorRecovery = dynamic(() => import('@/components/ChunkErrorRecovery').then(mod => ({ default: mod.ChunkErrorRecovery })))
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
