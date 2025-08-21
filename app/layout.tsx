@@ -4,10 +4,8 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Providers } from "./providers"
-import dynamic from 'next/dynamic'
 import { EnvStatus } from '@/components/ui/env-status'
-
-const ChunkErrorRecovery = dynamic(() => import('@/components/ChunkErrorRecovery').then(mod => ({ default: mod.ChunkErrorRecovery })))
+import ChunkErrorRecovery from '@/components/client-chunk-error-recovery'
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
