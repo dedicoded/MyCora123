@@ -1,11 +1,12 @@
 "use client"
 
-import { createAppKit } from '@reown/appkit/react'
+import { createAppKit } from '@reown/appkit'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { mainnet, sepolia } from '@reown/appkit/networks'
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react'
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { useEffect, useState } from "react"
+import { createConfig, http } from 'wagmi'
 
 // Validate environment variables
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
@@ -42,35 +43,29 @@ const getAppInfo = () => {
 // Modern Reown AppKit configuration based on web examples
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo"
 
-const metadata = {
-  name: 'MyCora',
-  description: 'Blockchain Trust Network',
-  url: typeof window !== 'undefined' ? window.location.origin : 'https://mycora.com',
-  icons: ['https://mycora.com/icon-192x192.png']
-}
-
-const networks = network === "mainnet" ? [mainnet] : [sepolia]
-
 // Create the modal using Reown AppKit pattern from web examples
 const modal = createAppKit({
   adapters: [new EthersAdapter()],
   projectId,
-  networks,
-  metadata,
-  features: {
-    analytics: true,
-    email: false,
-    socials: false
-  }
+  networks: network === "mainnet" ? [mainnet] : [sepolia],
+  metadata: {
+    name: "MyCora",
+    description: "Blockchain Trust Network",
+    url: typeof window !== 'undefined' ? window.location.origin : "https://mycora.com",
+    icons: ["/placeholder-logo.svg"]
+  },
+  allowUnsupportedChain: true
 })
 
-// Export a Wagmi-compatible config for providers
-export const config = {
-  connectors: [],
-  chains: networks,
-  ssr: false, // Explicitly set for client-side
-  projectId
-}
+// Create a proper Wagmi config
+export const config = createConfig({
+  chains: network === "mainnet" ? [mainnet] : [sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+  },
+  ssr: false
+})
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false)
@@ -103,10 +98,6 @@ export function WalletConnect() {
     }
   }
 
-  // This projectId is redundant with the one used in getDefaultConfig, but keeping for consistency with provided changes if it was intended for connectors directly.
-  // const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
-
-
   // Removed the redundant metadata definition here as it's defined above for getDefaultConfig.
   // If it was intended for connectorsForWallets, that part of the changes was not present in the original code's structure.
 
@@ -134,7 +125,7 @@ export function WalletConnect() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative">
-          <button 
+          <button
             onClick={() => open()}
             className="w-full px-4 py-2 bg-[var(--color-moss)] text-white rounded-lg hover:bg-[var(--color-moss)]/80 transition-colors"
           >

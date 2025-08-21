@@ -4,10 +4,18 @@ import React, { useEffect } from "react"
 import { WagmiProvider } from "wagmi"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { ThemeProvider } from "next-themes"
+import { ThemeProvider } from '@/components/theme-provider'
+import { ClientErrorBoundary } from '@/components/client-error-boundary'
 import { config } from "../components/WalletConnect"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+})
 
 // Ensure config is available before using it
 const validateConfig = () => {
@@ -41,11 +49,11 @@ function EnvironmentValidator() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false)
-  
+
   React.useEffect(() => {
     setMounted(true)
   }, [])
-  
+
   if (!mounted) {
     return (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -53,9 +61,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </ThemeProvider>
     )
   }
-  
+
   const validConfig = validateConfig()
-  
+
   if (!validConfig) {
     return (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -69,8 +77,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <WagmiProvider config={validConfig}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
-            <EnvironmentValidator />
-            {children}
+            <ClientErrorBoundary>
+              <EnvironmentValidator />
+              {children}
+            </ClientErrorBoundary>
           </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>

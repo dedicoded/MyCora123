@@ -20,16 +20,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <ChunkErrorRecovery>
+        <Providers>
           <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
             <div className="fixed top-4 right-4 z-50">
               <EnvStatus />
             </div>
-            <Providers>
-              {children}
-            </Providers>
+            {children}
           </div>
-        </ChunkErrorRecovery>
+        </Providers>
       </body>
     </html>
   )
