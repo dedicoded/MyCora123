@@ -7,18 +7,21 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || process.env.PROJECT_ID,
     NEXT_PUBLIC_MCC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK
+    NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK,
+    PROJECT_ID: process.env.PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   },
 
-  allowedDevOrigins: [
-    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',
-    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3001',
-    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3002',
-    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3003',
-    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:5000'
-  ],
+  experimental: {
+    allowedDevOrigins: [
+      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',
+      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3001',
+      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3002',
+      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3003',
+      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:5000'
+    ]
+  },
 
   async headers() {
     return [
