@@ -12,6 +12,10 @@ const nextConfig = {
     NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK || 'sepolia'
   },
 
+  allowedDevOrigins: [
+    'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev'
+  ],
+
   async headers() {
     return [
       {
