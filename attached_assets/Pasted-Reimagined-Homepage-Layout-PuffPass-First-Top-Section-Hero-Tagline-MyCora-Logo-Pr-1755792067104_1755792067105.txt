@@ -1,0 +1,80 @@
+Reimagined Homepage Layout: PuffPass-First
+🔝 Top Section: Hero + Tagline
+[MyCora Logo]        [Profile Icon]
+
+🌟 PuffPass Rewards
+Earn like Five Star • Pay like CashApp • Redeem like Starbucks
+
+[View My PuffPass] → (CTA button)
+
+
+- Visual: Show a PuffPass card with tier, points, and perks
+- CTA: “View My PuffPass” leads to wallet + redemption flow
+
+💳 Section 1: Smart Payments
+💸 Smart Payments
+Pay with your phone, earn PuffPass points automatically.
+
+[Connect Wallet] → [Learn More]
+
+
+- Visual: Tap-to-pay animation or phone scan mockup
+- Copy: Emphasize seamless, everyday use
+
+🎁 Section 2: Unlock Rewards
+🎉 Unlock Rewards
+Verify once. Unlock exclusive perks across the MyCora network.
+
+[Verify Identity] → [See Available Perks]
+
+
+- Visual: Badge or shield icon with animated checkmark
+- Copy: Focus on simplicity and trust
+
+💼 Section 3: MyCora Wallet
+🏦 MyCora Wallet
+Store, send, and grow your money with bank-level security.
+
+[Open Wallet] → [Send Money]
+
+
+- Visual: Wallet balance, recent transactions, PuffPass points
+- Copy: Highlight speed, security, and ease
+
+🚀 Section 4: Enterprise Ready (Optional)
+📈 For Businesses
+Scale your brand with PuffPass-powered loyalty and payments.
+
+[Get Started] → [Contact Sales]
+
+
+- Visual: Business dashboard preview
+- Copy: Tailored for merchants and partners
+
+🚫 Remove These Elements
+- ❌ “Demo Mode” — gone
+- ❌ “Retry After Configuration” — move to dev-only screen
+- ❌ “Development Network” and “Dev Tools” — hide unless in dev mode
+
+🧭 Onboarding Flow (3 Steps)
+Step 1: Welcome
+Welcome to MyCora
+Your everyday purchases, now powered by PuffPass rewards.
+
+[Continue] → 
+
+
+Step 2: Connect Wallet
+Connect your wallet to start earning PuffPass rewards.
+
+[Connect Wallet] → 
+
+
+Step 3: Verify Identity
+Verify once to unlock exclusive perks and redeem rewards.
+
+[Verify Identity] → 
+
+
+
+Would you like me to turn this into a React component structure or a Figma-style layout next?
