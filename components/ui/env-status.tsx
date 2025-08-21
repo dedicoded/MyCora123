@@ -19,21 +19,24 @@ export function EnvStatus() {
 
   useEffect(() => {
     const checkEnvironment = () => {
-      const required = [
-        'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
-        'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS', 
-        'NEXT_PUBLIC_NETWORK'
-      ]
+      // Get environment variables from client-side (injected by Next.js)
+      const envVars = {
+        'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID': process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+        'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS': process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
+        'NEXT_PUBLIC_NETWORK': process.env.NEXT_PUBLIC_NETWORK
+      }
+
+      const required = Object.keys(envVars)
 
       // Check for missing variables
       const missing = required.filter(key => {
-        const value = process.env[key]
+        const value = envVars[key as keyof typeof envVars]
         return !value || value === '' || value === 'undefined'
       })
 
       // Check for placeholder values
       const placeholders = required.filter(key => {
-        const value = process.env[key]
+        const value = envVars[key as keyof typeof envVars]
         return value && (
           value.includes('your_') || 
           value.includes('YOUR_') ||
@@ -48,27 +51,33 @@ export function EnvStatus() {
       // Detect hosting platform
       const isReplit = typeof window !== 'undefined' && (
         window.location.hostname.includes('replit') || 
-        process.env.REPLIT_DB_URL ||
-        process.env.REPL_ID
+        window.location.hostname.includes('repl.co')
       )
 
       // Log status for debugging
-      console.log('[v0] Environment status:', {
+      console.log('[EnvStatus] Environment check:', {
         envStatus: isReady ? 'ready' : 'missing',
         platform: isReplit ? 'replit' : 'other',
+        envVars: Object.fromEntries(
+          Object.entries(envVars).map(([k, v]) => [k, v ? `${v.substring(0, 8)}...` : 'missing'])
+        ),
         missingRequired: missing,
-        missingOptional: placeholders
+        placeholderValues: placeholders
       })
 
       setStatus({ isReady, missing, placeholders, loading: false })
     }
 
-    // Initial check
-    checkEnvironment()
-
+    // Add a small delay to ensure hydration is complete
+    const timer = setTimeout(checkEnvironment, 100)
+    
     // Recheck periodically for hot reload scenarios
-    const interval = setInterval(checkEnvironment, 5000)
-    return () => clearInterval(interval)
+    const interval = setInterval(checkEnvironment, 10000)
+    
+    return () => {
+      clearTimeout(timer)
+      clearInterval(interval)
+    }
   }, [])
 
   if (status.loading) {
