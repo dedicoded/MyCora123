@@ -1,0 +1,71 @@
+Critical Error: ssr: false in Server Component
+❌ Problem
+You're using next/dynamic with { ssr: false } inside a Server Component (layout.tsx). This is not allowed in Next.js 13+ App Router.
+const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error-recovery'), {
+  ssr: false
+})
+
+
+✅ Solution
+Move this dynamic import into a Client Component. Here's how:
+- Create a new file: ChunkErrorRecoveryWrapper.tsx
+- Add the "use client" directive and move the dynamic import there:
+// app/components/ChunkErrorRecoveryWrapper.tsx
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error-recovery'), {
+  ssr: false
+});
+
+export default ChunkErrorRecovery;
+
+
+- Import and use it in your layout:
+import ChunkErrorRecoveryWrapper from '@/components/ChunkErrorRecoveryWrapper';
+
+
+
+⚠ Port Conflict
+You're seeing:
+⚠ Port 3000 is in use by an unknown process, using available port 3002 instead.
+
+
+This is harmless unless you're relying on port 3000 for something specific. You can:
+- Kill the process manually:
+lsof -i :3000
+kill <PID>
+- Or just continue using the new port (3002).
+
+⚠ Cross-Origin Warning
+Cross origin request detected... configure "allowedDevOrigins"
+
+
+This is a preview warning for future Next.js versions. To fix it now:
+✅ Add to next.config.mjs:
+export default {
+  experimental: {
+    allowedDevOrigins: ['https://your-replit-url.worf.replit.dev']
+  }
+}
+
+
+Replace with your actual dev origin.
+
+❌ Missing Env Var
+You're missing POLYGONSCAN_API_KEY. If you're not deploying to Polygon, you can ignore this. Otherwise, add it to .env.local:
+POLYGONSCAN_API_KEY=your_key_here
+
+
+
+✅ Summary
+| Issue | Fix | 
+| ssr: false in Server Component | Move to Client Component | 
+| Port 3000 in use | Kill process or use new port | 
+| Cross-origin warning | Add allowedDevOrigins | 
+| Missing env var | Add POLYGONSCAN_API_KEY if needed | 
+
+
+
+

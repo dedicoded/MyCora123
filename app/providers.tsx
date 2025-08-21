@@ -7,13 +7,9 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { ThemeProvider } from '@/components/theme-provider'
 import { ClientErrorBoundary } from '@/components/client-error-boundary'
 import { config } from "../components/WalletConnect"
-import dynamic from 'next/dynamic'
+import ChunkErrorRecoveryWrapper from '@/components/ChunkErrorRecoveryWrapper'
 
 import '@rainbow-me/rainbowkit/styles.css'
-
-const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error-recovery'), {
-  ssr: false
-})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,7 +83,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ClientErrorBoundary>
               <EnvironmentValidator />
               {children}
-              <ChunkErrorRecovery />
+              <ChunkErrorRecoveryWrapper />
             </ClientErrorBoundary>
           </RainbowKitProvider>
         </QueryClientProvider>
