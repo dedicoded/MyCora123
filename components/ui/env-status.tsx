@@ -10,11 +10,11 @@ interface EnvStatusState {
 }
 
 export function EnvStatus() {
-  const [status, setStatus] = useState<EnvStatusState>({ 
-    isReady: false, 
-    missing: [], 
+  const [status, setStatus] = useState<EnvStatusState>({
+    isReady: false,
+    missing: [],
     placeholders: [],
-    loading: true 
+    loading: true
   })
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function EnvStatus() {
       const placeholders = required.filter(key => {
         const value = envVars[key as keyof typeof envVars]
         return value && (
-          value.includes('your_') || 
+          value.includes('your_') ||
           value.includes('YOUR_') ||
           value === '0x0000000000000000000000000000000000000000' ||
           value === 'placeholder' ||
@@ -50,7 +50,7 @@ export function EnvStatus() {
 
       // Detect hosting platform
       const isReplit = typeof window !== 'undefined' && (
-        window.location.hostname.includes('replit') || 
+        window.location.hostname.includes('replit') ||
         window.location.hostname.includes('repl.co')
       )
 
@@ -65,15 +65,22 @@ export function EnvStatus() {
         placeholderValues: placeholders
       })
 
+      // Debug: Log actual environment values
+      console.log('[v0] Actual env values:', {
+        walletConnect: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ? 'FOUND' : 'MISSING',
+        contract: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS ? 'FOUND' : 'MISSING',
+        network: process.env.NEXT_PUBLIC_NETWORK ? 'FOUND' : 'MISSING'
+      })
+
       setStatus({ isReady, missing, placeholders, loading: false })
     }
 
     // Add a small delay to ensure hydration is complete
     const timer = setTimeout(checkEnvironment, 100)
-    
+
     // Recheck periodically for hot reload scenarios
     const interval = setInterval(checkEnvironment, 10000)
-    
+
     return () => {
       clearTimeout(timer)
       clearInterval(interval)
