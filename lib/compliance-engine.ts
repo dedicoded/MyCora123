@@ -113,8 +113,31 @@ export class ComplianceEngine {
   }
 
   private async assessCounterpartyRisk(counterparty: string): Promise<number> {
-    // Mock counterparty risk assessment
-    return Math.floor(Math.random() * 30)
+    try {
+      // Use Reown API to analyze counterparty transaction history
+      const { getReownAPI } = await import('./blockchain-api')
+      const reownAPI = getReownAPI()
+      const chainId = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? "eip155:1" : "eip155:11155111"
+      
+      const history = await reownAPI.getTransactionHistory(counterparty, chainId)
+      const portfolio = await reownAPI.getPortfolio(counterparty, chainId)
+      
+      let riskScore = 0
+      
+      // Analyze transaction patterns
+      if (history.length > 100) riskScore += 10 // High activity
+      if (history.some(tx => tx.status === 'failed')) riskScore += 5 // Failed transactions
+      
+      // Analyze portfolio diversity
+      if (portfolio.length < 2) riskScore += 15 // Low diversity
+      if (portfolio.some(token => token.symbol.toLowerCase().includes('meme'))) riskScore += 10 // Meme tokens
+      
+      return Math.min(30, riskScore)
+    } catch (error) {
+      console.error('[ComplianceEngine] Counterparty risk assessment failed:', error)
+      // Fallback to mock assessment
+      return Math.floor(Math.random() * 30)
+    }
   }
 
   private async assessVelocityRisk(address: string): Promise<number> {

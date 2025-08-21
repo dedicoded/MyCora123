@@ -5,14 +5,29 @@ import { mainnet, sepolia } from "viem/chains"
 const SECURITY_TOKEN_ADDRESS = process.env.SECURITY_TOKEN_ADDRESS as `0x${string}`
 const UTILITY_TOKEN_ADDRESS = process.env.UTILITY_TOKEN_ADDRESS as `0x${string}`
 
-// RPC configuration
-const RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || process.env.NEXT_PUBLIC_RPC_URL
+// Enhanced RPC configuration with Reown Blockchain API
+const REOWN_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+const ALCHEMY_RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || process.env.NEXT_PUBLIC_RPC_URL
 const chain = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? mainnet : sepolia
 
-// Create clients
+// Configure RPC with fallback to Reown Blockchain API
+const getRpcUrl = () => {
+  if (ALCHEMY_RPC_URL) return ALCHEMY_RPC_URL
+  
+  // Fallback to Reown Blockchain API
+  const chainId = chain.id
+  return `https://rpc.reown.com/v1/?chainId=eip155:${chainId}&projectId=${REOWN_PROJECT_ID}`
+}
+
+// Create clients with enhanced configuration
 export const publicClient = createPublicClient({
   chain,
-  transport: http(RPC_URL),
+  transport: http(getRpcUrl(), {
+    // Add retry logic and batch requests
+    batch: true,
+    retryCount: 3,
+    retryDelay: 1000,
+  }),
 })
 
 // Contract interaction functions
