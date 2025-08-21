@@ -1,21 +1,17 @@
+
 'use client'
 
-import dynamic from 'next/dynamic'
+import { ChunkErrorRecovery } from '@/components/ChunkErrorRecovery'
 import { ReactNode } from 'react'
-
-const ChunkErrorRecoveryComponent = dynamic(
-  () => import('@/components/ChunkErrorRecovery').then(mod => ({ default: mod.ChunkErrorRecovery })),
-  { ssr: false }
-)
 
 interface ChunkErrorRecoveryProps {
   children: ReactNode
 }
 
-export default function ChunkErrorRecovery({ children }: ChunkErrorRecoveryProps) {
+export default function ClientChunkErrorRecovery({ children }: ChunkErrorRecoveryProps) {
   return (
-    <ChunkErrorRecoveryComponent>
+    <ChunkErrorRecovery>
       {children}
-    </ChunkErrorRecoveryComponent>
+    </ChunkErrorRecovery>
   )
 }

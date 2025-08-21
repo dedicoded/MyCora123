@@ -64,6 +64,7 @@ const config = createAppKit({
   }
 })
 
+// Export config for use in providers
 export { config }
 
 export function WalletConnect() {

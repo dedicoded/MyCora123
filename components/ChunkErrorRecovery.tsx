@@ -142,3 +142,7 @@ export function ChunkErrorRecovery({ children }: { children: React.ReactNode }) 
     </div>
   )
 }
+
+// Export both named and default
+export { ChunkErrorRecovery }
+export default ChunkErrorRecovery

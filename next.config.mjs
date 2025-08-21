@@ -6,6 +6,13 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    allowedDevOrigins: [
+      '.replit.dev',
+      'replit.dev',
+      '.worf.replit.dev'
+    ]
+  },
   
   outputFileTracingIncludes: {
     "/api/**": [

@@ -13,6 +13,16 @@ export const envConfig = {
   privateKey: process.env.PRIVATE_KEY,
   ethPrivateKey: process.env.ETH_PRIVATE_KEY,
 
+  // Optional Variables with Fallbacks
+  biconomyApiKey: process.env.BICONOMY_API_KEY || null,
+  biconomyProjectId: process.env.BICONOMY_PROJECT_ID || null,
+  supabaseUrl: process.env.SUPABASE_URL || null,
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY || null,
+
+  // Feature Flags
+  gaslessEnabled: () => !!(process.env.BICONOMY_API_KEY && process.env.BICONOMY_PROJECT_ID),
+  supabaseEnabled: () => !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY),
+
   // Contract Addresses
   securityTokenAddress: process.env.SECURITY_TOKEN_ADDRESS,
   utilityTokenAddress: process.env.UTILITY_TOKEN_ADDRESS,

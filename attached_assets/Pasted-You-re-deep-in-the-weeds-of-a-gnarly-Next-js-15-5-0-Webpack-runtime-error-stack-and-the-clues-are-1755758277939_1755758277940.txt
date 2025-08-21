@@ -1,0 +1,71 @@
+You're deep in the weeds of a gnarly Next.js 15.5.0 + Webpack runtime error stack, and the clues are pointing to a few key culprits. Let’s break this down and get you back to clean renders and stable hydration.
+
+🚨 Primary Error: Invalid Element Type
+🔍 Error:
+Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined.
+
+
+🔎 Likely Cause:
+You're trying to render <ClientChunkErrorRecovery> inside RootLayout, but it’s either:
+- Not properly imported
+- Not exported from its source file
+- A named export being imported as a default (or vice versa)
+✅ Fix Checklist:
+- Check the import:
+import { ClientChunkErrorRecovery } from "@/components/ClientChunkErrorRecovery";
+// or
+import ClientChunkErrorRecovery from "@/components/ClientChunkErrorRecovery";
+- Confirm the export in the component file:
+export default function ClientChunkErrorRecovery() { ... }
+// or
+export function ClientChunkErrorRecovery() { ... }
+- If using barrel exports (index.ts), make sure it’s included:
+export { default as ClientChunkErrorRecovery } from "./ClientChunkErrorRecovery";
+
+
+
+🌐 Cross-Origin & Reown Config Errors
+🔥 Errors:
+- Origin not found on Allowlist
+- features.email, features.socials config overridden remotely
+🛠️ Fix:
+- Go to dashboard.reown.com and:
+- Add your dev origin (*.replit.dev) to the allowlist
+- Confirm feature flags are managed remotely and not overridden locally
+
+🧨 Hydration & COOP Policy Errors
+🔥 Error:
+Error checking Cross-Origin-Opener-Policy: "HTTP error! status: 500"
+
+
+🛠️ Fix:
+- This may stem from Coinbase Wallet SDK or other third-party scripts expecting COOP headers.
+- If you’re using next.config.js, add:
+headers: async () => [
+  {
+    source: "/(.*)",
+    headers: [
+      {
+        key: "Cross-Origin-Opener-Policy",
+        value: "same-origin"
+      },
+      {
+        key: "Cross-Origin-Embedder-Policy",
+        value: "require-corp"
+      }
+    ]
+  }
+]
+
+
+
+🧪 Debug Tips
+- Use console.log(ClientChunkErrorRecovery) before rendering to confirm it's defined.
+- Run tsc --noEmit to catch type mismatches and missing exports.
+- Use next lint to catch import path issues.
+- Consider wrapping ClientChunkErrorRecovery in a dynamic import with ssr: false if it's client-only:
+const ClientChunkErrorRecovery = dynamic(() => import("@/components/ClientChunkErrorRecovery"), { ssr: false });
+
+
+
+

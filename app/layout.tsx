@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Providers } from "./providers"
 import { EnvStatus } from '@/components/ui/env-status'
-import { ClientChunkErrorRecovery } from '@/components/client-chunk-error-recovery'
+import ClientChunkErrorRecovery from '@/components/client-chunk-error-recovery'
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
