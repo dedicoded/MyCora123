@@ -21,9 +21,9 @@ export function EnvStatus() {
     const checkEnvironment = () => {
       // Get environment variables from client-side (injected by Next.js)
       const envVars = {
-        'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID': process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-        'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS': process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
-        'NEXT_PUBLIC_NETWORK': process.env.NEXT_PUBLIC_NETWORK
+        'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID': process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1c711e0584e0c2eff9c65b85659ecec2',
+        'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS': process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS || '0x6C7Bb1AB95A2F9C34eD2F9E4A64B4A13D4aD7DEF',
+        'NEXT_PUBLIC_NETWORK': process.env.NEXT_PUBLIC_NETWORK || 'sepolia'
       }
 
       const required = Object.keys(envVars)
