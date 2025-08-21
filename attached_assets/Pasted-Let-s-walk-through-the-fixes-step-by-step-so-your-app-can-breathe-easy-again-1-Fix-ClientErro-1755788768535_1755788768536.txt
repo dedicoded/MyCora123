@@ -1,0 +1,88 @@
+Let's walk through the fixes step-by-step so your app can breathe easy again.
+
+✅ 1. Fix ClientErrorBoundary Export
+File: components/client-error-boundary.tsx
+Make sure it uses a default export:
+'use client';
+
+export default function ClientErrorBoundary({ children }: { children: React.ReactNode }) {
+  // your error boundary logic here
+  return <>{children}</>;
+}
+
+
+If you were using a named export like export function ClientErrorBoundary, that’s what breaks React.lazy() or dynamic imports unless you remap it manually.
+
+✅ 2. Fix ChunkErrorRecovery Export
+File: components/client-chunk-error-recovery.tsx
+Same idea — ensure it’s a default export:
+'use client';
+
+export default function ChunkErrorRecovery() {
+  // your recovery logic here
+  return <div>Recovery Component</div>;
+}
+
+
+Then in ChunkErrorRecoveryWrapper.tsx, you can safely do:
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const ChunkErrorRecovery = dynamic(() => import('./client-chunk-error-recovery'), {
+  ssr: false
+});
+
+export default function ChunkErrorRecoveryWrapper() {
+  return <ChunkErrorRecovery />;
+}
+
+
+
+✅ 3. Clean Up Providers.tsx
+Avoid lazy loading foundational components like ClientErrorBoundary inside Providers. Instead, import them directly:
+'use client';
+
+import ClientErrorBoundary from '@/components/client-error-boundary';
+import ChunkErrorRecoveryWrapper from '@/components/ChunkErrorRecoveryWrapper';
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RainbowKitProvider>
+        <ClientErrorBoundary>
+          <EnvironmentValidator />
+          {children}
+          <ChunkErrorRecoveryWrapper />
+        </ClientErrorBoundary>
+      </RainbowKitProvider>
+    </QueryClientProvider>
+  );
+}
+
+
+This ensures everything is loaded eagerly and avoids hydration mismatches.
+
+✅ 4. Refine Environment Validation
+In EnvironmentValidator, make sure you're not checking process.env in both server and client contexts simultaneously. Instead:
+- Run the check once in a client-only component
+- Avoid throwing errors — log warnings instead
+- Use a fallback UI if critical vars are missing
+Example:
+'use client';
+
+const requiredVars = [
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
+  process.env.NEXT_PUBLIC_NETWORK,
+];
+
+const missing = requiredVars.filter(v => !v);
+
+if (missing.length > 0) {
+  console.warn('Missing env vars:', missing);
+}
+
+
+
+Once these are in place, your app should compile cleanly, hydrate without errors, and stop throwing false env warnings.
