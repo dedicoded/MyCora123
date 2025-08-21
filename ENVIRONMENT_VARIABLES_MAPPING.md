@@ -47,10 +47,10 @@
 |---------------|---------|---------|---------------|
 | `NODE_ENV` | `lib/env-config.ts` | Environment detection | `production` |
 
-## 🛠 Vercel Setup Instructions
+## 🛠 Replit Setup Instructions
 
-1. **Go to Vercel Dashboard**
-   - Navigate to your project → Settings → Environment Variables
+1. **Go to Replit Secrets**
+   - Navigate to your project → Click the lock icon (Secrets) in the sidebar
 
 2. **Add Each Variable**
    \`\`\`
@@ -65,9 +65,9 @@
    \`\`\`
 
 3. **Environment Settings**
-   - Set each variable to **both Production and Preview**
-   - Click Save after each variable
-   - Trigger a **Redeploy** after adding all variables
+   - Click "Add Secret" for each variable
+   - Variables are automatically available in all environments
+   - Restart your development server after adding variables
 
 ## 🔍 File-by-File Usage
 
@@ -91,13 +91,13 @@
 
 ## ✅ Validation Checklist
 
-- [ ] All 8 environment variables added to Vercel
-- [ ] Variables set for both Production and Preview
+- [ ] All 8 environment variables added to Replit Secrets
+- [ ] Variables accessible in development and production
 - [ ] RPC URL matches your blockchain network
 - [ ] Contract addresses are from correct network
 - [ ] Private keys are secure and properly formatted
 - [ ] Web3.Storage token is valid and active
-- [ ] Redeployed after adding variables
+- [ ] Restarted development server after adding variables
 
 ## 🚨 Security Notes
 

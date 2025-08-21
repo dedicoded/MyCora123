@@ -69,5 +69,5 @@ npm run deployment:status
 
 If you encounter issues:
 1. Run validation scripts first
-2. Check Vercel deployment logs
+2. Check Replit deployment logs
 3. Verify environment variables match this guide

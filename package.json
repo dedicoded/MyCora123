@@ -39,7 +39,8 @@
     "verify:all": "npx hardhat run scripts/verify-contracts.ts",
     "audit:dev": "pnpm audit --audit-level=high && npm run perf:audit",
     "audit:production": "echo 'Production audit skipped for faster deployment'",
-    "deploy:replit": "npm run build && npm start"
+    "deploy:replit": "npm run build && npm start",
+    "sync:replit": "node scripts/sync-env-to-replit.js"
   },
   "dependencies": {
     "@biconomy/mexa": "latest",

@@ -82,14 +82,13 @@ jobs:
 BICONOMY_API_KEY=your-real-biconomy-api-key-here
 \`\`\`
 
-**Step 2: Configure in Vercel**
-1. Go to your Vercel project dashboard
-2. Navigate to Settings → Environment Variables
+**Step 2: Configure in Replit**
+1. Go to your Replit project
+2. Navigate to Secrets (lock icon in sidebar)
 3. Add:
    - Key: `BICONOMY_API_KEY`
    - Value: `your-real-biconomy-api-key-here`
-   - Environment: Production (and optionally Preview/Development)
-4. Click Save and redeploy
+4. Click Add Secret and redeploy
 
 **Step 3: Verify Configuration**
 \`\`\`bash

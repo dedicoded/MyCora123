@@ -26,6 +26,8 @@ const nextConfig = {
   env: {
     WEB3_STORAGE_TOKEN: process.env.WEB3_STORAGE_TOKEN,
   },
+  // Replit-specific settings
+  assetPrefix: process.env.NODE_ENV === 'production' ? process.env.REPLIT_APP_URL : '',
   // Production optimizations
   compress: true,
   poweredByHeader: false,

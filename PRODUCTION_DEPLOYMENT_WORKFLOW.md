@@ -62,13 +62,13 @@ npm run validate:addresses
 
 ### Step 4: Sync to Hosting Platform
 
-#### Option A: Automated Vercel Sync
+#### Option A: Automated Replit Sync
 \`\`\`bash
-npm run sync:vercel
+npm run sync:replit
 \`\`\`
 
 #### Option B: Manual Environment Variable Setup
-1. Go to Vercel Project → Settings → Environment Variables
+1. Go to Replit Project → Secrets (lock icon)
 2. Add each contract address:
    - `MCC_CONTRACT_ADDRESS`
    - `PUFFPASS_CONTRACT_ADDRESS`

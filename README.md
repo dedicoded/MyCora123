@@ -2,8 +2,8 @@
 
 ## 🚀 Quick Start
 
-### 1. Environment Variables
-Create `.env.local` with the following variables:
+### 1. Environment Variables (Replit Secrets)
+Add the following variables to Replit Secrets (🔒 icon in sidebar):
 
 \`\`\`bash
 # Blockchain RPC URLs
@@ -96,7 +96,7 @@ These scripts ensure reproducibility, silent consoles, and investor-grade hygien
 - **Real-time Updates** - Live balance tracking and transaction status
 
 ### Infrastructure
-- **Frontend**: Vercel with Next.js 14
+- **Frontend**: Replit with Next.js 14
 - **Blockchain**: Multi-chain (Ethereum, Polygon, Base)
 - **Database**: Supabase with real-time subscriptions
 - **Storage**: IPFS for metadata and compliance documents
@@ -128,10 +128,10 @@ npm run validate:deployment
 
 ## 🚀 Production Deployment
 
-### Vercel Setup
-1. Connect your GitHub repository to Vercel
-2. Add all environment variables in Vercel Dashboard → Settings → Environment Variables
-3. Deploy with automatic CI/CD integration
+### Replit Setup
+1. Your project is already configured for Replit deployment
+2. Add all environment variables in Replit Secrets
+3. Deploy with Replit's built-in deployment system
 
 ### Environment Variables for Production
 Use the comprehensive environment validation:

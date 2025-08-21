@@ -94,8 +94,8 @@ find . -name "*.tsx" -o -name "*.ts" | sort | uniq -i -d
 ## Emergency Rollback Plan
 
 If deployment issues occur:
-1. Check Vercel deployment logs
-2. Verify environment variables in Vercel dashboard
+1. Check Replit deployment logs
+2. Verify environment variables in Replit Secrets
 3. Test locally with production build
-4. Use Vercel rollback feature if needed
+4. Use Replit's deployment history if needed
 5. Monitor error tracking for user impact

@@ -90,7 +90,7 @@ npx hardhat verify --network polygon [UTILITY_TOKEN_ADDRESS] "MyCora Utility Tok
 npx hardhat verify --network base [UTILITY_TOKEN_ADDRESS] "MyCora Utility Token" "MCUT"
 \`\`\`
 
-## 🔧 Vercel Environment Variables
+## 🔧 Replit Environment Variables
 
 ### Required Variables (Server-Side Only)
 \`\`\`bash
