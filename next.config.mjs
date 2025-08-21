@@ -6,9 +6,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    esmExternals: "loose"
-  },
+  
   outputFileTracingIncludes: {
     "/api/**": [
       "./node_modules/@thirdweb-dev/**",

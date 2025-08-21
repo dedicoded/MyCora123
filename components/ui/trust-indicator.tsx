@@ -3,13 +3,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const trustIndicatorVariants = cva(
-  "inline-flex items-center justify-center rounded-full font-medium transition-all duration-300",
+  "inline-flex items-center justify-center rounded-full font-medium transition-all duration-300 organic-card mycelial-glow",
   {
     variants: {
       level: {
-        high: "trust-indicator-high text-white mycora-pulse",
-        medium: "trust-indicator-medium text-white",
-        low: "trust-indicator-low text-foreground",
+        high: "trust-indicator-high text-white mycora-pulse bg-[var(--color-moss)] shadow-[0_0_15px_var(--color-glow)]",
+        medium: "trust-indicator-medium text-white bg-[var(--color-earth)] shadow-[0_0_10px_var(--color-spore-gold)]",
+        low: "trust-indicator-low text-foreground bg-[var(--color-root-brown)] shadow-[0_0_5px_rgba(139,92,246,0.4)]",
       },
       size: {
         sm: "h-6 w-6 text-xs",

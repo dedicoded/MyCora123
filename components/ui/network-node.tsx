@@ -46,19 +46,19 @@ export function NetworkNode({ id, label, x, y, active = false, onClick }: Networ
     >
       <div
         className={clsx(
-          "relative w-12 h-12 rounded-full border-2 transition-all duration-300",
+          "relative w-12 h-12 rounded-full border-2 transition-all duration-300 organic-card mycora-grow",
           active
-            ? "bg-green-500 border-green-400 shadow-lg shadow-green-500/50"
-            : "bg-gray-600 border-gray-500",
-          isHovered && "scale-110 shadow-xl"
+            ? "bg-[var(--color-moss)] border-[var(--color-spore-gold)] shadow-[0_0_20px_var(--color-glow)] mycelial-glow"
+            : "bg-[var(--color-earth)] border-[var(--color-root-brown)]",
+          isHovered && "scale-110 shadow-[0_0_25px_var(--color-network-purple)]"
         )}
       >
         <div
           className={clsx(
             "absolute inset-2 rounded-full transition-all duration-300",
             active
-              ? "bg-green-300 animate-pulse"
-              : "bg-gray-400"
+              ? "bg-[var(--color-spore-gold)] animate-pulse shadow-inner"
+              : "bg-[var(--color-moss)] opacity-60"
           )}
         />
       </div>
