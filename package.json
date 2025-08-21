@@ -112,7 +112,7 @@
     "jsdom": "latest",
     "lucide-react": "^0.454.0",
     "net": "latest",
-    "next": "14.2.16",
+    "next": "15.5.0",
     "next-themes": "^0.4.6",
     "path": "latest",
     "pino-pretty": "^13.1.1",
