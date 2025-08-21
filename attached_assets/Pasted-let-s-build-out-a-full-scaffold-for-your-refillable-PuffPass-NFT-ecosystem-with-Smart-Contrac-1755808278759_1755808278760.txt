@@ -1,0 +1,149 @@
+let’s build out a full scaffold for your refillable PuffPass NFT ecosystem with:
+- 🧠 Smart Contract (Solidity)
+- ⚛️ React UI (tsx)
+- 🪝 wagmi hooks
+- 🔁 Refill logic
+- 💸 Live on-ramp & off-ramp flow
+This will give you a modular, production-ready foundation for legal, prepaid NFT payments that can be topped up, transferred, redeemed, and off-ramped.
+
+🔐 1. Smart Contract: PuffPass.sol
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract PuffPass is ERC721, Ownable {
+    uint256 public nextTokenId;
+    mapping(uint256 => uint256) public balances;
+    mapping(uint256 => bool) public redeemed;
+
+    constructor() ERC721("PuffPass", "PUFF") {}
+
+    function mint(address to) external onlyOwner {
+        uint256 tokenId = nextTokenId++;
+        _safeMint(to, tokenId);
+        balances[tokenId] = 0;
+    }
+
+    function refill(uint256 tokenId) external payable {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        balances[tokenId] += msg.value;
+    }
+
+    function redeem(uint256 tokenId, uint256 amount) external {
+        require(ownerOf(tokenId) == msg.sender || msg.sender == owner(), "Unauthorized");
+        require(balances[tokenId] >= amount, "Insufficient balance");
+        balances[tokenId] -= amount;
+        payable(msg.sender).transfer(amount);
+        redeemed[tokenId] = true;
+    }
+
+    function getBalance(uint256 tokenId) external view returns (uint256) {
+        return balances[tokenId];
+    }
+}
+
+
+
+⚛️ 2. React UI: PuffPassCard.tsx
+import { useState } from 'react'
+import { useAccount, useWriteContract, useReadContract } from 'wagmi'
+import { abi, contractAddress } from './PuffPassAbi'
+
+export default function PuffPassCard({ tokenId }: { tokenId: number }) {
+  const { address } = useAccount()
+  const { writeContractAsync } = useWriteContract()
+  const [amount, setAmount] = useState('')
+
+  const handleRefill = async () => {
+    await writeContractAsync({
+      address: contractAddress,
+      abi,
+      functionName: 'refill',
+      args: [tokenId],
+      value: BigInt(amount),
+    })
+  }
+
+  const handleRedeem = async () => {
+    await writeContractAsync({
+      address: contractAddress,
+      abi,
+      functionName: 'redeem',
+      args: [tokenId, BigInt(amount)],
+    })
+  }
+
+  return (
+    <div className="p-4 border rounded shadow">
+      <h2 className="text-xl font-bold">PuffPass #{tokenId}</h2>
+      <input
+        type="number"
+        placeholder="Amount in wei"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="mt-2 p-2 border rounded w-full"
+      />
+      <button onClick={handleRefill} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+        Refill
+      </button>
+      <button onClick={handleRedeem} className="mt-2 bg-green-500 text-white px-4 py-2 rounded">
+        Redeem
+      </button>
+    </div>
+  )
+}
+
+
+
+🪝 3. wagmi Hooks Setup
+import { createConfig } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
+import { injected } from 'wagmi/connectors'
+
+export const config = createConfig({
+  autoConnect: true,
+  connectors: [injected()],
+  publicClient: { chain: mainnet },
+})
+
+
+
+🔁 4. Refill Logic (User Flow)
+- User connects wallet
+- Enters amount (in ETH or stablecoin)
+- Calls refill(tokenId) with msg.value
+- Contract updates balance
+- UI reflects new balance via getBalance(tokenId)
+
+💸 5. On-Ramp & Off-Ramp Flow
+🟢 On-Ramp (User → PuffPass)
+- Integrate Stripe, Transak, or Ramp Network
+- User pays with fiat → receives ETH → calls refill
+🔴 Off-Ramp (Merchant → Fiat)
+- Merchant redeems PuffPass
+- ETH received → off-ramped via:
+- Transak
+- MoonPay
+- Binance Pay
+- Bank transfer via KYC gateway
+✅ You can embed these flows via iframe or SDK in your merchant dashboard.
+
+🧪 Bonus: Smart Contract Test (Hardhat + Vitest)
+it('should refill and redeem PuffPass', async () => {
+  await puffPass.mint(user.address)
+  await puffPass.connect(user).refill(0, { value: ethers.utils.parseEther("1") })
+  await puffPass.connect(user).redeem(0, ethers.utils.parseEther("0.5"))
+  const balance = await puffPass.getBalance(0)
+  expect(balance).to.equal(ethers.utils.parseEther("0.5"))
+})
+
+
+
+🚀 Ready to Deploy?
+I can help you:
+- Set up Hardhat or Foundry for deployment
+- Integrate IPFS metadata via web3.storage
+- Build merchant dashboard with redemption logs
+- Add tier logic, badges, and analytics
