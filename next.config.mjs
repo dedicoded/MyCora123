@@ -13,6 +13,17 @@ const nextConfig = {
     PROJECT_ID: process.env.PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   },
 
+  // Performance optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
+  },
+
+  // Reduce bundle size
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
+  },
+
   experimental: {
     allowedDevOrigins: [
       'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',

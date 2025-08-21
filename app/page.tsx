@@ -1,10 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import dynamic from 'next/dynamic'
-import { SecurityVerification } from "@/components/ui/security-verification"
-import { RewardsDashboard } from "@/components/ui/rewards-dashboard"
-import { PaymentForm } from "@/components/ui/payment-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -12,11 +9,30 @@ import { TrustIndicator } from "@/components/ui/trust-indicator"
 import { ComplianceBadge } from "@/components/ui/compliance-badge"
 import { NetworkNode } from "@/components/ui/network-node"
 
-const WalletConnect = dynamic(() => import('@/components/WalletConnect').then(mod => ({ default: mod.WalletConnect })), {
-  ssr: false
+// Lazy load heavy components only when needed
+const SecurityVerification = dynamic(() => import("@/components/ui/security-verification").then(mod => ({ default: mod.SecurityVerification })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-mycora-sage/20 h-64 rounded-lg"></div>
 })
+
+const RewardsDashboard = dynamic(() => import("@/components/ui/rewards-dashboard").then(mod => ({ default: mod.RewardsDashboard })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-mycora-sage/20 h-48 rounded-lg"></div>
+})
+
+const PaymentForm = dynamic(() => import("@/components/ui/payment-form").then(mod => ({ default: mod.PaymentForm })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-mycora-sage/20 h-40 rounded-lg"></div>
+})
+
+const WalletConnect = dynamic(() => import('@/components/WalletConnect').then(mod => ({ default: mod.WalletConnect })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-mycora-sage/20 h-16 rounded-lg"></div>
+})
+
 const MintingInterface = dynamic(() => import('@/components/MintingInterface'), {
-  ssr: false
+  ssr: false,
+  loading: () => <div className="animate-pulse bg-mycora-sage/20 h-32 rounded-lg"></div>
 })
 
 interface UserSession {
@@ -45,34 +61,25 @@ export default function Page() {
   const [missingVars, setMissingVars] = useState<string[]>([])
 
   useEffect(() => {
-    const requiredVars = [
-      "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
-      "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS",
-      "NEXT_PUBLIC_NETWORK",
-    ]
+    // Use timeout to defer env validation after initial render
+    const timer = setTimeout(() => {
+      const requiredVars = [
+        "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+        "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS",
+        "NEXT_PUBLIC_NETWORK",
+      ]
 
-    const optionalVars: string[] = []
+      const missing = requiredVars.filter((varName) => !process.env[varName])
 
-    const missing = requiredVars.filter((varName) => !process.env[varName])
-    const missingOptional = optionalVars.filter((varName) => !process.env[varName])
-
-    if (missing.length > 0 && !isPreview) {
-      console.warn("[v0] Missing critical environment variables:", missing)
-      if (missingOptional.length > 0) {
-        console.warn("[v0] Missing optional environment variables:", missingOptional)
+      if (missing.length > 0 && !isPreview) {
+        setMissingVars(missing)
+        setEnvStatus("missing")
+      } else {
+        setEnvStatus("ready")
       }
-      setMissingVars([...missing, ...missingOptional])
-      setEnvStatus("missing")
-    } else {
-      setEnvStatus("ready")
-    }
+    }, 100)
 
-    console.log("[v0] Environment status:", {
-      envStatus: missing.length > 0 ? "missing" : "ready",
-      isPreview,
-      missingRequired: missing,
-      missingOptional,
-    })
+    return () => clearTimeout(timer)
   }, [])
 
   const handleBeginJourney = () => {
@@ -160,50 +167,56 @@ export default function Page() {
         </Button>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-          <CardHeader>
-            <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <NetworkNode size="sm" active={true} />
-            </div>
-            <CardTitle className="text-mycora-earth">Security Tokens</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-mycora-sage">
-              Issue and manage compliant security tokens with built-in regulatory features and automated compliance.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-          <CardHeader>
-            <div className="w-16 h-16 bg-gradient-to-br from-mycora-moss to-mycora-sage rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <ComplianceBadge status="verified" size="lg" />
-            </div>
-            <CardTitle className="text-mycora-earth">Compliance Engine</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-mycora-sage">
-              Automated KYC/AML checks, risk assessment, and regulatory reporting for global markets.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-          <CardHeader>
-            <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-earth rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <TrustIndicator level="secure" />
-            </div>
-            <CardTitle className="text-mycora-earth">DeFi Integration</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-mycora-sage">
-              Connect to decentralized finance protocols with institutional-grade security and compliance.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Suspense fallback={<div className="grid md:grid-cols-3 gap-8 mb-16">{Array(3).fill(0).map((_, i) => <div key={i} className="animate-pulse bg-mycora-sage/20 h-64 rounded-lg"></div>)}</div>}>
+        <FeatureCards />
+      </Suspense>
     </>
+  )
+
+  const FeatureCards = () => (
+    <div className="grid md:grid-cols-3 gap-8 mb-16">
+      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
+        <CardHeader>
+          <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <NetworkNode size="sm" active={true} />
+          </div>
+          <CardTitle className="text-mycora-earth">Security Tokens</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-mycora-sage">
+            Issue and manage compliant security tokens with built-in regulatory features and automated compliance.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
+        <CardHeader>
+          <div className="w-16 h-16 bg-gradient-to-br from-mycora-moss to-mycora-sage rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <ComplianceBadge status="verified" size="lg" />
+          </div>
+          <CardTitle className="text-mycora-earth">Compliance Engine</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-mycora-sage">
+            Automated KYC/AML checks, risk assessment, and regulatory reporting for global markets.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
+        <CardHeader>
+          <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-earth rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <TrustIndicator level="secure" />
+          </div>
+          <CardTitle className="text-mycora-earth">DeFi Integration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-mycora-sage">
+            Connect to decentralized finance protocols with institutional-grade security and compliance.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   )
 
   const renderUserTypeSelection = () => (
@@ -404,10 +417,10 @@ export default function Page() {
             </CardHeader>
             <CardContent className="space-y-6">
               {envStatus === "ready" ? (
-                <>
+                <Suspense fallback={<div className="space-y-4"><div className="animate-pulse bg-mycora-sage/20 h-16 rounded-lg"></div><div className="animate-pulse bg-mycora-sage/20 h-32 rounded-lg"></div></div>}>
                   <WalletConnect onConnectionChange={handleWalletConnection} />
                   {walletConnected && <MintingInterface />}
-                </>
+                </Suspense>
               ) : (
                 <div className="p-6 border-2 border-dashed border-mycora-sage/30 rounded-lg text-center">
                   <p className="text-mycora-sage mb-4">
@@ -429,7 +442,9 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               {envStatus === "ready" ? (
-                <PaymentForm />
+                <Suspense fallback={<div className="animate-pulse bg-mycora-sage/20 h-40 rounded-lg"></div>}>
+                  <PaymentForm />
+                </Suspense>
               ) : (
                 <div className="p-6 border-2 border-dashed border-mycora-sage/30 rounded-lg text-center">
                   <p className="text-mycora-sage">Payment processing available with full configuration</p>
