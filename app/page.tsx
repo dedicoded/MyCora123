@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -11,6 +10,12 @@ import { TrustIndicator } from "@/components/ui/trust-indicator"
 import { ComplianceBadge } from "@/components/ui/compliance-badge"
 import { NetworkNode } from "@/components/ui/network-node"
 import { Progress } from "@/components/ui/progress"
+import { Wallet, Shield, Gift, TrendingUp, Zap, Users } from "lucide-react"
+import { InstantRewards } from "@/components/ui/instant-rewards"
+import { RewardsDashboard } from "@/components/ui/rewards-dashboard"
+import { FiatOnRamp } from "@/components/ui/fiat-onramp"
+import { CannabisRewards } from "@/components/ui/cannabis-rewards"
+
 
 // Lazy load heavy components only when needed
 const SecurityVerification = dynamic(() => import("@/components/ui/security-verification").then(mod => ({ default: mod.SecurityVerification })), {
@@ -206,7 +211,7 @@ export default function Page() {
     <div className="relative group">
       {/* Magical glow background */}
       <div className="absolute -inset-1 bg-gradient-to-r from-mycora-sage via-mycora-moss to-mycora-sage rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-all duration-700 animate-pulse"></div>
-      
+
       <Card className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-none backdrop-blur-sm overflow-hidden shadow-2xl transform group-hover:scale-105 transition-all duration-700 group-hover:shadow-3xl">
         {/* Animated background pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -275,7 +280,7 @@ export default function Page() {
                 <p className="text-sm text-gray-300 font-medium">{puffPassData.recentEarning}</p>
               </div>
             </div>
-            
+
             {/* Animated points display */}
             <div className="text-right">
               <Badge className="bg-gradient-to-r from-mycora-sage to-mycora-moss text-white border-none px-4 py-2 text-lg font-bold shadow-lg">
@@ -285,7 +290,7 @@ export default function Page() {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="relative text-white space-y-6">
           {/* Enhanced progress section */}
           <div className="space-y-3">
@@ -293,7 +298,7 @@ export default function Page() {
               <span className="text-sm font-medium text-gray-300">Progress to {puffPassData.nextTier}</span>
               <span className="text-sm font-bold text-white">{puffPassData.points}/{puffPassData.nextTierPoints}</span>
             </div>
-            
+
             {/* Stunning progress bar */}
             <div className="relative h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
               <div className="absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-700"></div>
@@ -310,7 +315,7 @@ export default function Page() {
                 }}
               />
             </div>
-            
+
             <div className="text-xs text-gray-400">
               {(puffPassData.nextTierPoints - puffPassData.points).toLocaleString()} points to unlock {puffPassData.nextTier} benefits
             </div>
@@ -458,21 +463,12 @@ export default function Page() {
       </div>
 
       <div className="mb-12">
-        <h1 className="text-7xl md:text-8xl font-black text-transparent bg-gradient-to-br from-mycora-sage via-mycora-moss to-yellow-400 bg-clip-text mb-6 animate-pulse">
-          MyCora
-        </h1>
-        
-        <div className="flex items-center justify-center mb-8">
-          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-400 via-mycora-sage to-mycora-moss bg-clip-text text-transparent animate-pulse">
-            🌟 PuffPass Rewards
-          </div>
-        </div>
-        
-        <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed">
-          <span className="text-mycora-sage font-semibold">Earn like Five Star</span> • 
-          <span className="text-mycora-moss font-semibold mx-2">Pay like CashApp</span> • 
-          <span className="text-yellow-600 font-semibold">Redeem like Starbucks</span>
-        </p>
+        <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
+              🌿 PuffPass Rewards
+            </h1>
+            <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 mb-12 font-medium">
+              Earn at dispensaries • Pay like CashApp • Redeem like Starbucks
+            </p>
       </div>
 
       <div className="max-w-lg mx-auto mb-12">
@@ -504,7 +500,7 @@ export default function Page() {
     <Card className="group relative bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-700 hover:scale-105 hover:shadow-2xl overflow-hidden">
       {/* Animated background gradient */}
       <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} opacity-0 group-hover:opacity-10 transition-all duration-700`}></div>
-      
+
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(6)].map((_, i) => (
@@ -529,7 +525,7 @@ export default function Page() {
           {title}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="relative">
         <p className="text-gray-600 mb-8 leading-relaxed">{description}</p>
         <div className="flex flex-col sm:flex-row gap-4">
@@ -556,29 +552,30 @@ export default function Page() {
   const renderMainSections = () => (
     <div className="grid lg:grid-cols-3 gap-8 mb-20">
       {renderEnhancedFeatureSection(
-        <span className="text-4xl">💳</span>,
-        "Smart Payments",
-        "Pay with your phone, earn PuffPass points automatically with every transaction.",
+        <span className="text-4xl">🌿</span>,
+        "Cannabis Payments",
+        "Pay at dispensaries, earn PuffPass points automatically. Load up with card or wallet.",
+        "🌿 Buy PuffPass Points",
+        () => {
+          // This action should ideally navigate to or open the FiatOnRamp component
+          alert("Navigate to Fiat On-Ramp to buy PuffPass Points")
+        },
         "Connect Wallet",
         handleConnectWallet,
-        "Learn More",
-        () => {
-          alert("Smart Payments: Seamlessly connect your wallet to earn PuffPass rewards with every transaction. Compatible with popular wallets and supports gasless transactions.")
-        },
-        "from-blue-500 to-cyan-500"
+        "from-green-500 to-emerald-500"
       )}
 
       {renderEnhancedFeatureSection(
-        <ComplianceBadge status="verified" size="lg" />,
-        "Unlock Rewards",
-        "Verify once. Unlock exclusive perks across the entire MyCora network.",
-        "Verify Identity",
+        <Gift className="h-8 w-8" />,
+        "🎁 Cannabis Perks",
+        "Verify once. Unlock exclusive cannabis rewards across verified dispensaries.",
+        "Verify for Cannabis Access",
         handleVerifyIdentity,
-        "See Available Perks",
+        "See Cannabis Perks",
         () => {
-          alert("Available Perks: 5% cashback on purchases, Free shipping, $10 gift cards, Exclusive partner discounts, Priority customer support, and more!")
+          alert("See Available Perks: Exclusive discounts at partner dispensaries, early access to new strains, free merchandise, and more!")
         },
-        "from-green-500 to-emerald-500"
+        "from-purple-500 to-pink-500"
       )}
 
       {renderEnhancedFeatureSection(
@@ -631,12 +628,12 @@ export default function Page() {
         </div>
         <CardTitle className="text-4xl font-bold text-white mb-4">For Businesses</CardTitle>
       </CardHeader>
-      
+
       <CardContent className="text-center relative z-10">
         <p className="text-gray-300 text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
           Scale your brand with PuffPass-powered loyalty and payments. Transform customer engagement with blockchain rewards.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <Button 
             size="lg" 
@@ -715,7 +712,7 @@ export default function Page() {
       {renderHeroSection()}
       {renderMainSections()}
       {renderBusinessSection()}
-      
+
       {/* Enhanced Dev Tools */}
       {isDev && (
         <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-600 mb-8">
@@ -764,7 +761,7 @@ export default function Page() {
         >
           {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-br from-mycora-sage/10 to-mycora-moss/10 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-          
+
           <CardHeader className="text-center relative z-10">
             <div className="w-24 h-24 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg group-hover:shadow-2xl">
               <NetworkNode size="md" active={true} />
@@ -787,7 +784,7 @@ export default function Page() {
         >
           {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-br from-mycora-moss/10 to-yellow-400/10 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-          
+
           <CardHeader className="text-center relative z-10">
             <div className="w-24 h-24 bg-gradient-to-br from-mycora-moss to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg group-hover:shadow-2xl">
               <TrustIndicator level="enterprise" />
@@ -913,7 +910,7 @@ PuffPass Tier: ${puffPassData.tier}
 Total Points Earned: ${puffPassData.points.toLocaleString()}
 
 All compliance requirements met.`
-                  
+
                   const blob = new Blob([report], { type: 'text/plain' })
                   const url = window.URL.createObjectURL(blob)
                   const a = document.createElement('a')
@@ -1004,7 +1001,7 @@ All compliance requirements met.`
       <div className="container mx-auto px-4 py-16 relative z-10">
         {currentStep === "welcome" && renderWelcomeScreen()}
         {currentStep === "userType" && renderUserTypeSelection()}
-        
+
         {currentStep === "security" && userSession && (
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
