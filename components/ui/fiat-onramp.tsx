@@ -75,12 +75,22 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
 
   useEffect(() => {
     const checkMagicWallet = async () => {
-      const walletInfo = await magicWallet.getWalletInfo()
-      if (walletInfo) {
-        setMagicWalletInfo(walletInfo)
+      try {
+        const walletInfo = await magicWallet.getWalletInfo()
+        // Use setTimeout to defer state update and prevent render warnings
+        setTimeout(() => {
+          if (walletInfo) {
+            setMagicWalletInfo(walletInfo)
+          }
+        }, 0)
+      } catch (error) {
+        console.log('Magic wallet check failed:', error)
       }
     }
-    checkMagicWallet()
+    
+    // Delay the check to avoid hydration issues
+    const timer = setTimeout(checkMagicWallet, 100)
+    return () => clearTimeout(timer)
   }, [])
 
   const selectedMethod = paymentMethods.find(m => m.id === paymentMethod)

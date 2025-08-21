@@ -19,6 +19,13 @@ const paymentMethodFees = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Add CORS headers for better cross-origin handling
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+
     const body = await request.json() as OnRampRequest
     const { amount, paymentMethod, email, userId } = body
 
@@ -122,7 +129,13 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+  })
 
   } catch (error) {
     console.error("[v0] Fiat on-ramp error:", error)

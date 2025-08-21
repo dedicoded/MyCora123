@@ -95,23 +95,29 @@ export default function AuthFlow() {
         const userMetadata = await magic.user.getInfo()
         const walletAddress = userMetadata.publicAddress
         
-        setMessage(`✨ Magic wallet created! Address: ${walletAddress?.slice(0, 6)}...${walletAddress?.slice(-4)}`)
-        
-        // Store wallet info for PuffPass integration
-        localStorage.setItem('magicWalletAddress', walletAddress || '')
-        localStorage.setItem('userEmail', email)
-        
-        router.push('/dashboard')
+        // Use setTimeout to defer state updates and avoid render warnings
+        setTimeout(() => {
+          setMessage(`✨ Magic wallet created! Address: ${walletAddress?.slice(0, 6)}...${walletAddress?.slice(-4)}`)
+          
+          // Store wallet info for PuffPass integration
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('magicWalletAddress', walletAddress || '')
+            localStorage.setItem('userEmail', email)
+          }
+          
+          router.push('/dashboard')
+        }, 0)
       }
     } catch (error: any) {
-      setMessage(error.message || 'Magic authentication failed')
-    } finally {
-      setLoading(false)
+      setTimeout(() => {
+        setMessage(error.message || 'Magic authentication failed')
+        setLoading(false)
+      }, 0)
     }
   }
 
   const checkMagicSession = async () => {
-    if (!magic) return
+    if (!magic || typeof window === 'undefined') return
     
     try {
       const isLoggedIn = await magic.user.isLoggedIn()
@@ -125,7 +131,12 @@ export default function AuthFlow() {
   }
 
   useEffect(() => {
-    checkMagicSession()
+    // Defer session check to avoid hydration issues
+    const timer = setTimeout(() => {
+      checkMagicSession()
+    }, 100)
+
+    return () => clearTimeout(timer)
   }, [])
 
   return (

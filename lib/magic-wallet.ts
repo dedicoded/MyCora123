@@ -3,10 +3,26 @@ import { Magic } from 'magic-sdk'
 
 export class MagicWalletService {
   private magic: Magic | null = null
+  private isInitialized: boolean = false
 
   constructor() {
-    if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY) {
-      this.magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY)
+    // Don't initialize during SSR to prevent hydration issues
+    if (typeof window !== 'undefined' && !this.isInitialized) {
+      this.initializeMagic()
+    }
+  }
+
+  private initializeMagic() {
+    if (this.isInitialized || typeof window === 'undefined') return
+    
+    const key = process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY
+    if (key && key !== 'your_magic_key_here') {
+      try {
+        this.magic = new Magic(key)
+        this.isInitialized = true
+      } catch (error) {
+        console.warn('Magic SDK initialization failed:', error)
+      }
     }
   }
 
@@ -29,6 +45,9 @@ export class MagicWalletService {
   }
 
   async getWalletInfo() {
+    if (typeof window === 'undefined') return null
+    
+    this.initializeMagic()
     if (!this.magic) return null
 
     try {
