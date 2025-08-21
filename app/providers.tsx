@@ -7,7 +7,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { ThemeProvider } from '@/components/theme-provider'
 import { ClientErrorBoundary } from '@/components/client-error-boundary'
 import { config } from "../components/WalletConnect"
-import ChunkErrorRecoveryWrapper from '@/components/ChunkErrorRecoveryWrapper'
+import { ChunkErrorRecovery } from '@/components/client-chunk-error-recovery'
 
 import '@rainbow-me/rainbowkit/styles.css'
 
@@ -28,19 +28,29 @@ const validateConfig = () => {
 
 function EnvironmentValidator() {
   useEffect(() => {
-    // Only run client-side after hydration
+    // Only run client-side after hydration and ensure we're in development
+    if (typeof window === 'undefined') return
+
     const required = [
       'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
       'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS',
       'NEXT_PUBLIC_NETWORK'
     ]
 
+    const envValues = {
+      walletConnect: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ? 'FOUND' : 'MISSING',
+      contract: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS ? 'FOUND' : 'MISSING',
+      network: process.env.NEXT_PUBLIC_NETWORK ? 'FOUND' : 'MISSING'
+    }
+
     const missing = required.filter(key => {
       const value = process.env[key]
-      return !value || value === '' || value === 'undefined'
+      return !value || value === '' || value === 'undefined' || value === 'your_project_id_here'
     })
 
-    if (missing.length > 0) {
+    console.log('[v0] Actual env values:', envValues)
+    
+    if (missing.length > 0 && process.env.NODE_ENV === 'development') {
       console.warn('[v0] Missing critical environment variables:', missing)
     } else {
       console.log('[v0] ✅ All environment variables loaded successfully')
@@ -83,7 +93,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ClientErrorBoundary>
               <EnvironmentValidator />
               {children}
-              <ChunkErrorRecoveryWrapper />
+              <ChunkErrorRecovery />
             </ClientErrorBoundary>
           </RainbowKitProvider>
         </QueryClientProvider>

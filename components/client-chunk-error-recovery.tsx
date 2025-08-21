@@ -27,6 +27,19 @@ export function ChunkErrorRecovery() {
   if (!hasChunkError) return null
 
   return (
+    <div className="fixed bottom-4 right-4 bg-orange-500 text-white p-4 rounded-lg shadow-lg z-50">
+      <h4 className="font-semibold">Connection Issue Detected</h4>
+      <p className="text-sm mt-1">There was a problem loading part of the application.</p>
+      <Button onClick={handleRecovery} className="mt-2 bg-white text-orange-500 hover:bg-gray-100">
+        Reload Page
+      </Button>
+    </div>
+  )
+}
+
+export default ChunkErrorRecovery
+
+  return (
     <div className="fixed top-4 right-4 z-50 max-w-sm">
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-lg">
         <div className="flex">
