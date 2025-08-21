@@ -135,7 +135,7 @@
     "ts-node": "latest",
     "typechain": "latest",
     "vaul": "^0.9.9",
-    "viem": "latest",
+    "viem": "^2.34.0",
     "vitest": "latest",
     "wagmi": "latest",
     "web3.storage": "latest",

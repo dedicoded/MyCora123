@@ -1,9 +1,3 @@
-import withBundleAnalyzer from "@next/bundle-analyzer";
-
-const bundleAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true" && process.env.NODE_ENV !== "production",
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
@@ -184,4 +178,4 @@ const nextConfig = {
   transpilePackages: ['magic-sdk']
 }
 
-export default bundleAnalyzer(nextConfig);
+export default nextConfig;
