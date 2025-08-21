@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { TrustIndicator } from "@/components/ui/trust-indicator"
 import { ComplianceBadge } from "@/components/ui/compliance-badge"
 import { NetworkNode } from "@/components/ui/network-node"
+import { Progress } from "@/components/ui/progress"
 
 // Lazy load heavy components only when needed
 const SecurityVerification = dynamic(() => import("@/components/ui/security-verification").then(mod => ({ default: mod.SecurityVerification })), {
@@ -45,11 +47,7 @@ interface UserSession {
 }
 
 const isPreview = process.env.NODE_ENV === "development" && !process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-const mockContracts = {
-  mcc: { address: "0x1234...5678", name: "MyCora Coin (Preview)" },
-  security: { address: "0x5678...9012", name: "Security Token (Preview)" },
-  utility: { address: "0x9012...3456", name: "Utility Token (Preview)" },
-}
+const isDev = process.env.NODE_ENV === "development"
 
 export default function Page() {
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -60,6 +58,7 @@ export default function Page() {
   const [userEmail, setUserEmail] = useState("")
   const [envStatus, setEnvStatus] = useState<"loading" | "ready" | "missing">("loading")
   const [missingVars, setMissingVars] = useState<string[]>([])
+  const [showDevPanel, setShowDevPanel] = useState(false)
 
   useEffect(() => {
     // Defer env validation to next tick to avoid blocking render
@@ -95,7 +94,7 @@ export default function Page() {
 
   const handleUserTypeSelection = async (type: "individual" | "business") => {
     setUserType(type)
-    setCurrentStep("security") // Move to next step immediately
+    setCurrentStep("security")
 
     // Create secure session in background
     const deviceInfo = {
@@ -123,7 +122,6 @@ export default function Page() {
     })
     .catch(error => {
       logger.error("Session creation failed:", error)
-      // Create fallback session for demo
       setUserSession({
         sessionId: `fallback_${Date.now()}`,
         requiresMFA: false,
@@ -152,87 +150,247 @@ export default function Page() {
     setWalletConnected(connected)
   }
 
-  const renderWelcomeScreen = () => (
-    <>
-      <div className="text-center mb-16">
-        <div className="mb-8">
-          <div className="inline-block p-4 rounded-full bg-mycora-sage/20 mb-6">
-            <NetworkNode size="lg" active={true} />
+  // PuffPass Mock Data - in production, this comes from user's account
+  const puffPassData = {
+    tier: "Silver",
+    points: 2847,
+    nextTierPoints: 5000,
+    availableRewards: ["5% cashback", "Free shipping", "$10 gift card"],
+    recentEarning: "+25 points from coffee purchase"
+  }
+
+  const renderPuffPassCard = () => (
+    <Card className="bg-gradient-to-br from-mycora-sage/20 to-mycora-moss/20 border-mycora-sage/30 backdrop-blur-sm">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-mycora-earth flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-mycora-sage to-mycora-moss"></div>
+              PuffPass {puffPassData.tier}
+            </CardTitle>
+            <p className="text-mycora-sage text-sm mt-1">{puffPassData.recentEarning}</p>
           </div>
-        </div>
-        <h1 className="text-6xl font-bold text-mycora-earth mb-6 bg-gradient-to-r from-mycora-sage to-mycora-moss bg-clip-text text-transparent">
-          Welcome to MyCora
-        </h1>
-        <p className="text-xl text-mycora-sage max-w-3xl mx-auto mb-8">
-          Earn rewards like Five Star • Pay like CashApp • Redeem like Starbucks
-          <br />
-          <span className="text-lg opacity-80">Your everyday purchases, now powered by PuffPass rewards</span>
-        </p>
-        <div className="flex items-center justify-center space-x-4 mb-8">
-          <TrustIndicator level="platform" />
-          <ComplianceBadge status="verified" />
           <Badge variant="outline" className="border-mycora-sage text-mycora-sage">
-            Enterprise Ready
+            {puffPassData.points.toLocaleString()} pts
           </Badge>
         </div>
-        <Button
-          onClick={handleBeginJourney}
-          className="bg-gradient-to-r from-mycora-sage to-mycora-moss hover:from-mycora-moss hover:to-mycora-sage text-white px-12 py-4 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-        >
-          Begin Your Journey
-        </Button>
-      </div>
-
-      <Suspense fallback={<div className="grid md:grid-cols-3 gap-8 mb-16">{Array(3).fill(0).map((_, i) => <div key={i} className="animate-pulse bg-mycora-sage/20 h-64 rounded-lg"></div>)}</div>}>
-        <FeatureCards />
-      </Suspense>
-    </>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-mycora-sage">Progress to Gold</span>
+              <span className="text-mycora-earth">{puffPassData.points}/{puffPassData.nextTierPoints}</span>
+            </div>
+            <Progress 
+              value={(puffPassData.points / puffPassData.nextTierPoints) * 100} 
+              className="h-2"
+            />
+          </div>
+          <div>
+            <p className="text-sm text-mycora-sage mb-2">Available rewards:</p>
+            <div className="flex flex-wrap gap-1">
+              {puffPassData.availableRewards.map((reward, i) => (
+                <Badge key={i} variant="secondary" className="text-xs">
+                  {reward}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 
-  const FeatureCards = () => (
-    <div className="grid md:grid-cols-3 gap-8 mb-16">
-      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-        <CardHeader>
-          <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <NetworkNode size="sm" active={true} />
+  const renderHeroSection = () => (
+    <div className="text-center mb-16">
+      <div className="mb-8">
+        <h1 className="text-6xl font-bold text-mycora-earth mb-4 bg-gradient-to-r from-mycora-sage to-mycora-moss bg-clip-text text-transparent">
+          MyCora
+        </h1>
+        <div className="flex items-center justify-center mb-6">
+          <div className="text-2xl font-medium text-mycora-sage">
+            🌟 PuffPass Rewards
           </div>
-          <CardTitle className="text-mycora-earth">Smart Payments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-mycora-sage">
-            Pay with your phone, earn points automatically, and enjoy seamless transactions everywhere you shop.
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="text-xl text-mycora-sage max-w-3xl mx-auto mb-8">
+          Earn like Five Star • Pay like CashApp • Redeem like Starbucks
+        </p>
+      </div>
 
-      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-        <CardHeader>
-          <div className="w-16 h-16 bg-gradient-to-br from-mycora-moss to-mycora-sage rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <ComplianceBadge status="verified" size="lg" />
-          </div>
-          <CardTitle className="text-mycora-earth">Unlock Rewards</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-mycora-sage">
-            Verify your identity once, unlock exclusive perks, and access premium features across the network.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="max-w-md mx-auto mb-8">
+        {renderPuffPassCard()}
+      </div>
 
-      <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
-        <CardHeader>
-          <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-earth rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <TrustIndicator level="secure" />
-          </div>
-          <CardTitle className="text-mycora-earth">MyCora Wallet</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-mycora-sage">
-            Store, send, and grow your money with bank-level security and instant transactions.
-          </p>
-        </CardContent>
-      </Card>
+      <Button
+        onClick={handleBeginJourney}
+        size="lg"
+        className="bg-gradient-to-r from-mycora-sage to-mycora-moss hover:from-mycora-moss hover:to-mycora-sage text-white px-8 py-3 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+      >
+        View My PuffPass
+      </Button>
     </div>
+  )
+
+  const renderFeatureSection = (
+    icon: React.ReactNode,
+    title: string,
+    description: string,
+    primaryButton: string,
+    secondaryButton?: string
+  ) => (
+    <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm hover:bg-mycora-earth/10 transition-all duration-300 group">
+      <CardHeader>
+        <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          {icon}
+        </div>
+        <CardTitle className="text-mycora-earth text-2xl">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-mycora-sage mb-6">{description}</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button className="bg-mycora-sage hover:bg-mycora-moss text-white flex-1">
+            {primaryButton}
+          </Button>
+          {secondaryButton && (
+            <Button variant="outline" className="border-mycora-sage text-mycora-sage hover:bg-mycora-sage/10 flex-1">
+              {secondaryButton}
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderMainSections = () => (
+    <div className="grid lg:grid-cols-3 gap-8 mb-16">
+      {renderFeatureSection(
+        <div className="text-2xl">💳</div>,
+        "Smart Payments",
+        "Pay with your phone, earn PuffPass points automatically.",
+        "Connect Wallet",
+        "Learn More"
+      )}
+
+      {renderFeatureSection(
+        <ComplianceBadge status="verified" size="lg" />,
+        "Unlock Rewards",
+        "Verify once. Unlock exclusive perks across the MyCora network.",
+        "Verify Identity",
+        "See Available Perks"
+      )}
+
+      {renderFeatureSection(
+        <div className="text-2xl">🏦</div>,
+        "MyCora Wallet",
+        "Store, send, and grow your money with bank-level security.",
+        "Open Wallet",
+        "Send Money"
+      )}
+    </div>
+  )
+
+  const renderBusinessSection = () => (
+    <Card className="bg-gradient-to-r from-mycora-earth/10 to-mycora-sage/5 border-mycora-sage/20 backdrop-blur-sm mb-16">
+      <CardHeader className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-mycora-moss to-mycora-earth rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="text-2xl">📈</div>
+        </div>
+        <CardTitle className="text-mycora-earth text-3xl">For Businesses</CardTitle>
+      </CardHeader>
+      <CardContent className="text-center">
+        <p className="text-mycora-sage text-lg mb-6 max-w-2xl mx-auto">
+          Scale your brand with PuffPass-powered loyalty and payments.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button size="lg" className="bg-mycora-sage hover:bg-mycora-moss">
+            Get Started
+          </Button>
+          <Button variant="outline" size="lg" className="border-mycora-sage text-mycora-sage hover:bg-mycora-sage/10">
+            Contact Sales
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderDevPanel = () => {
+    if (!isDev || !showDevPanel) return null
+
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Card className="bg-red-50 border-red-200 max-w-sm">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-red-800 text-sm">⚠️ Dev Configuration</CardTitle>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDevPanel(false)}
+                className="h-6 w-6 p-0"
+              >
+                ×
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <p className="text-red-700 text-xs mb-3">
+              Environment variables needed for full functionality
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => setEnvStatus("ready")}
+                className="text-xs border-red-300 text-red-700 hover:bg-red-50"
+              >
+                Continue Demo
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={() => window.location.reload()} 
+                className="text-xs bg-red-600 hover:bg-red-700"
+              >
+                Retry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const renderWelcomeScreen = () => (
+    <>
+      {renderHeroSection()}
+      {renderMainSections()}
+      {renderBusinessSection()}
+      
+      {/* Dev Tools - Only show in development */}
+      {isDev && (
+        <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm mb-8">
+          <CardHeader>
+            <CardTitle className="text-mycora-earth text-sm">🛠️ Development Tools</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-4 gap-3">
+              <a href="/dev-tools" className="text-xs p-2 border border-mycora-sage/20 rounded hover:bg-mycora-earth/10 transition-colors">
+                Dev Tools
+              </a>
+              <a href="/admin" className="text-xs p-2 border border-mycora-sage/20 rounded hover:bg-mycora-earth/10 transition-colors">
+                Admin Dashboard
+              </a>
+              <a href="/networks" className="text-xs p-2 border border-mycora-sage/20 rounded hover:bg-mycora-earth/10 transition-colors">
+                Networks
+              </a>
+              <a href="/investors" className="text-xs p-2 border border-mycora-sage/20 rounded hover:bg-mycora-earth/10 transition-colors">
+                Investors
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </>
   )
 
   const renderUserTypeSelection = () => (
@@ -255,7 +413,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <p className="text-mycora-sage text-center mb-4">
-              Personal investment and token management with streamlined compliance for individual users.
+              Personal rewards and payments with streamlined verification.
             </p>
             <div className="flex justify-center">
               <ComplianceBadge status="basic" />
@@ -275,7 +433,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <p className="text-mycora-sage text-center mb-4">
-              Enterprise-grade token operations with advanced compliance, reporting, and management tools.
+              Enterprise-grade loyalty programs with advanced management tools.
             </p>
             <div className="flex justify-center">
               <ComplianceBadge status="enhanced" />
@@ -286,136 +444,12 @@ export default function Page() {
     </div>
   )
 
-  const renderEnvironmentStatus = () => {
-    if (envStatus === "loading") {
-      return (
-        <Card className="bg-yellow-50 border-yellow-200 mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mycora-sage"></div>
-              <span className="text-mycora-earth">Initializing MyCora platform...</span>
-            </div>
-          </CardContent>
-        </Card>
-      )
-    }
-
-    if (envStatus === "missing") {
-      const criticalVars = missingVars.filter((v) => v.includes("WALLETCONNECT") || v.includes("MCC_CONTRACT"))
-      const optionalVars = missingVars.filter((v) => !criticalVars.includes(v))
-
-      return (
-        <Card className="bg-red-50 border-red-200 mb-8">
-          <CardHeader>
-            <CardTitle className="text-red-800">⚠️ Deployment Configuration Required</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-red-700 mb-4">
-              Your MyCora deployment needs environment variables configured in Replit Secrets:</p>
-
-            {criticalVars.length > 0 && (
-              <div className="mb-4">
-                <p className="font-semibold text-red-800 mb-2">Critical (required for core functionality):</p>
-                <ul className="list-disc list-inside space-y-1 text-red-600 mb-2">
-                  {criticalVars.map((varName) => (
-                    <li key={varName}>
-                      <code className="bg-red-100 px-2 py-1 rounded text-xs">{varName}</code>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {optionalVars.length > 0 && (
-              <div className="mb-4">
-                <p className="font-semibold text-red-700 mb-2">Optional (enhanced features):</p>
-                <ul className="list-disc list-inside space-y-1 text-red-500 mb-2">
-                  {optionalVars.map((varName) => (
-                    <li key={varName}>
-                      <code className="bg-red-50 px-2 py-1 rounded text-xs">{varName}</code>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="bg-red-100 p-3 rounded-lg mb-4">
-              <p className="text-red-800 text-sm">
-                <strong>Fix:</strong> Go to Replit → Secrets (lock icon) → Add required environment variables.
-              </p>
-              <p className="text-red-600 text-xs mt-2">
-                Running on {process.env.REPLIT_DB_URL ? 'Replit' : 'Unknown platform'} - configure secrets accordingly.
-              </p>
-            </div>
-
-            <div className="flex space-x-3">
-              <Button
-                onClick={() => setEnvStatus("ready")}
-                variant="outline"
-                className="border-red-300 text-red-700 hover:bg-red-50"
-              >
-                Continue in Demo Mode
-              </Button>
-              <Button onClick={() => window.location.reload()} className="bg-red-600 hover:bg-red-700 text-white">
-                Retry After Configuration
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )
-    }
-
-    if (isPreview) {
-      return (
-        <Card className="bg-blue-50 border-blue-200 mb-8">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Badge variant="outline" className="border-blue-300 text-blue-700">
-                  Preview Mode
-                </Badge>
-                <span className="text-blue-700 text-sm">Using mock contracts for demonstration</span>
-              </div>
-              <div className="text-xs text-blue-600">
-                {Object.entries(mockContracts).map(([key, contract]) => (
-                  <div key={key}>
-                    {contract.name}: {contract.address}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )
-    }
-
-    return (
-      <Card className="bg-green-50 border-green-200 mb-8">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="border-green-300 text-green-700">
-              ✅ Production Ready
-            </Badge>
-            <span className="text-green-700 text-sm">All environment variables configured</span>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   const renderUserDashboard = () => (
     <div className="max-w-7xl mx-auto space-y-8">
-      {renderEnvironmentStatus()}
-
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-mycora-earth">Your MyCora Dashboard</h2>
           <p className="text-mycora-sage">Manage your tokens, compliance, and network connections</p>
-          {isPreview && (
-            <Badge variant="outline" className="mt-2 border-blue-300 text-blue-700">
-              Demo Mode - Mock Data
-            </Badge>
-          )}
         </div>
         <div className="flex items-center space-x-4">
           <TrustIndicator level="verified" />
@@ -425,7 +459,6 @@ export default function Page() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Wallet & Token Management */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="bg-mycora-earth/5 border-mycora-sage/20">
             <CardHeader>
@@ -439,14 +472,8 @@ export default function Page() {
                 </Suspense>
               ) : (
                 <div className="p-6 border-2 border-dashed border-mycora-sage/30 rounded-lg text-center">
-                  <p className="text-mycora-sage mb-4">
-                    {isPreview
-                      ? "Wallet connection available in production mode"
-                      : "Configure environment variables to enable wallet connection"}
-                  </p>
-                  <Button variant="outline" disabled>
-                    Connect Wallet (Disabled)
-                  </Button>
+                  <p className="text-mycora-sage mb-4">Wallet connection available with full configuration</p>
+                  <Button variant="outline" disabled>Connect Wallet (Demo)</Button>
                 </div>
               )}
             </CardContent>
@@ -470,7 +497,6 @@ export default function Page() {
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
           <Card className="bg-mycora-earth/5 border-mycora-sage/20">
             <CardHeader>
@@ -515,8 +541,16 @@ export default function Page() {
     </div>
   )
 
+  // Show dev panel if environment issues detected
+  useEffect(() => {
+    if (isDev && envStatus === "missing") {
+      setShowDevPanel(true)
+    }
+  }, [envStatus, isDev])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-mycora-earth/5 to-mycora-sage/5 relative overflow-hidden">
+      {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <svg className="w-full h-full" viewBox="0 0 1200 800">
           <defs>
@@ -550,15 +584,9 @@ export default function Page() {
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
-        {currentStep === "welcome" && (
-          <>
-            {renderEnvironmentStatus()}
-            {renderWelcomeScreen()}
-          </>
-        )}
-
+        {currentStep === "welcome" && renderWelcomeScreen()}
         {currentStep === "userType" && renderUserTypeSelection()}
-
+        
         {currentStep === "security" && userSession && (
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
@@ -577,7 +605,7 @@ export default function Page() {
         {currentStep === "kyc" && (
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-mycora-earth mb-4">Identity Verification</h2>
-            <p className="text-mycora-sage mb-8">Complete KYC verification to unlock full platform features</p>
+            <p className="text-mycora-sage mb-8">Complete verification to unlock full PuffPass rewards</p>
             <Card className="bg-mycora-earth/5 border-mycora-sage/20">
               <CardContent className="p-8">
                 <div className="space-y-6">
@@ -597,7 +625,7 @@ export default function Page() {
                       disabled={!userEmail}
                       className="w-full bg-mycora-sage hover:bg-mycora-moss"
                     >
-                      Complete KYC Verification
+                      Verify & Unlock Rewards
                     </Button>
                   </div>
                   <p className="text-sm text-mycora-sage">
@@ -610,73 +638,9 @@ export default function Page() {
         )}
 
         {currentStep === "dashboard" && renderUserDashboard()}
-
-        {process.env.NODE_ENV === "development" && currentStep === "welcome" && (
-          <Card className="bg-mycora-earth/5 border-mycora-sage/20 backdrop-blur-sm mb-16">
-            <CardHeader>
-              <CardTitle className="text-mycora-earth">🛠️ Development Network</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-mycora-sage mb-6">
-                Access development tools and testing utilities for the MyCora platform.
-              </p>
-              <div className="grid md:grid-cols-3 gap-4">
-                <a
-                  href="/dev-tools"
-                  className="block p-4 border border-mycora-sage/20 rounded-lg hover:border-mycora-sage hover:bg-mycora-earth/10 transition-all duration-300 group"
-                >
-                  <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Dev Tools</div>
-                  <div className="text-sm text-mycora-sage">Development utilities</div>
-                </a>
-                <a
-                  href="/admin"
-                  className="block p-4 border border-mycora-sage/20 rounded-lg hover:border-mycora-sage hover:bg-mycora-earth/10 transition-all duration-300 group"
-                >
-                  <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Admin Dashboard</div>
-                  <div className="text-sm text-mycora-sage">Platform management</div>
-                </a>
-                <div className="p-4 border border-mycora-sage/20 rounded-lg bg-mycora-earth/5">
-                  <div className="font-semibold text-mycora-earth">API Testing</div>
-                  <div className="text-sm text-mycora-sage">Endpoint validation</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {currentStep === "welcome" && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <a
-              href="/networks"
-              className="block p-6 bg-mycora-earth/5 border border-mycora-sage/20 rounded-lg hover:bg-mycora-earth/10 hover:border-mycora-sage transition-all duration-300 group backdrop-blur-sm"
-            >
-              <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Networks</div>
-              <div className="text-sm text-mycora-sage">Blockchain networks</div>
-            </a>
-            <a
-              href="/investors"
-              className="block p-6 bg-mycora-earth/5 border border-mycora-sage/20 rounded-lg hover:bg-mycora-earth/10 hover:border-mycora-sage transition-all duration-300 group backdrop-blur-sm"
-            >
-              <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Investors</div>
-              <div className="text-sm text-mycora-sage">Investment management</div>
-            </a>
-            <a
-              href="/admin"
-              className="block p-6 bg-mycora-earth/5 border border-mycora-sage/20 rounded-lg hover:bg-mycora-earth/10 hover:border-mycora-sage transition-all duration-300 group backdrop-blur-sm"
-            >
-              <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Admin</div>
-              <div className="text-sm text-mycora-sage">Platform administration</div>
-            </a>
-            <a
-              href="/onboarding"
-              className="block p-6 bg-mycora-earth/5 border border-mycora-sage/20 rounded-lg hover:bg-mycora-earth/10 hover:border-mycora-sage transition-all duration-300 group backdrop-blur-sm"
-            >
-              <div className="font-semibold text-mycora-earth group-hover:text-mycora-sage">Onboarding</div>
-              <div className="text-sm text-mycora-sage">Getting started guide</div>
-            </a>
-          </div>
-        )}
       </div>
+
+      {renderDevPanel()}
     </div>
   )
 }
