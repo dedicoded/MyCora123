@@ -1,30 +1,19 @@
 
 'use client'
 
-let Magic: any = null
-
-// Dynamically import magic-sdk only on client side
-if (typeof window !== 'undefined') {
-  import('magic-sdk').then((module) => {
-    Magic = module.Magic
-  }).catch(() => {
-    console.warn('magic-sdk not available')
-  })
-}
+import { Magic } from 'magic-sdk'
 
 export class MagicWalletService {
-  private magic: any = null
+  private magic: Magic | null = null
+  private isInitialized = false
 
   async initialize(apiKey: string) {
     if (typeof window === 'undefined') return null
+    if (this.isInitialized && this.magic) return this.magic
 
     try {
-      if (!Magic) {
-        const module = await import('magic-sdk')
-        Magic = module.Magic
-      }
-      
       this.magic = new Magic(apiKey)
+      this.isInitialized = true
       return this.magic
     } catch (error) {
       console.warn('Failed to initialize Magic SDK:', error)

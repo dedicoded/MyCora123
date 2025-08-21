@@ -33,6 +33,11 @@ export const validateMagicConfig = () => {
     console.warn('🎪 Get one at: https://magic.link/dashboard')
     return false
   }
+
+  if (magicConfig.publishableKey.startsWith('pk_test_') && process.env.NODE_ENV === 'production') {
+    console.warn('🎪 Magic SDK: Using test key in production environment')
+    return false
+  }
   
   return true
 }
