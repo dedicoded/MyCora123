@@ -6,6 +6,15 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    esmExternals: "loose"
+  },
+  outputFileTracingIncludes: {
+    "/api/**": [
+      "./node_modules/@thirdweb-dev/**",
+      "./lib/**"
+    ]
+  },
   trailingSlash: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -15,9 +24,6 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-  },
-  outputFileTracingIncludes: {
-    '/': ['./public/**/*'],
   },
   // Replit optimized configuration
   serverRuntimeConfig: {
