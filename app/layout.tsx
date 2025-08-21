@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { EnvStatus } from '@/components/ui/env-status'
-import { ChunkErrorRecovery } from '@/components/ChunkErrorRecovery'
+import dynamic from 'next/dynamic'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
   description: "Secure, compliant blockchain infrastructure for real-world adoption",
 }
+
+const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error-recovery'), {
+  ssr: false
+})
 
 export default function RootLayout({
   children,
