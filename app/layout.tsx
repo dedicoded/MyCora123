@@ -1,10 +1,9 @@
-
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { EnvStatus } from '@/components/ui/env-status'
-import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
+import { ChunkErrorRecovery } from '@/components/ChunkErrorRecovery'
 
 const inter = Inter({ subsets: ['latin'] })
 

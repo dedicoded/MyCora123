@@ -9,6 +9,12 @@ import { config } from "../components/WalletConnect"
 
 const queryClient = new QueryClient()
 
+// Ensure config is available before using it
+const validateConfig = () => {
+  if (typeof window === 'undefined') return null // Server-side
+  return config // Client-side
+}
+
 function EnvironmentValidator() {
   useEffect(() => {
     // Only run client-side after hydration
@@ -34,9 +40,33 @@ function EnvironmentValidator() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false)
+  
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  if (!mounted) {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <div>Loading wallet configuration...</div>
+      </ThemeProvider>
+    )
+  }
+  
+  const validConfig = validateConfig()
+  
+  if (!validConfig) {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <div>Error: Wallet configuration not available</div>
+      </ThemeProvider>
+    )
+  }
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <WagmiProvider config={config}>
+      <WagmiProvider config={validConfig}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             <EnvironmentValidator />

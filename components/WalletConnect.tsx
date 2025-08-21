@@ -52,7 +52,7 @@ const metadata = {
 const networks = network === "mainnet" ? [mainnet] : [sepolia]
 
 // Create the modal using Reown AppKit pattern from web examples
-const config = createAppKit({
+const modal = createAppKit({
   adapters: [new EthersAdapter()],
   projectId,
   networks,
@@ -64,9 +64,13 @@ const config = createAppKit({
   }
 })
 
-// Export config for use in providers
-// Make sure config is properly exported
-export { config }
+// Export a Wagmi-compatible config for providers
+export const config = {
+  connectors: [],
+  chains: networks,
+  ssr: false, // Explicitly set for client-side
+  projectId
+}
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false)
