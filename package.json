@@ -18,7 +18,7 @@
     "deployment:status": "cat DEPLOYMENT_STATUS_TRACKER.md",
     "detect-port": "node scripts/port-check.js",
     "predev": "node scripts/env-check.js",
-    "dev": "next dev",
+    "dev": "next dev -p 5000 -H 0.0.0.0",
     "dev:clean": "pkill -f 'next dev' || true && fuser -k 3000/tcp 2>/dev/null || true && rm -rf .next && pnpm store prune && pnpm run dev",
     "dev:auto": "node scripts/port-check.js && pnpm run dev",
     "lint": "next lint",
