@@ -8,10 +8,14 @@ interface ChunkErrorRecoveryProps {
   children: ReactNode
 }
 
-export default function ClientChunkErrorRecovery({ children }: ChunkErrorRecoveryProps) {
+function ClientChunkErrorRecovery({ children }: ChunkErrorRecoveryProps) {
   return (
     <ChunkErrorRecovery>
       {children}
     </ChunkErrorRecovery>
   )
 }
+
+// Export both named and default to handle any import style
+export { ClientChunkErrorRecovery }
+export default ClientChunkErrorRecovery

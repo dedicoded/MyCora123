@@ -40,7 +40,8 @@
     "audit:dev": "pnpm audit --audit-level=high && pnpm run perf:audit",
     "audit:production": "echo 'Production audit skipped for faster deployment'",
     "deploy:replit": "pnpm run build && pnpm start",
-    "sync:replit": "node scripts/sync-env-to-replit.js"
+    "sync:replit": "node scripts/sync-env-to-replit.js",
+    "diagnose": "node scripts/component-diagnostic.js"
   },
   "dependencies": {
     "@biconomy/mexa": "latest",
