@@ -1,0 +1,76 @@
+Console Error
+
+Cannot update a component (`ConnectModal`) while rendering a different component (`Hydrate`). To locate the bad setState() call inside `Hydrate`, follow the stack trace as described in https://react.dev/link/setstate-in-render
+
+app/providers.tsx (67:7) @ ProvidersComponent
+
+
+  65 |   return (
+  66 |     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+> 67 |       <WagmiProvider config={validConfig || config}>
+     |       ^
+  68 |         <QueryClientProvider client={queryClient}>
+  69 |           <RainbowKitProvider>
+  70 |             <ClientErrorBoundary>
+Call Stack
+29
+
+Hide 27 ignore-listed frame(s)
+createConsoleError
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/shared/console-error.js (26:1)
+handleConsoleError
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/userspace/app/errors/use-error-handler.js (50:1)
+console.error
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js (55:1)
+scheduleUpdateOnFiber
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (14951:1)
+forceStoreRerender
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (7390:1)
+eval
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (7375:1)
+listener
+node_modules/.pnpm/zustand@5.0.0_@types+react@18.3.23_immer@10.0.2_react@18.3.1_use-sync-external-store@1.4.0_react@18.3.1_/node_modules/zustand/esm/middleware.mjs (227:1)
+eval
+node_modules/.pnpm/zustand@5.0.0_@types+react@18.3.23_immer@10.0.2_react@18.3.1_use-sync-external-store@1.4.0_react@18.3.1_/node_modules/zustand/esm/vanilla.mjs (9:1)
+Set.forEach
+<anonymous>
+setState
+node_modules/.pnpm/zustand@5.0.0_@types+react@18.3.23_immer@10.0.2_react@18.3.1_use-sync-external-store@1.4.0_react@18.3.1_/node_modules/zustand/esm/vanilla.mjs (9:1)
+api.setState
+node_modules/.pnpm/zustand@5.0.0_@types+react@18.3.23_immer@10.0.2_react@18.3.1_use-sync-external-store@1.4.0_react@18.3.1_/node_modules/zustand/esm/middleware.mjs (334:1)
+Object.setState
+node_modules/.pnpm/@wagmi+core@2.19.0_@tanstack+query-core@5.85.5_@types+react@18.3.23_immer@10.0.2_react@_90f39f40d8ccf8b244d11f9902dd047e/node_modules/@wagmi/core/dist/esm/createConfig.js (346:1)
+reconnect
+node_modules/.pnpm/@wagmi+core@2.19.0_@tanstack+query-core@5.85.5_@types+react@18.3.23_immer@10.0.2_react@_90f39f40d8ccf8b244d11f9902dd047e/node_modules/@wagmi/core/dist/esm/actions/reconnect.js (8:1)
+onMount
+node_modules/.pnpm/@wagmi+core@2.19.0_@tanstack+query-core@5.85.5_@types+react@18.3.23_immer@10.0.2_react@_90f39f40d8ccf8b244d11f9902dd047e/node_modules/@wagmi/core/dist/esm/hydrate.js (44:26)
+Hydrate
+../src/hydrate.ts (21:30)
+Object.react_stack_bottom_frame
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (23583:1)
+renderWithHooks
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (6792:1)
+updateFunctionComponent
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (9246:1)
+beginWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (10857:1)
+runWithFiberInDEV
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (871:1)
+performUnitOfWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15726:1)
+workLoopConcurrentByScheduler
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15720:1)
+renderRootConcurrent
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15695:1)
+performWorkOnRoot
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (14989:1)
+performWorkOnRootViaSchedulerTask
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (16815:1)
+MessagePort.performWorkUntilDeadline
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/scheduler/cjs/scheduler.development.js (45:1)
+WagmiProvider
+../src/context.ts (23:23)
+ProvidersComponent
+app/providers.tsx (67:7)
+RootLayout
+app/layout.tsx (25:13)

@@ -1,0 +1,47 @@
+A tree hydrated but some attributes of the server rendered HTML didn&#x27;t match the client properties. This won&#x27;t be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch &#x60;if (typeof window !== &#x27;undefined&#x27;)&#x60;.
+- Variable input such as &#x60;Date.now()&#x60; or &#x60;Math.random()&#x60; which changes each time it&#x27;s called.
+- Date formatting in a user&#x27;s locale which doesn&#x27;t match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload assetPrefix="" globalError={[...]}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="en"
+-                         className="dark"
+-                         style={{color-scheme:"dark"}}
+                        >
+                  ...
+
+[v0] ✅ All environment variables loaded successfully
+Magic wallet check failed: 
+TypeError {}
+[Fast Refresh] rebuilding
+Purchase failed: Invalid payment method
+[Fast Refresh] done in 8652ms
+Cannot update a component (&#x60;ConnectModal&#x60;) while rendering a different component (&#x60;Hydrate&#x60;). To locate the bad setState() call inside &#x60;Hydrate&#x60;, follow the stack trace as described in https://react.dev/link/setstate-in-render
+[ChunkError] Route replace detected, validating chunks
+Purchase failed: Invalid payment method
+[Fast Refresh] rebuilding
+[Fast Refresh] done in 3737ms
+[Fast Refresh] done in 6163ms
+[ChunkError] Route replace detected, validating chunks
