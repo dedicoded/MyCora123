@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { EnvStatus } from '@/components/ui/env-status'
+import { ChunkErrorRecovery } from '@/components/client-chunk-error-recovery'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({
             <div className="fixed top-4 right-4 z-50">
               <EnvStatus />
             </div>
+            <ChunkErrorRecovery />
             {children}
           </div>
         </Providers>
