@@ -46,7 +46,7 @@ function EnvironmentValidator() {
   return null
 }
 
-export default function Providers({
+function ProvidersComponent({
   children,
 }: {
   children: React.ReactNode
@@ -78,3 +78,6 @@ export default function Providers({
     </ThemeProvider>
   )
 }
+
+export default ProvidersComponent
+export { ProvidersComponent as Providers }

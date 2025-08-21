@@ -21,9 +21,10 @@ const nextConfig = {
   // Reduce bundle size
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
-    serverComponentsExternalPackages: ['sharp']
+    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query']
   },
+  
+  serverExternalPackages: ['sharp'],
 
   async headers() {
     return [
@@ -180,8 +181,7 @@ const nextConfig = {
 
     return config
   },
-  transpilePackages: ['magic-sdk'],
-  output: 'standalone'
+  transpilePackages: ['magic-sdk']
 }
 
 export default bundleAnalyzer(nextConfig);
