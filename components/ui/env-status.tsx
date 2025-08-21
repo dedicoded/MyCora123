@@ -46,10 +46,17 @@ export function EnvStatus() {
 
       const isReady = missing.length === 0 && placeholders.length === 0
 
+      // Detect hosting platform
+      const isReplit = typeof window !== 'undefined' && (
+        window.location.hostname.includes('replit') || 
+        process.env.REPLIT_DB_URL ||
+        process.env.REPL_ID
+      )
+
       // Log status for debugging
       console.log('[v0] Environment status:', {
         envStatus: isReady ? 'ready' : 'missing',
-        isPreview: typeof window !== 'undefined' && window.location.hostname.includes('replit'),
+        platform: isReplit ? 'replit' : 'other',
         missingRequired: missing,
         missingOptional: placeholders
       })
@@ -104,7 +111,7 @@ export function EnvStatus() {
                   <div>Placeholders: {status.placeholders.join(', ')}</div>
                 )}
                 <div className="text-blue-400 mt-2">
-                  💡 Fix: Add real values in Replit Secrets
+                  💡 Fix: Click the lock icon (🔒) in Replit sidebar → Add secrets
                 </div>
               </div>
             </details>

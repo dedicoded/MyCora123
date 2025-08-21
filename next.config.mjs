@@ -1,4 +1,3 @@
-
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const bundleAnalyzer = withBundleAnalyzer({
@@ -18,13 +17,17 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    serverComponentsExternalPackages: ['fs'],
+    outputFileTracingIncludes: {
+      '/': ['./public/**/*'],
+    },
     esmExternals: 'loose',
   },
-  // Replit optimization
-  output: 'standalone',
-  env: {
-    WEB3_STORAGE_TOKEN: process.env.WEB3_STORAGE_TOKEN,
+  // Replit optimized configuration
+  serverRuntimeConfig: {
+    PROJECT_ROOT: __dirname
+  },
+  publicRuntimeConfig: {
+    staticFolder: '/public',
   },
   // Replit-specific settings
   assetPrefix: process.env.NODE_ENV === 'production' ? process.env.REPLIT_APP_URL : '',
@@ -32,7 +35,7 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
-  
+
   // Cache control headers
   async headers() {
     return [
@@ -76,7 +79,7 @@ const nextConfig = {
 
       // Ignore Node.js modules in client bundle
       config.plugins = config.plugins || []
-      
+
       // Add ignore plugin synchronously
       if (typeof config.plugins === 'undefined') {
         config.plugins = []

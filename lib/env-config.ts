@@ -21,10 +21,13 @@ export const envConfig = {
 
   // Environment
   nodeEnv: process.env.NODE_ENV || "development",
+  isReplit: Boolean(process.env.REPL_ID || process.env.REPLIT_DB_URL),
+  replId: process.env.REPL_ID,
 
   // Helper functions
   isProduction: () => process.env.NODE_ENV === "production",
   isDevelopment: () => process.env.NODE_ENV === "development",
+  isReplitEnvironment: () => Boolean(process.env.REPL_ID || process.env.REPLIT_DB_URL),
 
   validateRequired: () => {
     const requiredContracts = [
@@ -51,6 +54,10 @@ export const envConfig = {
       missing.forEach(({ key, purpose }) => {
         console.error(`   - ${key} (needed for ${purpose})`)
       })
+      console.error(`\n💡 Add these to Replit Secrets:`)
+      console.error(`   1. Click the lock icon (🔒) in your Replit sidebar`)
+      console.error(`   2. Add each missing variable as a new secret`)
+      console.error(`   3. Restart your development server`)
     }
 
     if (placeholders.length > 0) {
@@ -58,6 +65,7 @@ export const envConfig = {
       placeholders.forEach(({ key, purpose }) => {
         console.error(`   - ${key} contains placeholder address (needed for ${purpose})`)
       })
+      console.error(`\n💡 Deploy contracts first: npm run deploy:sepolia`)
     }
 
     return missing.length === 0 && placeholders.length === 0

@@ -282,8 +282,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <p className="text-red-700 mb-4">
-              Your MyCora deployment needs environment variables configured in Vercel:
-            </p>
+              Your MyCora deployment needs environment variables configured in Replit Secrets:</p>
 
             {criticalVars.length > 0 && (
               <div className="mb-4">
@@ -313,7 +312,7 @@ export default function Page() {
 
             <div className="bg-red-100 p-3 rounded-lg mb-4">
               <p className="text-red-800 text-sm">
-                <strong>Fix:</strong> Go to Vercel Dashboard → Project Settings → Environment Variables
+                <strong>Fix:</strong> Go to Replit Secrets configuration.
               </p>
             </div>
 

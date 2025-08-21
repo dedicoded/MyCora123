@@ -44,20 +44,55 @@ class DeploymentVerifier {
 
     const requiredVars = [
       "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
-      "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS",
+      "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS", 
       "NEXT_PUBLIC_NETWORK",
     ]
 
     const optionalVars = [
       "TRUST_TOKEN_ADDRESS",
-      "SECURITY_TOKEN_ADDRESS",
+      "SECURITY_TOKEN_ADDRESS", 
       "UTILITY_TOKEN_ADDRESS",
       "BICONOMY_API_KEY",
       "CYBRID_API_KEY",
+      "REPL_ID",
+      "REPLIT_DB_URL"
     ]
 
     let missingRequired = 0
     let missingOptional = 0
+
+    // Check required variables
+    requiredVars.forEach(varName => {
+      if (!process.env[varName]) {
+        this.log("error", `Missing required variable: ${varName}`)
+        missingRequired++
+      } else {
+        this.log("info", `Found required variable: ${varName}`)
+      }
+    })
+
+    // Check optional variables
+    optionalVars.forEach(varName => {
+      if (!process.env[varName]) {
+        this.log("warning", `Missing optional variable: ${varName}`)
+        missingOptional++
+      } else {
+        this.log("info", `Found optional variable: ${varName}`)
+      }
+    })
+
+    // Platform detection
+    const isReplit = process.env.REPL_ID || process.env.REPLIT_DB_URL
+    if (isReplit) {
+      this.log("info", "Running on Replit platform")
+    }
+
+    if (missingRequired > 0) {
+      this.log("error", `${missingRequired} required environment variables are missing`)
+      this.log("error", "Add missing variables to Replit Secrets (click lock icon in sidebar)")
+    }
+
+    return missingRequired === 0tional = 0
 
     requiredVars.forEach((varName) => {
       if (!process.env[varName]) {

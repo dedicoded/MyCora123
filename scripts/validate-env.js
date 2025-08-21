@@ -44,7 +44,7 @@ class EnvironmentValidator {
     return {
       ETHERSCAN_API_KEY: "For contract verification",
       POLYGONSCAN_API_KEY: "For Polygon contract verification",
-      VERCEL_TOKEN: "For automated deployment sync",
+      REPLIT_DB_URL: "For Replit database integration (auto-provided)",
       COMPLIANCE_REGISTRY_API_KEY: "For enhanced compliance features",
     }
   }
@@ -216,7 +216,7 @@ class EnvironmentValidator {
     if (this.warnings.length > 0) {
       console.log("3. Address warnings for production readiness")
     }
-    console.log("4. Run deployment validation: npm run validate:deployment")
+    console.log("4. Deploy on Replit: Your app will auto-deploy when you save changes")
   }
 }
 

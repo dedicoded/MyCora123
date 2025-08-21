@@ -72,4 +72,11 @@ if (missingRequired.length > 0) {
   console.log('\n');
 }
 
-console.log('📚 For more help: https://docs.replit.com/programming-ide/workspace-features/secrets');
+console.log('📚 For more information:');
+console.log('   🔗 Replit Secrets: https://docs.replit.com/hosting/deployments/secrets');
+console.log('   🔗 WalletConnect Setup: https://cloud.reown.com/');
+console.log('\n💡 Pro Tips:');
+console.log('   • Replit Secrets are automatically injected into your environment');
+console.log('   • No need to restart - changes apply immediately');
+console.log('   • Secrets are shared across all collaborators');
+console.log('   • Production deployments use the same secrets automatically'); more help: https://docs.replit.com/programming-ide/workspace-features/secrets');
