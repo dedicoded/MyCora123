@@ -1,83 +1,102 @@
-
-"use client"
-
-import React, { useEffect } from "react"
-import { WagmiProvider } from "wagmi"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { ThemeProvider } from '@/components/theme-provider'
-import ClientErrorBoundary from '@/components/client-error-boundary'
-import { config } from "../components/WalletConnect"
-import ChunkErrorRecovery from '@/components/client-chunk-error-recovery'
+'use client'
 
 import '@rainbow-me/rainbowkit/styles.css'
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { WagmiProvider } from 'wagmi'
+import { sepolia, polygon } from 'wagmi/chains'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { ThemeProvider } from './theme-provider'
+import { ChunkErrorRecoveryWrapper } from '../components/ChunkErrorRecoveryWrapper'
+import { ClientErrorBoundary } from '../components/client-error-boundary'
+import { useEffect, useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 })
 
-function EnvironmentValidator() {
-  useEffect(() => {
-    // Only run client-side after hydration
-    if (typeof window === 'undefined') return
-
-    const requiredVars = [
-      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-      process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
-      process.env.NEXT_PUBLIC_NETWORK
-    ]
-
-    const missing = requiredVars.filter(value => {
-      return !value || value === '' || value === 'undefined' || value === 'your_project_id_here'
-    })
-
-    if (missing.length > 0 && process.env.NODE_ENV === 'development') {
-      console.warn('[v0] Missing critical environment variables:', missing.length, 'variables')
-    } else {
-      console.log('[v0] ✅ All environment variables loaded successfully')
-    }
-  }, [])
-
-  return null
+// Create a stable config that won't change during hydration
+const getStableConfig = () => {
+  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'fallback-project-id'
+  return getDefaultConfig({
+    appName: 'MyCora',
+    projectId,
+    chains: [sepolia, polygon],
+    ssr: true,
+  })
 }
 
-function ProvidersComponent({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  // Validate config availability
-  const validConfig = typeof window !== 'undefined' ? config : null
+const config = getStableConfig()
 
-  if (typeof window !== 'undefined' && !validConfig) {
+// Dynamic wrapper to prevent hydration issues with WalletConnect
+const WalletProviderWrapper = dynamic(
+  () => Promise.resolve(({ children }: { children: React.ReactNode }) => (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          {children}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  )),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse">Loading wallet...</div>
+      </div>
+    )
+  }
+)
+
+function HydrationBoundary({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  if (!isHydrated) {
     return (
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <div className="p-4 text-red-600">Error: Wallet configuration not available</div>
-      </ThemeProvider>
+      <div className="min-h-screen bg-background">
+        {children}
+      </div>
     )
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <WagmiProvider config={validConfig || config}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            <ClientErrorBoundary>
-              <EnvironmentValidator />
-              {children}
-              <ChunkErrorRecovery />
-            </ClientErrorBoundary>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </ThemeProvider>
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse">Initializing...</div>
+      </div>
+    }>
+      <WalletProviderWrapper>
+        <ClientErrorBoundary>
+          <ChunkErrorRecoveryWrapper>
+            {children}
+          </ChunkErrorRecoveryWrapper>
+        </ClientErrorBoundary>
+      </WalletProviderWrapper>
+    </Suspense>
   )
 }
 
-export default ProvidersComponent
-export { ProvidersComponent as Providers }
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider 
+      attribute="class" 
+      defaultTheme="system" 
+      enableSystem
+      disableTransitionOnChange
+    >
+      <HydrationBoundary>
+        {children}
+      </HydrationBoundary>
+    </ThemeProvider>
+  )
+}

@@ -15,7 +15,9 @@ const nextConfig = {
   // Reduce bundle size
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query']
+    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
+    // Disable strict mode in production to prevent hydration issues
+    reactStrictMode: process.env.NODE_ENV !== 'production'
   },
   
   serverExternalPackages: ['sharp'],
