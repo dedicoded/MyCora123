@@ -1,0 +1,58 @@
+ Lazy Component Error in <ClientErrorBoundary>
+The error:
+"Element type is invalid. Received a promise that resolves to: [object Module]. Lazy element type must resolve to a class or function."
+
+This means you're likely importing ClientErrorBoundary (or another component inside Providers) using React.lazy() or dynamic import() — but the import isn't returning the actual component function.
+✅ Fix: Ensure Proper Default Export
+If you're doing:
+const ClientErrorBoundary = React.lazy(() => import('./ClientErrorBoundary'));
+
+
+Then ClientErrorBoundary.tsx must export like this:
+export default function ClientErrorBoundary() { ... }
+
+
+If it uses a named export:
+export function ClientErrorBoundary() { ... }
+
+
+Then change the lazy import to:
+const ClientErrorBoundary = React.lazy(() =>
+  import('./ClientErrorBoundary').then(mod => ({ default: mod.ClientErrorBoundary }))
+);
+
+
+Or better yet — avoid lazy loading inside app/providers.tsx unless absolutely necessary. Providers are foundational and should be loaded eagerly to avoid hydration mismatches.
+
+🌱 2. Environment Variable Warnings
+You're seeing:
+Missing critical environment variables:
+["NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID", "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS", "NEXT_PUBLIC_NETWORK"]
+
+
+But later:
+Actual env values:
+{walletConnect: "FOUND", contract: "FOUND", network: "FOUND"}
+
+
+This contradiction suggests your environment check logic is running before the variables are properly loaded — or you're checking them in both server and client contexts inconsistently.
+✅ Fix: Sanitize Your Env Check
+In your EnvironmentValidator or wherever you're doing the check, make sure you're accessing process.env.NEXT_PUBLIC_* only in the client or build-time context.
+Example:
+const requiredVars = [
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
+  process.env.NEXT_PUBLIC_NETWORK,
+];
+
+const missing = requiredVars.filter(v => !v);
+
+
+Also, ensure .env.local is present and loaded correctly. If you're on Replit, double-check your secrets panel — they must be prefixed with NEXT_PUBLIC_ to be exposed to the client.
+
+🧼 Final Cleanup Suggestions
+- Avoid lazy loading inside Providers.tsx unless you're wrapping it in a <Suspense> boundary and you're sure the component is client-only.
+- Move environment validation to a separate utility and run it once during startup or inside a dev-only banner.
+- Use console.warn instead of throwing errors for missing envs in development — this avoids crashing the app unnecessarily.
+
+If you want to drop in your Providers.tsx or ClientErrorBoundary.tsx, I can help you refactor it for better SSR compatibility and cleaner startup.
