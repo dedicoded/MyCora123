@@ -7,14 +7,20 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    allowedDevOrigins: [
-      '.replit.dev',
-      'replit.dev'
-    ]
+    // Remove invalid allowedDevOrigins option
   },
 
   async headers() {
     return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
@@ -25,6 +31,10 @@ const nextConfig = {
           {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'credentialless'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
           }
         ]
       }
@@ -61,29 +71,7 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
 
-  // Cache control headers
-  async headers() {
-    return [
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
-          },
-        ],
-      },
-    ]
-  },
+  // Cache control headers combined with COOP headers above
 
   webpack: (config, { isServer, dev }) => {
     if (!isServer) {
