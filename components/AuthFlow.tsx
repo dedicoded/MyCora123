@@ -9,6 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { auth } from '@/lib/supabase'
+import { Magic } from 'magic-sdk'
+
+// Initialize Magic with your publishable key
+const magic = typeof window !== 'undefined' ? new Magic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY || '') : null
 
 export default function AuthFlow() {
   const [email, setEmail] = useState('')
@@ -73,13 +77,64 @@ export default function AuthFlow() {
     }
   }
 
+  const handleMagicAuth = async () => {
+    if (!magic) {
+      setMessage('Magic SDK not initialized')
+      return
+    }
+
+    setLoading(true)
+    setMessage('')
+
+    try {
+      // Magic creates embedded wallet + handles auth
+      const didToken = await magic.auth.loginWithMagicLink({ email })
+      
+      if (didToken) {
+        // Get user's embedded wallet address
+        const userMetadata = await magic.user.getInfo()
+        const walletAddress = userMetadata.publicAddress
+        
+        setMessage(`✨ Magic wallet created! Address: ${walletAddress?.slice(0, 6)}...${walletAddress?.slice(-4)}`)
+        
+        // Store wallet info for PuffPass integration
+        localStorage.setItem('magicWalletAddress', walletAddress || '')
+        localStorage.setItem('userEmail', email)
+        
+        router.push('/dashboard')
+      }
+    } catch (error: any) {
+      setMessage(error.message || 'Magic authentication failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const checkMagicSession = async () => {
+    if (!magic) return
+    
+    try {
+      const isLoggedIn = await magic.user.isLoggedIn()
+      if (isLoggedIn) {
+        const userInfo = await magic.user.getInfo()
+        console.log('🎪 Active Magic session:', userInfo.publicAddress)
+      }
+    } catch (error) {
+      console.log('No active Magic session')
+    }
+  }
+
+  useEffect(() => {
+    checkMagicSession()
+  }, [])
+
   return (
     <div className="max-w-md mx-auto mt-8">
       <Card>
         <CardHeader>
           <CardTitle>Welcome to MyCora</CardTitle>
           <CardDescription>
-            Sign in to access your Web3 payment platform
+            🌿 Sign in to your cannabis payment platform - choose Web3 wallet or instant embedded wallet
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -147,12 +202,27 @@ export default function AuthFlow() {
                   </Button>
                 </form>
 
-                {/* Magic Link */}
+                {/* Magic Wallet (Instant Web3) */}
+                <div className="space-y-2">
+                  <Button 
+                    onClick={handleMagicAuth} 
+                    disabled={loading || !email}
+                    variant="secondary" 
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                  >
+                    ✨ Create Instant Web3 Wallet
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    🌿 Perfect for cannabis payments - no extensions needed
+                  </p>
+                </div>
+
+                {/* Traditional Magic Link */}
                 <div className="space-y-2">
                   <Button 
                     onClick={handleMagicLink} 
                     disabled={loading || !email}
-                    variant="secondary" 
+                    variant="outline" 
                     className="w-full"
                   >
                     Send Magic Link

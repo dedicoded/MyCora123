@@ -1,4 +1,3 @@
-
 import { type NextRequest, NextResponse } from "next/server"
 
 interface OnRampRequest {
@@ -6,6 +5,8 @@ interface OnRampRequest {
   paymentMethod: "credit" | "debit" | "apple_pay" | "google_pay" | "bank_transfer"
   email: string
   userId?: string
+  provider?: string
+  walletAddress?: string
 }
 
 const paymentMethodFees = {
@@ -18,7 +19,8 @@ const paymentMethodFees = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, paymentMethod, email, userId } = await request.json() as OnRampRequest
+    const body = await request.json() as OnRampRequest
+    const { amount, paymentMethod, email, userId } = body
 
     // Validate input
     if (!amount || amount < 5 || amount > 500) {
@@ -50,7 +52,19 @@ export async function POST(request: NextRequest) {
 
     // Create transaction record
     const transactionId = `onramp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+  const provider = body.provider || 'traditional'
+
+  console.log('[v0] Fiat on-ramp transaction:', {
+    transactionId,
+    amount: `$${amount}`,
+    fee: `$${platformFee.toFixed(2)} (${Math.round(feePercentage)}%)`,
+    points: `${puffPassPoints} PuffPass points`,
+    paymentMethod,
+    email,
+    provider,
+    walletAddress: body.walletAddress || 'N/A'
+  })
+
     const transaction = {
       id: transactionId,
       type: "fiat_onramp",
@@ -86,20 +100,29 @@ export async function POST(request: NextRequest) {
     // 3. Send confirmation email
     // 4. Log to compliance system
 
-    return NextResponse.json({
-      success: true,
-      transaction,
-      message: `Successfully loaded ${puffPassPoints} PuffPass points to your account!`,
-      receipt: {
-        transactionId,
-        purchaseAmount: `$${amount.toFixed(2)}`,
-        platformFee: `$${platformFee.toFixed(2)}`,
-        pointsReceived: puffPassPoints,
-        paymentMethod: paymentMethod.replace('_', ' ').toUpperCase(),
-        timestamp: transaction.timestamp,
-        closedLoopNotice: "Points are non-withdrawable and redeemable only within MyCora cannabis network"
-      }
-    })
+    // Enhanced response for Magic wallets
+  const response: any = {
+    success: true,
+    transactionId,
+    purchasedPoints: puffPassPoints,
+    feeCharged: platformFee,
+    paymentMethod,
+    message: `Successfully purchased ${puffPassPoints} PuffPass points! 🌿`,
+
+    // Cannabis-themed confirmation
+    cannabisMessage: "Your PuffPass is now loaded and ready for cannabis purchases! 💚"
+  }
+
+  // Add Magic wallet specific info
+  if (provider === 'magic' && body.walletAddress) {
+    response.magicWallet = {
+      address: body.walletAddress,
+      embedded: true,
+      message: "✨ Points added to your embedded wallet - no extensions needed!"
+    }
+  }
+
+  return NextResponse.json(response)
 
   } catch (error) {
     console.error("[v0] Fiat on-ramp error:", error)

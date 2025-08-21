@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -9,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { OrganicCard, OrganicCardContent, OrganicCardHeader, OrganicCardTitle } from "@/components/ui/organic-card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useState, useEffect } from 'react'
+import { magicWallet } from '@/lib/magic-wallet'
 
 interface FiatOnRampProps {
   onPurchase?: (data: PurchaseData) => void
@@ -70,38 +71,67 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
   const [email, setEmail] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [transactionId, setTransactionId] = React.useState("")
+  const [magicWalletInfo, setMagicWalletInfo] = useState<any>(null)
+
+  useEffect(() => {
+    const checkMagicWallet = async () => {
+      const walletInfo = await magicWallet.getWalletInfo()
+      if (walletInfo) {
+        setMagicWalletInfo(walletInfo)
+      }
+    }
+    checkMagicWallet()
+  }, [])
 
   const selectedMethod = paymentMethods.find(m => m.id === paymentMethod)
   const platformFee = selectedMethod ? (amount * selectedMethod.fee) / 100 : 0
   const grossPoints = amount * 100 // €1 = 100 points
   const netPoints = grossPoints - (platformFee * 100)
-  
-  const handlePurchase = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    
-    try {
-      const response = await fetch('/api/fiat-onramp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount,
-          paymentMethod,
-          email,
-        }),
-      })
 
-      const data = await response.json()
-      
-      if (data.success) {
-        setTransactionId(data.transaction.id)
+  const handlePurchase = async () => {
+    if (!amount) return
+
+    setIsLoading(true)
+    try {
+      let response
+
+      if (magicWalletInfo) {
+        // Use Magic wallet service for seamless experience
+        response = await magicWallet.purchasePuffPassPoints(
+          parseFloat(amount.toString()), // Ensure amount is a string for consistency if needed
+          paymentMethod
+        )
+      } else {
+        // Fallback to regular API
+        response = await fetch('/api/fiat-onramp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount,
+            paymentMethod,
+            email: 'paygarjoe@yahoo.com' // In production, get from auth
+          })
+        })
+        response = await response.json()
+      }
+
+      // Assuming response structure from magicWallet.purchasePuffPassPoints or fetch is similar
+      if (response.success || response.transaction?.id) {
+        setTransactionId(response.transaction?.id || 'N/A') // Handle potential missing transaction ID
         setStep(3)
         await onPurchase?.({
           amount,
           paymentMethod: paymentMethod as any,
           email,
         })
+      } else {
+        // Handle specific error scenarios if needed
+        console.error('Purchase failed:', response.error || 'Unknown error')
+        // Optionally set an error state to display to the user
       }
+    } catch (error) {
+      console.error('Purchase failed:', error)
+      // Optionally set an error state to display to the user
     } finally {
       setIsLoading(false)
     }
@@ -116,10 +146,15 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
             <div className="absolute top-4 left-1/4 w-16 h-16 bg-green-400/20 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute top-8 right-1/4 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
           </div>
-          
-          <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-600 via-green-500 to-yellow-500 bg-clip-text text-transparent">
-            💳 Add PuffPass Points
-          </h1>
+
+          <OrganicCardTitle className="text-[var(--color-glow)] flex items-center gap-2">
+            💳 Buy PuffPass Points
+            {magicWalletInfo && (
+              <span className="text-xs bg-purple-500/20 px-2 py-1 rounded-full">
+                ✨ Magic Wallet
+              </span>
+            )}
+          </OrganicCardTitle>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             Top up your PuffPass balance securely. Points are redeemable for perks and merchant credits.
           </p>
@@ -130,7 +165,7 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
           <OrganicCardContent className="p-6">
             <div className="space-y-4">
               <Label className="text-lg font-semibold text-center block">Choose Your Payment Method</Label>
-              
+
               <div className="grid grid-cols-1 gap-3">
                 {paymentMethods.map((method) => (
                   <button
@@ -193,11 +228,11 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
 
         <OrganicCard className="border-2 border-green-200 dark:border-green-800 shadow-lg">
           <OrganicCardContent className="p-6">
-            <form onSubmit={handlePurchase} className="space-y-6">
+            <form onSubmit={(e) => { e.preventDefault(); handlePurchase(); }} className="space-y-6">
               {/* Amount Selection */}
               <div className="space-y-4">
                 <Label className="text-lg font-semibold">Enter Amount</Label>
-                
+
                 {/* Preset amounts */}
                 <div className="grid grid-cols-4 gap-2">
                   {presetAmounts.map((preset) => (
@@ -260,7 +295,7 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
                     🌿 {Math.floor(netPoints).toLocaleString()} PuffPass Points
                   </div>
                 </div>
-                
+
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Purchase Amount:</span>
@@ -317,7 +352,7 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
               <div className="text-4xl animate-bounce">✅</div>
             </div>
           </div>
-          
+
           <h1 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
             Success!
           </h1>
@@ -336,7 +371,7 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
                   #{transactionId || 'PPX203948'}
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
                   <div className="font-semibold">Amount Paid</div>
@@ -359,7 +394,7 @@ export function FiatOnRamp({ onPurchase, className }: FiatOnRampProps) {
           >
             🌿 View My Wallet
           </Button>
-          
+
           <Button 
             variant="outline"
             className="w-full border-green-300 text-green-700 hover:bg-green-50 dark:hover:bg-green-950/20 py-6 text-lg rounded-xl"
