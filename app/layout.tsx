@@ -1,33 +1,36 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import "./globals.css"
-import { Providers } from "./providers"
+
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Providers } from './providers'
 import { EnvStatus } from '@/components/ui/env-status'
-import ClientChunkErrorRecovery from '@/components/client-chunk-error-recovery'
+import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
-  description:
-    "The comprehensive blockchain platform for security tokens, compliance management, and decentralized finance solutions.",
-  generator: "v0.app",
+  description: "Secure, compliant blockchain infrastructure for real-world adoption",
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <ClientChunkErrorRecovery>
-          <div className="fixed top-4 right-4 z-50">
-            <EnvStatus />
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
+        <ChunkErrorRecovery>
+          <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+            <div className="fixed top-4 right-4 z-50">
+              <EnvStatus />
+            </div>
+            <Providers>
+              {children}
+            </Providers>
           </div>
-          <Providers>{children}</Providers>
-        </ClientChunkErrorRecovery>
+        </ChunkErrorRecovery>
       </body>
     </html>
   )

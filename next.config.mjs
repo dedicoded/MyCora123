@@ -7,7 +7,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // Remove invalid allowedDevOrigins option
+    // Removed invalid allowedDevOrigins
   },
 
   async headers() {
