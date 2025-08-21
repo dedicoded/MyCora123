@@ -1,0 +1,94 @@
+Perfect—this is a comprehensive and well-structured migration plan. Here's how you can implement each step to fully transition your deployment logic and messaging from Vercel to Replit:
+
+✅ 1. Update the Deployment Validator Logic
+app/page.tsx
+Update the messaging logic:
+const isReplit = Boolean(process.env.REPLIT_DB_URL);
+
+const deploymentMessage = isReplit
+  ? "Your MyCora deployment needs environment variables configured in Replit."
+  : "Your MyCora deployment needs environment variables configured.";
+
+
+
+✅ 2. Update Environment Status Component
+components/ui/env-status.tsx
+Add Replit detection and messaging:
+const isReplit = Boolean(process.env.REPLIT_DB_URL);
+
+const helpText = isReplit
+  ? "Fix: Go to Replit → Secrets (lock icon) → Add required environment variables."
+  : "Fix: Go to your deployment platform → Add required environment variables.";
+
+
+
+✅ 3. Update Environment Validation Script
+scripts/validate-env.js
+Replace Vercel references:
+const requiredVars = [
+  "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID",
+  "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS",
+];
+
+requiredVars.forEach((key) => {
+  if (!process.env[key]) {
+    console.warn(`Missing ${key}. Please add it to Replit Secrets.`);
+  }
+});
+
+
+
+✅ 4. Update Deployment Verification Script
+scripts/deployment-verification.js
+Make it platform-agnostic:
+const isReplit = Boolean(process.env.REPLIT_DB_URL);
+
+console.log(`Running deployment verification on ${isReplit ? "Replit" : "Unknown platform"}`);
+
+
+
+✅ 5. Update Next.js Config
+next.config.mjs
+Remove Vercel-specific settings:
+export default {
+  reactStrictMode: true,
+  // Remove Vercel image domains or headers
+};
+
+
+
+✅ 6. Complete Sync Environment Script
+scripts/sync-env-to-replit.js
+Guide users to manually sync .env to Replit Secrets:
+const fs = require("fs");
+
+const envVars = fs.readFileSync(".env", "utf-8")
+  .split("\n")
+  .filter((line) => line && !line.startsWith("#"));
+
+console.log("To sync these to Replit:");
+envVars.forEach((line) => {
+  const [key, value] = line.split("=");
+  console.log(`→ Add secret: ${key} = ${value}`);
+});
+
+
+
+✅ 7. Update Environment Config
+lib/env-config.ts
+Add Replit detection and messaging:
+export const isReplit = Boolean(process.env.REPLIT_DB_URL);
+
+export const getEnvMessage = () =>
+  isReplit
+    ? "Missing Replit Secrets. Please configure your environment variables in Replit."
+    : "Missing environment variables. Please configure your deployment.";
+
+
+
+🧪 Final Touch
+Once these updates are applied:
+- Your app will no longer reference Vercel
+- All messaging will guide users to Replit
+- Environment validation will be platform-aware
+- Deployment scripts will be clean and consistent
