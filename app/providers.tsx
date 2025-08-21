@@ -1,7 +1,7 @@
 'use client'
 
 import '@rainbow-me/rainbowkit/styles.css'
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { sepolia, polygon } from 'wagmi/chains'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
@@ -10,6 +10,7 @@ import { ChunkErrorRecoveryWrapper } from '../components/ChunkErrorRecoveryWrapp
 import { ClientErrorBoundary } from '../components/client-error-boundary'
 import { useEffect, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import type { Config } from 'wagmi'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,70 +34,55 @@ const getStableConfig = () => {
 
 const config = getStableConfig()
 
-// Dynamic wrapper to prevent hydration issues with WalletConnect
-const WalletProviderWrapper = dynamic(
-  () => Promise.resolve(({ children }: { children: React.ReactNode }) => (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-  )),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse">Loading wallet...</div>
-      </div>
-    )
-  }
-)
-
-function HydrationBoundary({ children }: { children: React.ReactNode }) {
-  const [isHydrated, setIsHydrated] = useState(false)
+export default function ProvidersComponent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [mounted, setMounted] = useState(false)
+  const [validConfig, setValidConfig] = useState<Config | null>(null)
 
   useEffect(() => {
-    setIsHydrated(true)
+    setMounted(true)
+    // Prevent setState during render
+    const timer = setTimeout(() => {
+      if (config) {
+        setValidConfig(config)
+      }
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
-  if (!isHydrated) {
+  if (!mounted) {
     return (
-      <div className="min-h-screen bg-background">
-        {children}
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500"></div>
       </div>
     )
   }
 
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse">Initializing...</div>
-      </div>
-    }>
-      <WalletProviderWrapper>
-        <ClientErrorBoundary>
-          <ChunkErrorRecoveryWrapper>
-            {children}
-          </ChunkErrorRecoveryWrapper>
-        </ClientErrorBoundary>
-      </WalletProviderWrapper>
-    </Suspense>
-  )
-}
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider 
-      attribute="class" 
-      defaultTheme="system" 
-      enableSystem
-      disableTransitionOnChange
-    >
-      <HydrationBoundary>
-        {children}
-      </HydrationBoundary>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <WagmiProvider config={validConfig || config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider theme={darkTheme()} coolMode>
+            <ClientErrorBoundary>
+              <ChunkErrorRecoveryWrapper>
+                <Suspense fallback={
+                  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-900 via-green-900 to-teal-900">
+                    <div className="text-center">
+                      <div className="animate-pulse text-green-400 text-xl mb-4">🌱 Growing your MyCora network...</div>
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400 mx-auto"></div>
+                    </div>
+                  </div>
+                }>
+                  {children}
+                </Suspense>
+              </ChunkErrorRecoveryWrapper>
+            </ClientErrorBoundary>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </ThemeProvider>
   )
 }

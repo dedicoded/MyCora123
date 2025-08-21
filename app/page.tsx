@@ -1,286 +1,287 @@
-"use client"
 
-import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { FiatOnRamp } from "@/components/ui/fiat-onramp"
-import { CannabisRewards } from "@/components/ui/cannabis-rewards"
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 export default function HomePage() {
-  const [activeView, setActiveView] = useState<'home' | 'onramp' | 'rewards'>('home')
-  const [userPoints, setUserPoints] = useState(1847)
+  const { isConnected, address } = useAccount()
+  const [activeNode, setActiveNode] = useState(0)
+  const [networkGrowth, setNetworkGrowth] = useState(0)
 
-  // Enhanced PuffPass Data with more realistic progression
-  const puffPassData = {
-    tier: "Gold",
-    points: userPoints,
-    nextTierPoints: 2500,
-    nextTier: "Platinum",
-    availableRewards: [
-      { name: "$10 Gift Card", points: 1000, type: "gift_card", available: userPoints >= 1000 },
-      { name: "Premium Upgrade", points: 1500, type: "upgrade", available: userPoints >= 1500 },
-      { name: "Instant Payout", points: 2000, type: "payout", available: userPoints >= 2000 },
-      { name: "VIP Access", points: 2500, type: "vip", available: userPoints >= 2500 }
-    ],
-    recentEarning: "+45 points from dispensary visit",
-    monthlyEarnings: 320,
-    totalLifetime: 4720
-  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveNode(prev => (prev + 1) % 6)
+      setNetworkGrowth(prev => Math.min(prev + 1, 100))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
-  const progressPercentage = (puffPassData.points / puffPassData.nextTierPoints) * 100
-
-  const handleOnRampPurchase = async (data: any) => {
-    // Simulate adding points to user account
-    const netPoints = Math.floor((data.amount * 100) - (data.amount * 100 * 0.03)) // Assuming 3% avg fee
-    setUserPoints(prev => prev + netPoints)
-    console.log('Points added:', netPoints)
-  }
-
-  const renderStunningPuffPassCard = () => (
-    <div className="relative group">
-      {/* Magical glow background */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-green-500 via-green-600 to-yellow-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-all duration-700 animate-pulse"></div>
-
-      {/* Main card */}
-      <Card className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-none shadow-2xl overflow-hidden">
-        {/* Animated background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 left-4 w-32 h-32 bg-gradient-to-br from-green-400 to-transparent rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-4 right-4 w-24 h-24 bg-gradient-to-br from-yellow-400 to-transparent rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        </div>
-
-        <CardHeader className="relative pb-4 text-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {/* Enhanced tier badge */}
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur-md opacity-50"></div>
-                <div className="relative w-12 h-12 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
-                  <div className="text-xl font-bold text-yellow-900">👑</div>
-                </div>
-              </div>
-              <div>
-                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                  PuffPass {puffPassData.tier}
-                </CardTitle>
-                <p className="text-sm text-gray-300 font-medium">{puffPassData.recentEarning}</p>
-              </div>
-            </div>
-
-            {/* Animated points display */}
-            <div className="text-right">
-              <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none px-4 py-2 text-lg font-bold shadow-lg">
-                {puffPassData.points.toLocaleString()} pts
-              </Badge>
-              <div className="text-xs text-gray-400 mt-1">+{puffPassData.monthlyEarnings} this month</div>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="relative text-white space-y-6">
-          {/* Enhanced progress section */}
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-300">Progress to {puffPassData.nextTier}</span>
-              <span className="text-sm font-bold text-white">{puffPassData.points}/{puffPassData.nextTierPoints}</span>
-            </div>
-
-            {/* Stunning progress bar */}
-            <div className="relative h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-700"></div>
-              <div
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 via-green-600 to-yellow-400 rounded-full shadow-lg transition-all duration-1000 ease-out"
-                style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-              />
-              {/* Animated shimmer effect */}
-              <div
-                className="absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"
-                style={{
-                  left: `${Math.min(progressPercentage - 10, 90)}%`,
-                  animationDuration: '2s'
-                }}
-              />
-            </div>
-
-            <div className="text-xs text-gray-400">
-              {(puffPassData.nextTierPoints - puffPassData.points).toLocaleString()} points to unlock {puffPassData.nextTier} benefits
-            </div>
-          </div>
-
-          {/* Available rewards preview */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-300">Quick Rewards:</p>
-            <div className="grid grid-cols-2 gap-2">
-              {puffPassData.availableRewards.slice(0, 2).map((reward, i) => (
-                <div
-                  key={i}
-                  className={`p-2 rounded-lg border transition-all duration-300 ${
-                    reward.available
-                      ? 'bg-gradient-to-br from-green-500/20 to-green-600/20 border-green-500/40 hover:border-green-500 cursor-pointer'
-                      : 'bg-slate-800/50 border-slate-600 opacity-50'
-                  }`}
-                >
-                  <div className="text-xs font-medium text-white">{reward.name}</div>
-                  <div className="text-xs text-gray-400">{reward.points.toLocaleString()} pts</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              onClick={() => setActiveView('onramp')}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-            >
-              💳 Add Points
-            </Button>
-            <Button
-              onClick={() => setActiveView('rewards')}
-              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-            >
-              🎁 Redeem
-            </Button>
-          </div>
-
-          {/* Lifetime stats */}
-          <div className="pt-2 border-t border-slate-700">
-            <div className="text-xs text-gray-400 text-center">
-              Lifetime Earned: <span className="text-white font-medium">{puffPassData.totalLifetime.toLocaleString()} points</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-
-  const renderHeroSection = () => (
-    <div className="text-center mb-20 relative">
-      {/* Magical background effects */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 left-1/4 w-32 h-32 bg-green-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-20 right-1/4 w-40 h-40 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-10 left-1/3 w-24 h-24 bg-yellow-400/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
-      </div>
-
-      <div className="mb-12">
-        <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight bg-gradient-to-r from-green-600 via-green-500 to-yellow-500 bg-clip-text text-transparent">
-          🌿 PuffPass Rewards
-        </h1>
-        <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 mb-12 font-medium">
-          Earn at dispensaries • Pay like CashApp • Redeem like Starbucks
-        </p>
-      </div>
-
-      <div className="max-w-lg mx-auto mb-12">
-        {renderStunningPuffPassCard()}
-      </div>
-    </div>
-  )
-
-  if (activeView === 'onramp') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-6">
-            <Button
-              variant="outline"
-              onClick={() => setActiveView('home')}
-              className="mb-4"
-            >
-              ← Back to Dashboard
-            </Button>
-          </div>
-
-          <FiatOnRamp onPurchase={handleOnRampPurchase} />
-        </div>
-      </div>
-    )
-  }
-
-  if (activeView === 'rewards') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <div className="mb-6">
-            <Button
-              variant="outline"
-              onClick={() => setActiveView('home')}
-              className="mb-4"
-            >
-              ← Back to Dashboard
-            </Button>
-          </div>
-
-          <CannabisRewards
-            userPoints={puffPassData.points}
-            tier="gold"
-          />
-        </div>
-      </div>
-    )
-  }
+  const features = [
+    {
+      icon: "🌱",
+      title: "Seed Investment",
+      description: "Plant your capital in the growing cannabis innovation network",
+      color: "from-green-400 to-emerald-600"
+    },
+    {
+      icon: "🔗",
+      title: "Trust Network",
+      description: "Build verifiable connections through blockchain-verified transactions",
+      color: "from-blue-400 to-cyan-600"
+    },
+    {
+      icon: "🏆",
+      title: "PuffPass Rewards",
+      description: "Earn exclusive perks and access through network participation",
+      color: "from-purple-400 to-pink-600"
+    },
+    {
+      icon: "🔐",
+      title: "Compliance First",
+      description: "Fully regulated framework ensuring legal protection",
+      color: "from-orange-400 to-red-600"
+    },
+    {
+      icon: "💎",
+      title: "Exclusive Access",
+      description: "Unlock premium cannabis products and experiences",
+      color: "from-yellow-400 to-orange-600"
+    },
+    {
+      icon: "🌐",
+      title: "Global Network",
+      description: "Connect with innovators, investors, and industry leaders worldwide",
+      color: "from-teal-400 to-blue-600"
+    }
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-12">
-        {renderHeroSection()}
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-900 to-teal-950 overflow-hidden">
+      {/* Animated Background Network */}
+      <div className="absolute inset-0 opacity-20">
+        <svg className="w-full h-full" viewBox="0 0 1200 800">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <motion.circle
+              key={i}
+              cx={Math.random() * 1200}
+              cy={Math.random() * 800}
+              r={Math.random() * 3 + 1}
+              fill="#10b981"
+              animate={{
+                opacity: [0.3, 0.8, 0.3],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+          {Array.from({ length: 20 }).map((_, i) => (
+            <motion.path
+              key={`line-${i}`}
+              d={`M${Math.random() * 1200},${Math.random() * 800} Q${Math.random() * 1200},${Math.random() * 800} ${Math.random() * 1200},${Math.random() * 800}`}
+              stroke="#10b981"
+              strokeWidth="1"
+              fill="none"
+              opacity="0.2"
+              animate={{
+                pathLength: [0, 1, 0],
+              }}
+              transition={{
+                duration: 8 + Math.random() * 4,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+              }}
+            />
+          ))}
+        </svg>
+      </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-          <Card className="text-center border-green-200 hover:shadow-lg transition-all">
-            <CardContent className="p-6">
-              <div className="text-3xl font-bold text-green-600 mb-2">150k+</div>
-              <div className="text-sm text-gray-600">Active PuffPass Users</div>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center border-yellow-200 hover:shadow-lg transition-all">
-            <CardContent className="p-6">
-              <div className="text-3xl font-bold text-yellow-600 mb-2">$2.4M+</div>
-              <div className="text-sm text-gray-600">Points Redeemed</div>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center border-blue-200 hover:shadow-lg transition-all">
-            <CardContent className="p-6">
-              <div className="text-3xl font-bold text-blue-600 mb-2">500+</div>
-              <div className="text-sm text-gray-600">Partner Dispensaries</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* How it Works */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-8">How PuffPass Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
-                1
-              </div>
-              <h3 className="text-xl font-semibold mb-2">💳 Load Points</h3>
-              <p className="text-gray-600">Add money to your PuffPass using cards, Apple Pay, or bank transfer</p>
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        {/* Header */}
+        <header className="flex justify-between items-center mb-16">
+          <motion.div 
+            className="flex items-center space-x-3"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="text-4xl">🍄</div>
+            <div>
+              <h1 className="text-2xl font-bold text-green-400">MyCora</h1>
+              <p className="text-sm text-green-600">Mycelial Cannabis Network</p>
             </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <ConnectButton.Custom>
+              {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                const ready = mounted
+                const connected = ready && account && chain
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
-                2
-              </div>
-              <h3 className="text-xl font-semibold mb-2">🌿 Earn & Spend</h3>
-              <p className="text-gray-600">Pay at dispensaries and earn bonus points with every purchase</p>
-            </div>
+                return (
+                  <div
+                    {...(!ready && {
+                      'aria-hidden': true,
+                      style: {
+                        opacity: 0,
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                      },
+                    })}
+                  >
+                    {(() => {
+                      if (!connected) {
+                        return (
+                          <Button 
+                            onClick={openConnectModal}
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium transform hover:scale-105 transition-all duration-300"
+                          >
+                            🌱 Join Network
+                          </Button>
+                        )
+                      }
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
-                3
+                      return (
+                        <div className="flex items-center space-x-3">
+                          <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-green-400">
+                            Connected
+                          </Badge>
+                          <Button 
+                            onClick={openAccountModal}
+                            className="bg-gradient-to-r from-green-500/20 to-emerald-600/20 hover:from-green-500/30 hover:to-emerald-600/30 text-green-400 border border-green-500/30"
+                          >
+                            {account.displayName}
+                          </Button>
+                        </div>
+                      )
+                    })()}
+                  </div>
+                )
+              }}
+            </ConnectButton.Custom>
+          </motion.div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="text-center mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            <h2 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">
+              The Future of
+            </h2>
+            <h3 className="text-4xl md:text-6xl font-bold mb-8 text-white">
+              Cannabis Innovation
+            </h3>
+            <p className="text-xl md:text-2xl text-green-300 max-w-4xl mx-auto leading-relaxed">
+              MyCora creates a living network where cannabis entrepreneurs, investors, and enthusiasts 
+              connect through blockchain-verified trust, exclusive rewards, and compliant innovation.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-12 flex flex-col sm:flex-row gap-6 justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 text-lg rounded-xl font-medium transform hover:scale-105 transition-all duration-300">
+              🚀 Start Growing
+            </Button>
+            <Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/10 px-8 py-4 text-lg rounded-xl">
+              📚 Learn More
+            </Button>
+          </motion.div>
+        </section>
+
+        {/* Network Growth Visualization */}
+        <section className="mb-20">
+          <motion.div
+            className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 backdrop-blur-lg rounded-3xl p-8 border border-green-500/20"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+          >
+            <h3 className="text-3xl font-bold text-center text-green-400 mb-8">
+              🌐 Living Network Growth
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-white mb-2">{networkGrowth}%</div>
+                <div className="text-green-400">Network Expansion</div>
               </div>
-              <h3 className="text-xl font-semibold mb-2">🎁 Redeem Rewards</h3>
-              <p className="text-gray-600">Use points for discounts, free delivery, and exclusive cannabis perks</p>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-white mb-2">2,847</div>
+                <div className="text-green-400">Active Nodes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-white mb-2">$12.5M</div>
+                <div className="text-green-400">Total Value Locked</div>
+              </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </section>
+
+        {/* Features Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.2 + index * 0.1 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="group"
+            >
+              <Card className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 backdrop-blur-lg border-green-500/20 p-6 h-full hover:border-green-400/40 transition-all duration-300">
+                <div className={`text-4xl mb-4 p-3 rounded-xl bg-gradient-to-r ${feature.color} w-fit`}>
+                  {feature.icon}
+                </div>
+                <h4 className="text-xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
+                  {feature.title}
+                </h4>
+                <p className="text-green-300 leading-relaxed">
+                  {feature.description}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </section>
+
+        {/* PuffPass Showcase */}
+        {isConnected && (
+          <motion.section
+            className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-lg rounded-3xl p-8 border border-purple-500/20 text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.8 }}
+          >
+            <h3 className="text-3xl font-bold text-purple-400 mb-6">
+              🎫 Your PuffPass Awaits
+            </h3>
+            <p className="text-purple-300 text-lg mb-8 max-w-2xl mx-auto">
+              Connected wallets can mint exclusive PuffPass tokens for premium cannabis experiences and rewards.
+            </p>
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 text-lg rounded-xl font-medium transform hover:scale-105 transition-all duration-300">
+              🌿 Mint PuffPass
+            </Button>
+          </motion.section>
+        )}
       </div>
     </div>
   )
