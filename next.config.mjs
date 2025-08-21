@@ -6,6 +6,11 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1c711e0584e0c2eff9c65b85659ecec2',
+    NEXT_PUBLIC_MCC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS || '0x6C7Bb1AB95A2F9C34eD2F9E4A64B4A13D4aD7DEF',
+    NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK || 'sepolia'
+  },
 
   async headers() {
     return [
@@ -145,11 +150,17 @@ const nextConfig = {
         }
       }
 
-      // Add chunk loading timeout configuration
+      // Add chunk loading timeout configuration with better error handling
       config.output = {
         ...config.output,
-        chunkLoadTimeout: 30000, // 30 seconds instead of default 120
+        chunkLoadTimeout: 60000, // Increased to 60 seconds for Replit
         crossOriginLoading: 'anonymous',
+        publicPath: '/_next/',
+      }
+
+      // Add better chunk loading error recovery
+      config.optimization.runtimeChunk = {
+        name: entrypoint => `runtime-${entrypoint.name}`,
       }
     }
 
