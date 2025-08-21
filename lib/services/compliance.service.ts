@@ -1,21 +1,44 @@
-import { kv } from "@vercel/kv"
+import { supabase, db } from "@/lib/supabase"
 
 export class ComplianceService {
-  async checkKYC(userId: string) {
-    const cached = await kv.get(`kyc:${userId}`)
-    if (cached) return cached
-
-    // Simulate real KYC check - replace with actual provider integration
-    const kycStatus = {
-      userId,
-      status: "pending",
-      documents: [],
-      riskScore: Math.floor(Math.random() * 100),
-      lastUpdated: new Date().toISOString(),
+  async checkKYC(walletAddress: string) {
+    // Check if user profile exists
+    const { data: profile, error } = await db.getUserProfile(walletAddress)
+    
+    if (error && error.code !== 'PGRST116') {
+      throw new Error(`KYC check failed: ${error.message}`)
     }
 
-    await kv.set(`kyc:${userId}`, kycStatus, { ex: 3600 })
-    return kycStatus
+    if (profile) {
+      return {
+        userId: profile.id,
+        status: profile.kyc_status,
+        documents: [],
+        riskScore: profile.compliance_score,
+        lastUpdated: profile.updated_at,
+      }
+    }
+
+    // Create new user profile with pending KYC
+    const kycStatus = {
+      wallet_address: walletAddress,
+      kyc_status: "pending" as const,
+      compliance_score: Math.floor(Math.random() * 100),
+    }
+
+    const { data: newProfile, error: createError } = await db.createUserProfile(kycStatus)
+    
+    if (createError) {
+      throw new Error(`Failed to create user profile: ${createError.message}`)
+    }
+
+    return {
+      userId: newProfile.id,
+      status: newProfile.kyc_status,
+      documents: [],
+      riskScore: newProfile.compliance_score,
+      lastUpdated: newProfile.created_at,
+    }
   }
 
   async assessRisk(params: { userId: string; transactionAmount?: number; jurisdiction?: string }) {
