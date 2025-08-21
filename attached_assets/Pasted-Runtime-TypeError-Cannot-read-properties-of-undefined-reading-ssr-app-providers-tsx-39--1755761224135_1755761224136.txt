@@ -1,0 +1,49 @@
+Runtime TypeError
+
+
+Cannot read properties of undefined (reading 'ssr')
+
+app/providers.tsx (39:7) @ Providers
+
+
+  37 |   return (
+  38 |     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+> 39 |       <WagmiProvider config={config}>
+     |       ^
+  40 |         <QueryClientProvider client={queryClient}>
+  41 |           <RainbowKitProvider>
+  42 |             <EnvironmentValidator />
+Call Stack
+15
+
+Hide 13 ignore-listed frame(s)
+Hydrate
+../src/hydrate.ts (21:25)
+Object.react_stack_bottom_frame
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (23583:1)
+renderWithHooks
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (6792:1)
+updateFunctionComponent
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (9246:1)
+beginWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (10857:1)
+runWithFiberInDEV
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (871:1)
+performUnitOfWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15726:1)
+workLoopSync
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15546:39)
+renderRootSync
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15526:1)
+performWorkOnRoot
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15033:1)
+performWorkOnRootViaSchedulerTask
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (16815:1)
+MessagePort.performWorkUntilDeadline
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/scheduler/cjs/scheduler.development.js (45:1)
+WagmiProvider
+../src/context.ts (23:23)
+Providers
+app/providers.tsx (39:7)
+RootLayout
+app/layout.tsx (29:13)

@@ -1,0 +1,25 @@
+Console Error
+
+
+[Reown Config Notice] Your local configuration for "features.email", "features.socials" was ignored because a remote configuration was successfully fetched. Please manage these features via your project dashboard on dashboard.reown.com. undefined
+
+Call Stack
+8
+
+Hide 8 ignore-listed frame(s)
+createConsoleError
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/shared/console-error.js (26:1)
+handleConsoleError
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/userspace/app/errors/use-error-handler.js (50:1)
+console.error
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js (55:1)
+open
+node_modules/.pnpm/@reown+appkit-controllers@1.7.20_@types+react@18.3.23_@upstash+redis@1.35.3_@vercel+kv@_6e3a2c1c717431a615a31ab5625a2eb5/node_modules/@reown/appkit-controllers/dist/esm/src/controllers/AlertController.js (27:1)
+Object.wrapped [as open]
+node_modules/.pnpm/@reown+appkit-controllers@1.7.20_@types+react@18.3.23_@upstash+redis@1.35.3_@vercel+kv@_6e3a2c1c717431a615a31ab5625a2eb5/node_modules/@reown/appkit-controllers/dist/esm/src/utils/withErrorBoundary.js (92:1)
+Object.fetchRemoteFeatures
+node_modules/.pnpm/@reown+appkit@1.7.20_@types+react@18.3.23_@upstash+redis@1.35.3_@vercel+kv@3.0.0_buffer_0e88dc24cc437db3526f95cbcba37054/node_modules/@reown/appkit/dist/esm/src/utils/ConfigUtil.js (256:28)
+async AppKit.initialize
+node_modules/.pnpm/@reown+appkit@1.7.20_@types+react@18.3.23_@upstash+redis@1.35.3_@vercel+kv@3.0.0_buffer_0e88dc24cc437db3526f95cbcba37054/node_modules/@reown/appkit/dist/esm/src/client/appkit-base-client.js (217:1)
+async AppKit.initialize
+node_modules/.pnpm/@reown+appkit@1.7.20_@types+react@18.3.23_@upstash+redis@1.35.3_@vercel+kv@3.0.0_buffer_0e88dc24cc437db3526f95cbcba37054/node_modules/@reown/appkit/dist/esm/src/client/appkit.js (420:1)
