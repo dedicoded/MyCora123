@@ -1,0 +1,38 @@
+Console Error
+
+
+Element type is invalid. Received a promise that resolves to: [object Module]. Lazy element type must resolve to a class or function.
+
+app/layout.tsx (22:9) @ RootLayout
+
+
+  20 |     <html lang="en" suppressHydrationWarning>
+  21 |       <body className={inter.className} suppressHydrationWarning>
+> 22 |         <Providers>
+     |         ^
+  23 |           <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+  24 |             <div className="fixed top-4 right-4 z-50">
+  25 |               <EnvStatus />
+Call Stack
+9
+
+Hide 8 ignore-listed frame(s)
+beginWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (10848:1)
+runWithFiberInDEV
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (871:1)
+performUnitOfWork
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15726:1)
+workLoopSync
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15546:39)
+renderRootSync
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15526:1)
+performWorkOnRoot
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (15033:1)
+performWorkOnRootViaSchedulerTask
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js (16815:1)
+MessagePort.performWorkUntilDeadline
+node_modules/.pnpm/next@15.5.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/scheduler/cjs/scheduler.development.js (45:1)
+RootLayout
+app/layout.tsx (22:9)
+1

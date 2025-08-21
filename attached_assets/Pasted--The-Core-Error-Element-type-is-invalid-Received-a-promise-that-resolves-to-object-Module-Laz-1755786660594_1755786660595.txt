@@ -1,0 +1,52 @@
+ The Core Error
+"Element type is invalid. Received a promise that resolves to: [object Module]. Lazy element type must resolve to a class or function."
+
+This means you're trying to render a component that was imported using dynamic import() or React.lazy() — but the import isn't returning the actual component function. Instead, it's returning a module object.
+
+✅ Fix It Fast: Check Your Providers Import
+In app/layout.tsx, line 22:
+<Providers>
+
+
+You're likely importing Providers like this:
+const Providers = React.lazy(() => import('./Providers'));
+
+
+But if ./Providers.tsx uses a default export like:
+export default function Providers() { ... }
+
+
+Then you're fine. However, if it uses a named export:
+export function Providers() { ... }
+
+
+Then your lazy import needs to be adjusted:
+const Providers = React.lazy(() =>
+  import('./Providers').then(mod => ({ default: mod.Providers }))
+);
+
+
+This ensures React.lazy() receives a component function, not a module object.
+
+🧼 Bonus Cleanup Tips
+1. Avoid Lazy Loading in Layouts
+React Server Components and Next.js layouts don’t play well with React.lazy() unless wrapped in a client boundary. If Providers is a client component, mark it explicitly:
+'use client';
+
+
+And import it normally:
+import Providers from './Providers';
+
+
+2. Hydration Warnings
+You're already suppressing hydration warnings — good. But make sure your Providers component doesn’t rely on browser-only APIs during SSR.
+
+🔍 Environment Variable Warnings
+You're also seeing:
+Missing critical environment variables:
+["NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID", "NEXT_PUBLIC_MCC_CONTRACT_ADDRESS", "NEXT_PUBLIC_NETWORK"]
+
+
+Make sure these are defined in your .env.local or deployment environment. Otherwise, your app might crash or behave unpredictably.
+
+Want to share your Providers.tsx or layout logic? I can help you refactor it for better SSR compatibility and cleaner hydration. You're close — just need to untangle this lazy import knot.
