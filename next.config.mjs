@@ -21,14 +21,7 @@ const nextConfig = {
   // Reduce bundle size
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
-    allowedDevOrigins: [
-      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',
-      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3001',
-      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3002',
-      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:3003',
-      'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev:5000'
-    ]
+    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query']
   },
 
   async headers() {

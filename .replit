@@ -5,8 +5,8 @@ run = "npm run dev"
 channel = "stable-25_05"
 
 [deployment]
-run = ["sh", "-c", "npm start"]
-build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "pnpm start"]
+build = ["sh", "-c", "pnpm install --force && pnpm run build"]
 
 [[ports]]
 localPort = 5000
@@ -90,3 +90,16 @@ args = "pkill -f \"next dev\" || true"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Clean Install and Start"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm install --force"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run dev:clean"
