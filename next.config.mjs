@@ -24,7 +24,7 @@ const nextConfig = {
   },
   // Replit optimized configuration
   serverRuntimeConfig: {
-    PROJECT_ROOT: __dirname
+    PROJECT_ROOT: process.cwd()
   },
   publicRuntimeConfig: {
     staticFolder: '/public',

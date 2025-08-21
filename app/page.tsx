@@ -312,7 +312,10 @@ export default function Page() {
 
             <div className="bg-red-100 p-3 rounded-lg mb-4">
               <p className="text-red-800 text-sm">
-                <strong>Fix:</strong> Go to Replit Secrets configuration.
+                <strong>Fix:</strong> Go to Replit → Secrets (lock icon) → Add required environment variables.
+              </p>
+              <p className="text-red-600 text-xs mt-2">
+                Running on {process.env.REPLIT_DB_URL ? 'Replit' : 'Unknown platform'} - configure secrets accordingly.
               </p>
             </div>
 

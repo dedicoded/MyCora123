@@ -1,4 +1,11 @@
-// Environment variable configuration and validation
+// Environment configuration and validation
+export const isReplit = Boolean(process.env.REPLIT_DB_URL);
+
+export const getEnvMessage = () =>
+  isReplit
+    ? "Missing Replit Secrets. Please configure your environment variables in Replit."
+    : "Missing environment variables. Please configure your deployment.";
+
 export const envConfig = {
   // Blockchain Configuration
   alchemyRpcUrl: process.env.ALCHEMY_RPC_URL,
