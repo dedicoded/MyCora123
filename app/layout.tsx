@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Providers from './providers'
-import { EnvStatus } from '@/components/ui/env-status'
+import { Providers } from './providers'
+import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
+import ClientErrorBoundary from '@/components/client-error-boundary'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: "MyCora - Blockchain Trust Network",
-  description: "Secure, compliant blockchain infrastructure for real-world adoption",
+export const metadata = {
+  title: 'MyCora - Cannabis Rewards Platform',
+  description: 'Earn rewards with every purchase using blockchain technology',
 }
 
 export default function RootLayout({
@@ -17,16 +18,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <Providers>
-          <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-            <div className="fixed top-4 right-4 z-50">
-              <EnvStatus />
-            </div>
-            {children}
-          </div>
-        </Providers>
+    <html lang="en">
+      <body className={inter.className}>
+        <ClientErrorBoundary>
+          <ChunkErrorRecovery>
+            <Providers>
+              {children}
+            </Providers>
+          </ChunkErrorRecovery>
+        </ClientErrorBoundary>
       </body>
     </html>
   )
