@@ -1,0 +1,78 @@
+PuffPass Redemption Flow
+Here’s a clean, 3-step redemption flow that feels like redeeming Starbucks points or airline miles:
+Step 1: View PuffPass
+[PuffPass Card]
+Tier: Gold
+Points: 1,250
+Progress: 75% to Platinum
+
+[See Rewards] →
+
+
+Step 2: Choose Reward
+🎁 Redeem Your Points
+
+Available Rewards:
+- $10 Gift Card (1,000 pts) → [Redeem]
+- Premium Upgrade (1,500 pts) → [Unlock]
+- Instant Payout (2,000 pts) → [Withdraw]
+
+[Back to PuffPass] ←
+
+
+Step 3: Confirmation
+✅ Success!
+
+You’ve redeemed 1,000 PuffPass points for a $10 Gift Card.
+[View My Wallet] → [Earn More Points] →
+
+
+Optional Enhancements:
+- Add animations (confetti, badge unlocks)
+- Show progress bar toward next tier
+- Include “Surprise Me” option for mystery rewards
+
+📱 Mobile-First Homepage Layout
+Here’s a responsive layout optimized for mobile screens:
+🔝 Header
+[MyCora Logo]        [☰ Menu]
+
+🌟 PuffPass Card
+Tier: Silver | Points: 850
+[View Rewards] →
+
+💸 Smart Payments
+Tap to pay, earn PuffPass points instantly.
+[Connect Wallet] →
+
+🎉 Unlock Rewards
+Verify once, unlock perks across the network.
+[Verify Identity] →
+
+🏦 MyCora Wallet
+Send, store, and grow your money securely.
+[Open Wallet] →
+
+📈 For Businesses
+Scale with PuffPass-powered loyalty.
+[Contact Sales] →
+
+
+Sticky Footer Navigation:
+🏠 Home   🎁 Rewards   💼 Wallet   👤 Profile
+
+
+
+✨ Tooltips & Microcopy (Metaphor-Driven)
+Here’s how we reinforce the metaphor in subtle, delightful ways:
+| Element | Tooltip / Microcopy | 
+| PuffPass Card | “Your PuffPass is like your loyalty card — but smarter.” | 
+| Points Balance | “Every tap earns you points. Just like Five Star, but universal.” | 
+| Redeem Button | “Turn your points into perks — gift cards, upgrades, or payouts.” | 
+| Verify Identity | “One-time check. Unlock premium features across the network.” | 
+| Wallet | “Your money, your rewards — all in one place.” | 
+| Tier Progress | “Level up your PuffPass to unlock bigger rewards.” | 
+
+
+
+
