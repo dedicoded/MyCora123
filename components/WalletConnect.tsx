@@ -52,7 +52,7 @@ const metadata = {
 const networks = network === "mainnet" ? [mainnet] : [sepolia]
 
 // Create the modal using Reown AppKit pattern from web examples
-const modal = createAppKit({
+const config = createAppKit({
   adapters: [new EthersAdapter()],
   projectId,
   networks,
@@ -64,11 +64,12 @@ const modal = createAppKit({
   }
 })
 
-export { modal }
+export { config }
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [balance, setBalance] = useState(null); // State for balance
 
   useEffect(() => {
     setMounted(true)
@@ -80,7 +81,7 @@ export function WalletConnect() {
 
   // Enhanced mobile detection and wallet connection
   const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)
-  
+
   const handleWalletConnect = async () => {
     setIsConnecting(true)
     try {

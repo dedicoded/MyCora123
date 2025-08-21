@@ -22,11 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ClientChunkErrorRecovery />
-        <div className="fixed top-4 right-4 z-50">
-          <EnvStatus />
-        </div>
-        <Providers>{children}</Providers>
+        <ClientChunkErrorRecovery>
+          <div className="fixed top-4 right-4 z-50">
+            <EnvStatus />
+          </div>
+          <Providers>{children}</Providers>
+        </ClientChunkErrorRecovery>
       </body>
     </html>
   )

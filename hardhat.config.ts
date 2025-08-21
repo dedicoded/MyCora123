@@ -1,6 +1,6 @@
 import type { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
-import "@nomiclabs/hardhat-etherscan"
+import "@nomicfoundation/hardhat-verify"
 import * as dotenv from "dotenv"
 
 dotenv.config()
