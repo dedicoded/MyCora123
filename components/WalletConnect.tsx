@@ -1,11 +1,11 @@
 "use client"
 
-import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useAccount, useBalance } from "wagmi"
+import { createAppKit } from '@reown/appkit/react'
+import { EthersAdapter } from '@reown/appkit-adapter-ethers'
+import { mainnet, sepolia } from '@reown/appkit/networks'
+import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react'
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { useEffect, useState } from "react"
-import { getDefaultConfig } from "@rainbow-me/rainbowkit"
-import { sepolia, mainnet } from "wagmi/chains"
 
 // Validate environment variables
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
@@ -39,10 +39,9 @@ const getAppInfo = () => {
   }
 }
 
-// Update to Reown AppKit configuration and add Replit domain to WalletConnect allowlist
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo"; // Use "demo" as a fallback
+// Modern Reown AppKit configuration based on web examples
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo"
 
-// Add Replit domain configuration for WalletConnect
 const metadata = {
   name: 'MyCora',
   description: 'Blockchain Trust Network',
@@ -50,12 +49,22 @@ const metadata = {
   icons: ['https://mycora.com/icon-192x192.png']
 }
 
-export const config = getDefaultConfig({
-  ...getAppInfo(),
-  projectId: projectId,
-  chains: network === "mainnet" ? [mainnet] : [sepolia],
-  ssr: true,
+const networks = network === "mainnet" ? [mainnet] : [sepolia]
+
+// Create the modal using Reown AppKit pattern from web examples
+const modal = createAppKit({
+  adapters: [new EthersAdapter()],
+  projectId,
+  networks,
+  metadata,
+  features: {
+    analytics: true,
+    email: false,
+    socials: false
+  }
 })
+
+export { modal }
 
 export function WalletConnect() {
   const [mounted, setMounted] = useState(false)
@@ -65,10 +74,9 @@ export function WalletConnect() {
     setMounted(true)
   }, [])
 
-  const { address, isConnected } = useAccount()
-  const { data: balance } = useBalance({
-    address: address,
-  })
+  const { address, isConnected } = useAppKitAccount()
+  const { chainId } = useAppKitNetwork()
+  const { open } = useAppKit()
 
   // Enhanced mobile detection and wallet connection
   const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent)
@@ -119,7 +127,12 @@ export function WalletConnect() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative">
-          <ConnectButton />
+          <button 
+            onClick={() => open()}
+            className="w-full px-4 py-2 bg-[var(--color-moss)] text-white rounded-lg hover:bg-[var(--color-moss)]/80 transition-colors"
+          >
+            {isConnected ? 'Account' : 'Connect Wallet'}
+          </button>
           {isMobile && !isConnected && (
             <p className="text-xs text-[var(--color-glow)] mt-2 opacity-75">
               Tap to connect your mobile wallet

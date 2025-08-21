@@ -80,6 +80,8 @@
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
     "@rainbow-me/rainbowkit": "latest",
+    "@reown/appkit": "^1.7.20",
+    "@reown/appkit-adapter-ethers": "^1.7.20",
     "@tanstack/react-query": "latest",
     "@typechain/ethers-v6": "latest",
     "@typechain/hardhat": "latest",
