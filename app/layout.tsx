@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Providers } from "./providers"
 import { EnvStatus } from '@/components/ui/env-status'
-import ChunkErrorRecovery from '@/components/client-chunk-error-recovery'
+import { ClientChunkErrorRecovery } from '@/components/client-chunk-error-recovery'
 
 export const metadata: Metadata = {
   title: "MyCora - Blockchain Trust Network",
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ChunkErrorRecovery />
+        <ClientChunkErrorRecovery />
         <div className="fixed top-4 right-4 z-50">
           <EnvStatus />
         </div>

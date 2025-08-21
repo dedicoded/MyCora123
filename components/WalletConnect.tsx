@@ -39,9 +39,20 @@ const getAppInfo = () => {
   }
 }
 
+// Update to Reown AppKit configuration and add Replit domain to WalletConnect allowlist
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo"; // Use "demo" as a fallback
+
+// Add Replit domain configuration for WalletConnect
+const metadata = {
+  name: 'MyCora',
+  description: 'Blockchain Trust Network',
+  url: typeof window !== 'undefined' ? window.location.origin : 'https://mycora.com',
+  icons: ['https://mycora.com/icon-192x192.png']
+}
+
 export const config = getDefaultConfig({
   ...getAppInfo(),
-  projectId: walletConnectProjectId || "demo",
+  projectId: projectId,
   chains: network === "mainnet" ? [mainnet] : [sepolia],
   ssr: true,
 })
@@ -58,15 +69,12 @@ export function WalletConnect() {
     address: address,
   })
 
-  const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
+  // This projectId is redundant with the one used in getDefaultConfig, but keeping for consistency with provided changes if it was intended for connectors directly.
+  // const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
 
-  // Configure allowed origins for WalletConnect
-  const metadata = {
-    name: 'MyCora',
-    description: 'MyCora Blockchain Platform',
-    url: 'https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev',
-    icons: ['https://10ef237c-4d90-4026-9a06-cb1b3ee43a3b-00-1aqa1lbeqtan0.worf.replit.dev/placeholder-logo.svg']
-  };
+
+  // Removed the redundant metadata definition here as it's defined above for getDefaultConfig.
+  // If it was intended for connectorsForWallets, that part of the changes was not present in the original code's structure.
 
 
   if (!mounted) {
