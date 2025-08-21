@@ -1,0 +1,90 @@
+Crystal clear, t — this is a closed-loop ecosystem, meaning:
+- Users earn and redeem rewards, but cannot freely withdraw funds.
+- Only verified merchants and admins can initiate withdrawals.
+- Platform fees must be transparently baked into the redemption and payout structure.
+Let’s redesign the PuffPass redemption flow, mobile layout, and microcopy with those constraints in mind.
+
+🔒 Updated PuffPass Redemption Flow (Closed Loop)
+Step 1: View PuffPass
+[PuffPass Card]
+Tier: Gold
+Points: 1,250
+Progress: 75% to Platinum
+
+[See Rewards] →
+
+
+Step 2: Choose Reward
+🎁 Redeem Your Points
+
+Available Rewards:
+- $10 Gift Card (1,000 pts) → [Redeem]
+- Premium Upgrade (1,500 pts) → [Unlock]
+- Merchant Credit (2,000 pts) → [Apply to Purchase]
+
+[Back to PuffPass] ←
+
+
+🔐 Note: Withdrawals are only available to verified merchants and admins.
+
+Step 3: Confirmation
+✅ Success!
+
+You’ve redeemed 1,000 PuffPass points for a $10 Gift Card.
+Platform Fee: $0.50 (5%)
+Remaining Balance: 250 pts
+
+[View My Wallet] → [Earn More Points] →
+
+
+
+💸 Fee Structure Integration
+| Action | Fee Applied | Notes | 
+| Gift Card Redemption | 5% | Deducted from point value | 
+| Premium Upgrade | No fee | Internal feature unlock | 
+| Merchant Credit | 2.5% | Applied at point-of-sale | 
+| Admin Withdrawal | 1% | Only for verified admins | 
+
+
+Fees should be:
+- Visible before redemption
+- Logged in transaction history
+- Configurable via admin dashboard
+
+📱 Mobile-First Layout (Closed Loop UX)
+🔝 Header
+[MyCora Logo]        [☰ Menu]
+
+🌟 PuffPass Card
+Tier: Silver | Points: 850
+[See Rewards] →
+
+🎁 Rewards Center
+Redeem points for perks, upgrades, and merchant credits.
+[View Available Rewards] →
+
+💼 MyCora Wallet
+Track your balance, redemptions, and merchant credits.
+[Open Wallet] →
+
+🔐 Admin Portal (if verified)
+Manage payouts, fees, and merchant activity.
+[Enter Admin Mode] →
+
+📈 For Merchants
+Apply for verification to accept PuffPass credits.
+[Apply Now] →
+
+
+
+✨ Updated Microcopy (Closed Loop Language)
+| Element | Tooltip / Microcopy | 
+| PuffPass Card | “Your loyalty pass for earning and redeeming across MyCora.” | 
+| Points Balance | “Points can be redeemed for perks — not withdrawn.” | 
+| Merchant Credit | “Use your PuffPass at verified merchants. Withdrawals restricted.” | 
+| Admin Portal | “Admins can manage payouts and fees. Users redeem only.” | 
+| Fee Disclosure | “A small platform fee helps keep MyCora running smoothly.” | 
+
+
+
+Would you like help building the admin dashboard, merchant verification flow, or fee configuration panel next? We can make this system airtight and elegant.
