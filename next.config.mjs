@@ -12,12 +12,13 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
   },
 
+  // React strict mode configuration
+  reactStrictMode: process.env.NODE_ENV !== 'production',
+
   // Reduce bundle size
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
-    // Disable strict mode in production to prevent hydration issues
-    reactStrictMode: process.env.NODE_ENV !== 'production'
+    optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query']
   },
   
   serverExternalPackages: ['sharp'],

@@ -5,7 +5,7 @@ import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rai
 import { WagmiProvider } from 'wagmi'
 import { sepolia, polygon } from 'wagmi/chains'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import { ThemeProvider } from './theme-provider'
+import { ThemeProvider } from '../components/theme-provider'
 import { ChunkErrorRecoveryWrapper } from '../components/ChunkErrorRecoveryWrapper'
 import { ClientErrorBoundary } from '../components/client-error-boundary'
 import { useEffect, useState, Suspense } from 'react'
