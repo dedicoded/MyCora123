@@ -164,8 +164,9 @@ export default function Page() {
           Welcome to MyCora
         </h1>
         <p className="text-xl text-mycora-sage max-w-3xl mx-auto mb-8">
-          The comprehensive blockchain platform for security tokens, compliance management, and decentralized finance
-          solutions. Join the mycelial network where trust grows organically.
+          Earn rewards like Five Star • Pay like CashApp • Redeem like Starbucks
+          <br />
+          <span className="text-lg opacity-80">Your everyday purchases, now powered by PuffPass rewards</span>
         </p>
         <div className="flex items-center justify-center space-x-4 mb-8">
           <TrustIndicator level="platform" />
@@ -195,11 +196,11 @@ export default function Page() {
           <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-moss rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <NetworkNode size="sm" active={true} />
           </div>
-          <CardTitle className="text-mycora-earth">Security Tokens</CardTitle>
+          <CardTitle className="text-mycora-earth">Smart Payments</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-mycora-sage">
-            Issue and manage compliant security tokens with built-in regulatory features and automated compliance.
+            Pay with your phone, earn points automatically, and enjoy seamless transactions everywhere you shop.
           </p>
         </CardContent>
       </Card>
@@ -209,11 +210,11 @@ export default function Page() {
           <div className="w-16 h-16 bg-gradient-to-br from-mycora-moss to-mycora-sage rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <ComplianceBadge status="verified" size="lg" />
           </div>
-          <CardTitle className="text-mycora-earth">Compliance Engine</CardTitle>
+          <CardTitle className="text-mycora-earth">Unlock Rewards</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-mycora-sage">
-            Automated KYC/AML checks, risk assessment, and regulatory reporting for global markets.
+            Verify your identity once, unlock exclusive perks, and access premium features across the network.
           </p>
         </CardContent>
       </Card>
@@ -223,11 +224,11 @@ export default function Page() {
           <div className="w-16 h-16 bg-gradient-to-br from-mycora-sage to-mycora-earth rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <TrustIndicator level="secure" />
           </div>
-          <CardTitle className="text-mycora-earth">DeFi Integration</CardTitle>
+          <CardTitle className="text-mycora-earth">MyCora Wallet</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-mycora-sage">
-            Connect to decentralized finance protocols with institutional-grade security and compliance.
+            Store, send, and grow your money with bank-level security and instant transactions.
           </p>
         </CardContent>
       </Card>
