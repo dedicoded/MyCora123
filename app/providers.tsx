@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect } from "react"
@@ -5,9 +6,9 @@ import { WagmiProvider } from "wagmi"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { ThemeProvider } from '@/components/theme-provider'
-import { ClientErrorBoundary } from '@/components/client-error-boundary'
+import ClientErrorBoundary from '@/components/client-error-boundary'
 import { config } from "../components/WalletConnect"
-import { ChunkErrorRecovery } from '@/components/client-chunk-error-recovery'
+import ChunkErrorRecovery from '@/components/client-chunk-error-recovery'
 
 import '@rainbow-me/rainbowkit/styles.css'
 
@@ -20,38 +21,23 @@ const queryClient = new QueryClient({
   },
 })
 
-// Ensure config is available before using it
-const validateConfig = () => {
-  if (typeof window === 'undefined') return null // Server-side
-  return config // Client-side
-}
-
 function EnvironmentValidator() {
   useEffect(() => {
-    // Only run client-side after hydration and ensure we're in development
+    // Only run client-side after hydration
     if (typeof window === 'undefined') return
 
-    const required = [
-      'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
-      'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS',
-      'NEXT_PUBLIC_NETWORK'
+    const requiredVars = [
+      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+      process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS,
+      process.env.NEXT_PUBLIC_NETWORK
     ]
 
-    const envValues = {
-      walletConnect: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ? 'FOUND' : 'MISSING',
-      contract: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS ? 'FOUND' : 'MISSING',
-      network: process.env.NEXT_PUBLIC_NETWORK ? 'FOUND' : 'MISSING'
-    }
-
-    const missing = required.filter(key => {
-      const value = process.env[key]
+    const missing = requiredVars.filter(value => {
       return !value || value === '' || value === 'undefined' || value === 'your_project_id_here'
     })
 
-    console.log('[v0] Actual env values:', envValues)
-    
     if (missing.length > 0 && process.env.NODE_ENV === 'development') {
-      console.warn('[v0] Missing critical environment variables:', missing)
+      console.warn('[v0] Missing critical environment variables:', missing.length, 'variables')
     } else {
       console.log('[v0] ✅ All environment variables loaded successfully')
     }
@@ -60,34 +46,25 @@ function EnvironmentValidator() {
   return null
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false)
+export default function Providers({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  // Validate config availability
+  const validConfig = typeof window !== 'undefined' ? config : null
 
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
+  if (typeof window !== 'undefined' && !validConfig) {
     return (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <div>Loading wallet configuration...</div>
-      </ThemeProvider>
-    )
-  }
-
-  const validConfig = validateConfig()
-
-  if (!validConfig) {
-    return (
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <div>Error: Wallet configuration not available</div>
+        <div className="p-4 text-red-600">Error: Wallet configuration not available</div>
       </ThemeProvider>
     )
   }
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <WagmiProvider config={validConfig}>
+      <WagmiProvider config={validConfig || config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             <ClientErrorBoundary>
