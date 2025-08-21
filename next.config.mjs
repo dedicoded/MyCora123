@@ -16,11 +16,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    outputFileTracingIncludes: {
-      '/': ['./public/**/*'],
-    },
-    esmExternals: 'loose',
+  outputFileTracingIncludes: {
+    '/': ['./public/**/*'],
   },
   // Replit optimized configuration
   serverRuntimeConfig: {

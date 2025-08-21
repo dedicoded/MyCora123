@@ -1,4 +1,3 @@
-
 console.log('🔍 MyCora Environment Validation\n');
 
 // Configuration-driven approach
@@ -10,27 +9,27 @@ const envConfig = {
   ],
   optional: [
     'CYBRID_API_KEY',
-    'BICONOMY_API_KEY', 
+    'BICONOMY_API_KEY',
     'BICONOMY_PROJECT_ID',
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY'
   ],
   deployment: [
+    'DEPLOYER_PRIVATE_KEY',
     'ETHERSCAN_API_KEY',
-    'PRIVATE_KEY',
-    'INFURA_PROJECT_ID'
+    'POLYGONSCAN_API_KEY'
   ]
 };
 
 function validateEnvVar(varName, isRequired = true) {
   const value = process.env[varName];
   const isPlaceholder = value && (
-    value.includes('your_') || 
+    value.includes('your_') ||
     value.includes('0x0000000000000000000000000000000000000000') ||
     value.includes('placeholder') ||
     value === 'changeme'
   );
-  
+
   if (!value) {
     return { status: 'missing', message: 'Missing' };
   } else if (isPlaceholder) {
@@ -47,7 +46,7 @@ function validateEnvVar(varName, isRequired = true) {
 function checkEnvironmentGroup(groupName, variables, isRequired = true) {
   console.log(`📋 ${groupName} Variables:`);
   const issues = [];
-  
+
   variables.forEach(varName => {
     const result = validateEnvVar(varName, isRequired);
     const icons = {
@@ -56,14 +55,14 @@ function checkEnvironmentGroup(groupName, variables, isRequired = true) {
       placeholder: '⚠️',
       invalid: '❌'
     };
-    
+
     console.log(`${icons[result.status]} ${varName}: ${result.message}`);
-    
+
     if (isRequired && result.status !== 'valid') {
       issues.push(varName);
     }
   });
-  
+
   return issues;
 }
 
@@ -81,7 +80,7 @@ if (requiredIssues.length > 0) {
   console.info(`2. Add each missing variable as a new secret`);
   console.info(`3. Restart using "Clean Dev Server" workflow`);
   console.info(`\n💡 Missing env vars will cause runtime errors`);
-  
+
   // Specific guidance
   console.info(`\n🔗 Quick fixes:`);
   if (requiredIssues.includes('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID')) {
@@ -90,12 +89,12 @@ if (requiredIssues.length > 0) {
   if (requiredIssues.includes('NEXT_PUBLIC_MCC_CONTRACT_ADDRESS')) {
     console.info(`   - Deploy contracts first: pnpm run deploy:sepolia`);
   }
-  
+
   process.exit(1);
 } else {
   console.log('✅ All required environment variables are properly configured');
   console.log('✅ Application should start without environment errors');
-  
+
   if (deploymentIssues.length > 0) {
     console.log('\n⚠️ Missing deployment variables - contract deployment may fail');
     console.log(`   Missing: ${deploymentIssues.join(', ')}`);
