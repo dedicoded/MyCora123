@@ -46,7 +46,7 @@
     "sync:replit": "node scripts/sync-env-to-replit.js",
     "diagnose": "node scripts/component-diagnostic.js",
     "typechain": "hardhat typechain",
-    "compile": "hardhat compile",
+    "compile": "hardhat compile && hardhat typechain",
     "test:contracts": "hardhat test"
   },
   "dependencies": {
