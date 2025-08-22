@@ -250,5 +250,83 @@ export const defaultSecurityConfig = {
   apiKeyRequired: false
 }
 
+// MFA verification method
+  async verifyMFA(sessionId: string, code: string): Promise<{
+    verified: boolean
+    remainingAttempts?: number
+  }> {
+    // Mock MFA verification - replace with actual implementation
+    const isValidCode = code.length === 6 && /^\d+$/.test(code)
+    
+    if (isValidCode) {
+      return { verified: true }
+    }
+    
+    return { 
+      verified: false, 
+      remainingAttempts: 2 
+    }
+  }
+
+  // Biometric verification method
+  async verifyBiometric(sessionId: string, biometricData: any): Promise<{
+    verified: boolean
+    confidence: number
+    flags: string[]
+  }> {
+    // Mock biometric verification - replace with actual implementation
+    const mockConfidence = Math.random() * 100
+    const verified = mockConfidence > 70
+    
+    return {
+      verified,
+      confidence: Math.round(mockConfidence),
+      flags: verified ? [] : ['LOW_CONFIDENCE']
+    }
+  }
+
+  // Secure session creation
+  async createSecureSession(params: {
+    userId: string
+    deviceInfo: any
+    ipAddress: string
+    location: { country: string, city: string }
+  }): Promise<{
+    sessionId: string
+    riskScore: number
+    expiresAt: number
+  }> {
+    const sessionId = crypto.randomBytes(32).toString('hex')
+    const riskScore = Math.floor(Math.random() * 100) // Mock risk calculation
+    const expiresAt = Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    
+    this.logSecurityEvent('SESSION_CREATED', params.ipAddress, {
+      userId: params.userId,
+      sessionId,
+      riskScore
+    })
+    
+    return {
+      sessionId,
+      riskScore,
+      expiresAt
+    }
+  }
+}
+
+export const securityEngine = new SecurityEngine()
+
+// Export the default configuration for external use
+export const defaultSecurityConfig = {
+  maxRequestsPerMinute: 60,
+  maxRequestsPerHour: 1000,
+  allowedOrigins: [
+    process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000',
+    'https://*.replit.dev',
+    'https://*.repl.co'
+  ],
+  apiKeyRequired: false
+}
+
 // Auto-cleanup every 5 minutes
 setInterval(() => securityEngine.cleanup(), 5 * 60 * 1000)

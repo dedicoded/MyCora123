@@ -1,8 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { securityEngine } from "@/lib/security-engine"
 
-const securityEngine = new SecurityEngine(defaultSecurityConfig)
-
 export async function POST(request: NextRequest) {
   try {
     const { sessionId, code, method } = await request.json()
