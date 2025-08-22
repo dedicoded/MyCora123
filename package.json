@@ -21,9 +21,9 @@
     "dev": "next dev -p 5000 -H 0.0.0.0",
     "dev:clean": "pkill -f 'next dev' || true && fuser -k 3000/tcp 2>/dev/null || true && rm -rf .next && pnpm store prune && pnpm run dev",
     "dev:auto": "node scripts/port-check.js && pnpm run dev",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:fix": "next lint --fix",
-    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:check": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "perf:audit": "node scripts/performance-audit.js",
     "prepare": "echo 'Skipping prepare script in deployment'",
@@ -31,7 +31,7 @@
     "start": "pnpm run validate:replit && pnpm run dev:clean",
     "restart": "pkill -f 'next dev' || true && pnpm run dev",
     "check-env": "node scripts/env-check.js",
-    "test:contracts": "npx hardhat test",
+    "test:contracts": "hardhat test",
     "test:deployment": "node scripts/test-deployment.js",
     "validate": "tsx scripts/production-validation.ts",
     "validate:compile": "tsc scripts/production-validation.ts && node scripts/production-validation.js",
@@ -44,7 +44,10 @@
     "audit:production": "echo 'Production audit skipped for faster deployment'",
     "deploy:replit": "pnpm run build && pnpm start",
     "sync:replit": "node scripts/sync-env-to-replit.js",
-    "diagnose": "node scripts/component-diagnostic.js"
+    "diagnose": "node scripts/component-diagnostic.js",
+    "typechain": "hardhat typechain",
+    "compile": "hardhat compile",
+    "test:contracts": "hardhat test"
   },
   "dependencies": {
     "@biconomy/mexa": "latest",
