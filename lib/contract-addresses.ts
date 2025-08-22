@@ -1,5 +1,10 @@
 
 // Contract address configuration for different networks
+// Fallback for empty contract addresses to prevent ENS errors
+const getValidAddress = (address: string | undefined): string => {
+  return address && address.trim() !== '' ? address : '0x0000000000000000000000000000000000000000'
+}
+
 export const CONTRACT_ADDRESSES = {
   sepolia: {
     MCC_TOKEN: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS || '0x6C7Bb1ABF40C62cEbF95a8c57E24F0b8d7a88888',

@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { SecurityEngine, defaultSecurityConfig } from "@/lib/security-engine"
-
-const securityEngine = new SecurityEngine(defaultSecurityConfig)
+import { securityEngine } from "@/lib/security-engine"
 
 export async function POST(request: NextRequest) {
   try {

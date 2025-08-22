@@ -28,7 +28,7 @@
     "perf:audit": "node scripts/performance-audit.js",
     "prepare": "echo 'Skipping prepare script in deployment'",
     "size-check": "npx size-limit",
-    "start": "pnpm run validate:replit && pnpm run dev:clean",
+    "start": "next start -p 5000",
     "restart": "pkill -f 'next dev' || true && pnpm run dev",
     "check-env": "node scripts/env-check.js",
     "test:contracts": "hardhat test",

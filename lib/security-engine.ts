@@ -16,7 +16,7 @@ interface RateLimitEntry {
   blocked: boolean
 }
 
-class SecurityEngine {
+export class SecurityEngine {
   private rateLimitMap = new Map<string, RateLimitEntry>()
   private blockedIPs = new Set<string>()
   private securityEvents: Array<{
