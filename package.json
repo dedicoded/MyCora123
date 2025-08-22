@@ -46,8 +46,7 @@
     "sync:replit": "node scripts/sync-env-to-replit.js",
     "diagnose": "node scripts/component-diagnostic.js",
     "typechain": "hardhat typechain",
-    "compile": "hardhat compile && pnpm run typechain",
-    "test:contracts": "hardhat test"
+    "compile": "hardhat compile && pnpm run typechain"
   },
   "dependencies": {
     "@biconomy/mexa": "latest",
@@ -119,6 +118,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "ethers": "latest",
     "express": "latest",
+    "framer-motion": "12.23.12",
     "fs": "latest",
     "geist": "latest",
     "happy-dom": "latest",
