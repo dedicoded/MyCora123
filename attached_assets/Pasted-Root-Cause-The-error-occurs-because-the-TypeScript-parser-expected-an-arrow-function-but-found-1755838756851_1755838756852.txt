@@ -1,0 +1,153 @@
+Root Cause
+The error occurs because the TypeScript parser expected an arrow function (=>) but found an opening parenthesis ( — which suggests:
+
+A function signature is malformed
+There’s a missing } or ) earlier in the file
+An async method is incorrectly typed or formatted
+Even though async verifyMFA(...) is valid syntax, the error implies that something before this line broke the parser.
+
+✅ How to Fix It
+🛠️ Step 1: Check for Missing Braces or Parentheses
+Look at the code above the verifyMFA method — especially around class or object definitions.
+
+Example of a broken structure:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+⌄
+⌄
+class SecurityEngine {
+  constructor() {
+    this.init()
+    // forgot closing brace!
+  
+  async verifyMFA(sessionId: string, code: string): Promise<{ ... }> {
+    // ...
+  }
+}
+Or:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+⌄
+const config = {
+  timeout: 5000,
+  retries: 3
+  // missing comma or closing }
+  
+  async verifyMFA(...) { ... }
+🔍 Fix: Ensure all objects, classes, and functions are properly closed with }, ), and , where needed.
+
+🛠️ Step 2: Correct Syntax for Async Methods
+Make sure the method is defined correctly inside a class:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+⌄
+⌄
+⌄
+class SecurityEngine {
+  // ✅ Correct
+  async verifyMFA(sessionId: string, code: string): Promise<{
+    verified: boolean;
+    remainingAttempts?: number;
+  }> {
+    // implementation
+  }
+}
+❌ Don’t write it as a standalone function without proper context.
+
+🛠️ Step 3: Add Semicolon or Comma if Used in Object
+If SecurityEngine is an object (not a class), you need a comma after the previous member:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+⌄
+⌄
+⌄
+const SecurityEngine = {
+  init() {
+    // ...
+  }, // ← missing comma here breaks the next line
+
+  async verifyMFA(sessionId: string, code: string): Promise<{ ... }> {
+    // ...
+  }
+};
+✅ Add the comma!
+
+🛠️ Step 4: Use a Linter or Editor with TS Support
+Paste the file into VS Code or Replit editor — it will highlight:
+
+Unclosed brackets
+Missing commas
+Syntax errors
+Or run locally:
+
+bash
+
+
+1
+npx tsc lib/security-engine.ts --noEmit
+To catch errors without building.
+
+✅ Summary of Fixes
+1️⃣
+Open
+lib/security-engine.ts
+2️⃣
+Look for
+unclosed braces {
+,
+missing commas
+, or
+malformed functions
+above line 254
+3️⃣
+Ensure
+verifyMFA
+is properly defined inside a class or object
+4️⃣
+Fix any syntax issues and save
+5️⃣
+Test with
+pnpm run build
+
+Once fixed, your build should proceed past this error.
