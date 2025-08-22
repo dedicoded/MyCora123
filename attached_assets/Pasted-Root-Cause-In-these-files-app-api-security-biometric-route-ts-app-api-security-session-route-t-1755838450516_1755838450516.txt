@@ -1,0 +1,157 @@
+Root Cause
+In these files:
+
+app/api/security/biometric/route.ts
+app/api/security/session/route.ts
+You have:
+
+ts
+
+
+1
+import { SecurityEngine } from '@/lib/security-engine';
+But the file lib/security-engine.ts (or .js) does not export a named export called SecurityEngine.
+
+Possibilities:
+
+It uses export default instead of export const SecurityEngine
+The file doesn’t exist
+There's a typo in the export name
+The class/function isn't defined
+✅ How to Fix It
+🔧 Step 1: Check lib/security-engine.ts
+Open lib/security-engine.ts and verify how SecurityEngine is exported.
+
+✅ Correct: Named Export
+
+ts
+
+
+1
+2
+3
+⌄
+export class SecurityEngine {
+  // your logic
+}
+or
+
+ts
+
+
+1
+export const SecurityEngine = () => { ... }
+❌ Incorrect (causes your error):
+
+ts
+
+
+1
+2
+class SecurityEngine { ... }
+// no export!
+or
+
+ts
+
+
+1
+export default class SecurityEngine { ... }
+If it's a default export, then your import should be:
+
+ts
+
+
+1
+import SecurityEngine from '@/lib/security-engine'; // no braces
+But if you use named export, keep the braces.
+
+🛠️ Step 2: Match Export and Import
+export class SecurityEngine
+import { SecurityEngine } from '@/lib/security-engine'
+✅
+export default class SecurityEngine
+import SecurityEngine from '@/lib/security-engine'
+✅
+class SecurityEngine
+(no export)
+❌ Will fail
+
+💡 Step 3: Add a Fallback or Stub (Optional, for Build)
+If SecurityEngine is not ready, create a minimal version to allow the build:
+
+lib/security-engine.ts
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+⌄
+⌄
+⌄
+⌄
+export class SecurityEngine {
+  constructor(config = {}) {
+    this.config = config;
+  }
+
+  async verifyBiometric(data) {
+    // TODO: Implement biometric verification
+    return { success: true };
+  }
+
+  async validateSession(token) {
+    // TODO: Implement session validation
+    return { valid: true };
+  }
+}
+This lets the build proceed while you implement the real logic.
+
+🧪 Step 4: Test the Build Locally
+Run:
+
+bash
+
+
+1
+pnpm run build
+If it succeeds, deploy again.
+
+✅ Summary of Fixes
+1️⃣
+Open
+lib/security-engine.ts
+2️⃣
+Ensure
+SecurityEngine
+is exported:
+export class SecurityEngine
+or
+export default
+3️⃣
+Match import syntax in
+route.ts
+files
+4️⃣
+If missing, create a stub implementation
+5️⃣
+Run
+pnpm run build
+to verify
+
+🔗 Relevant Docs
+[Next.js Module Not Found](
