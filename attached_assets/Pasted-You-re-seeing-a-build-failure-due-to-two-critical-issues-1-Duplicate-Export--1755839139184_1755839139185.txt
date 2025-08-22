@@ -1,0 +1,104 @@
+You're seeing a **build failure** due to two critical issues:
+
+---
+
+### ❌ 1. **Duplicate Export in `ChunkErrorRecoveryWrapper.tsx`**
+
+> **Error**:  
+> ```
+> Duplicate export 'ChunkErrorRecoveryWrapper' causing webpack compilation failure
+> ```
+
+This means your component has **both**:
+- A named export: `export const ChunkErrorRecoveryWrapper = ...`
+- And a default export: `export default ChunkErrorRecoveryWrapper`
+
+Or worse, both are defined in the same file.
+
+#### ✅ Fix: Keep Only One Export
+
+In `components/ChunkErrorRecoveryWrapper.tsx`, remove one of them.
+
+✅ **Correct (default export):**
+```tsx
+export default function ChunkErrorRecoveryWrapper({ children }) {
+  return <div>{children}</div>;
+}
+```
+
+❌ **Incorrect (duplicate exports):**
+```tsx
+export default function ChunkErrorRecoveryWrapper({ children }) { ... }
+export const ChunkErrorRecoveryWrapper = ({ children }) => { ... } // ← This causes conflict!
+```
+
+> 🚫 Never have both `export default` and `export const` for the same name.
+
+---
+
+### ❌ 2. **Module Parse Error in `security-engine.ts`**
+
+> **Error**:  
+> ```
+> Build process failing during Next.js production build step with module parse error
+> File contains both named export and default export for the same component causing module conflicts
+> ```
+
+This suggests that `lib/security-engine.ts` also has a **duplicate export** — possibly from a class or function.
+
+#### ✅ Fix: Check for Duplicate Exports
+
+Open `lib/security-engine.ts` and look for:
+
+```ts
+export default class SecurityEngine { ... }
+export class SecurityEngine { ... } // ← Conflict!
+```
+
+Or:
+
+```ts
+export const SecurityEngine = () => { ... }
+export default SecurityEngine
+```
+
+🔧 **Fix**: Remove one of the exports.
+
+✅ Use only one:
+```ts
+export class SecurityEngine {
+  // your logic
+}
+```
+or
+```ts
+export default class SecurityEngine {
+  // your logic
+}
+```
+
+Then update imports accordingly:
+- If using `export class`, import as: `import { SecurityEngine } from '@/lib/security-engine'`
+- If using `export default`, import as: `import SecurityEngine from '@/lib/security-engine'`
+
+---
+
+### ✅ Summary of Fixes
+
+| Issue | Fix |
+|------|-----|
+| 1️⃣ Duplicate export in `ChunkErrorRecoveryWrapper.tsx` | Keep only one export (`default` or `named`) |
+| 2️⃣ Module parse error in `security-engine.ts` | Remove duplicate export (e.g., `export default` + `export class`) |
+
+---
+
+### 🧪 Test After Fixing
+
+Run:
+```bash
+pnpm run build
+```
+
+If it succeeds, deploy again.
+
+Let me know what the code looks like in those files — I’ll help you clean up the exports!
