@@ -9,3 +9,6 @@ const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error
 export function ChunkErrorRecoveryWrapper({ children }: { children: React.ReactNode }) {
   return <ChunkErrorRecovery>{children}</ChunkErrorRecovery>
 }
+
+export { ChunkErrorRecoveryWrapper }
+export default ChunkErrorRecoveryWrapper

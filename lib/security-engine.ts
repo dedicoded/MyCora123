@@ -234,23 +234,8 @@ export class SecurityEngine {
     const dayAgo = now - (24 * 60 * 60 * 1000)
     this.securityEvents = this.securityEvents.filter(event => event.timestamp > dayAgo)
   }
-}
 
-export const securityEngine = new SecurityEngine()
-
-// Export the default configuration for external use
-export const defaultSecurityConfig = {
-  maxRequestsPerMinute: 60,
-  maxRequestsPerHour: 1000,
-  allowedOrigins: [
-    process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000',
-    'https://*.replit.dev',
-    'https://*.repl.co'
-  ],
-  apiKeyRequired: false
-}
-
-// MFA verification method
+  // MFA verification method
   async verifyMFA(sessionId: string, code: string): Promise<{
     verified: boolean
     remainingAttempts?: number

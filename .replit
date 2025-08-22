@@ -25,7 +25,7 @@ localPort = 5000
 externalPort = 5000
 
 [workflows]
-runButton = "Test Build"
+runButton = "Quick Build Test"
 
 [[workflows.workflow]]
 name = "Build and Start"
@@ -78,3 +78,12 @@ args = "NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm run start"
+
+[[workflows.workflow]]
+name = "Quick Build Test"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build"
