@@ -1,0 +1,223 @@
+🔴 Current Issues Summary
+ISSUE
+STATUS
+❌
+run = "npm run dev"
+Blocked — Replit won’t deploy
+dev
+mode
+❌
+Missing start script
+Your
+package.json
+lacks
+"start": "next start"
+❌ Missing env vars
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+, etc. not set
+❌ No build verification
+Unclear if
+npm run build
+works
+
+Let’s fix them all.
+
+✅ Step 1: Fix package.json Scripts
+Ensure your package.json includes:
+
+json
+
+
+1
+2
+3
+4
+5
+⌄
+"scripts": {
+  "dev": "next dev -p 5000",
+  "build": "next build",
+  "start": "next start -p 5000"
+}
+✅ This adds the missing start script required for production. 
+
+Without "start", Replit can't run your app after building.
+
+✅ Step 2: Update .replit File (Correct Way)
+Replit uses .replit to define how your app runs.
+
+Create or edit .replit:
+
+ini
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+[env]
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = "${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}"
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS = "${NEXT_PUBLIC_MCC_CONTRACT_ADDRESS}"
+NEXT_PUBLIC_NETWORK = "${NEXT_PUBLIC_NETWORK}"
+CYBRID_API_KEY = "${CYBRID_API_KEY}"
+BICONOMY_API_KEY = "${BICONOMY_API_KEY}"
+BICONOMY_PROJECT_ID = "${BICONOMY_PROJECT_ID}"
+SUPABASE_URL = "${SUPABASE_URL}"
+SUPABASE_ANON_KEY = "${SUPABASE_ANON_KEY}"
+DEPLOYER_PRIVATE_KEY = "${DEPLOYER_PRIVATE_KEY}"
+ETHERSCAN_API_KEY = "${ETHERSCAN_API_KEY}"
+POLYGONSCAN_API_KEY = "${POLYGONSCAN_API_KEY}"
+
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
+
+run = "pnpm run build && pnpm run start"
+🔐 All variables are pulled from Secrets tab
+✅ Uses pnpm (your project’s package manager)
+✅ Builds then starts in production mode 
+
+✅ Step 3: Add Required Environment Variables
+Go to the Secrets tab in Replit and add these:
+
+KEY
+VALUE
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+Your project ID from
+cloud.reown.com
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS
+Your deployed contract address
+NEXT_PUBLIC_NETWORK
+sepolia
+or
+mainnet
+CYBRID_API_KEY
+From Cybrid dashboard
+BICONOMY_API_KEY
+From Biconomy
+BICONOMY_PROJECT_ID
+From Biconomy
+SUPABASE_URL
+https://xxx.supabase.co
+SUPABASE_ANON_KEY
+eyJhbGciOiJIUzI1NiIsInR5cCI6...
+DEPLOYER_PRIVATE_KEY
+0x...
+(without "0x" if required)
+ETHERSCAN_API_KEY
+From Etherscan
+POLYGONSCAN_API_KEY
+From Polygonscan
+
+✅ These must match what’s in your env-check.js.
+
+✅ Step 4: Verify Build Works Locally
+Before deploying, test the build command:
+
+bash
+
+
+1
+pnpm run build
+Expected output:
+
+
+
+1
+2
+Creating an optimized production build...
+Compiled successfully
+If it fails:
+
+Fix any import errors (like ChunkErrorRecoveryWrapper)
+Ensure all dependencies are in dependencies, not devDependencies if used in runtime
+✅ Step 5: Fix Import Errors (e.g., ChunkErrorRecoveryWrapper)
+You previously saw:
+
+
+
+1
+Attempted import error: '../components/ChunkErrorRecoveryWrapper' does not contain a default export
+🔧 Fix It
+In components/ChunkErrorRecoveryWrapper.tsx, make sure it exports default:
+
+ts
+
+
+1
+2
+3
+⌄
+export default function ChunkErrorRecoveryWrapper({ children }) {
+  return <div>{children}</div>;
+}
+Or, if using named export, update app/providers.tsx:
+
+ts
+
+
+1
+import { ChunkErrorRecoveryWrapper } from '../components/ChunkErrorRecoveryWrapper';
+✅ Match the export style!
+
+✅ Step 6: Allow Replit Domain in Reown (Critical)
+To fix:
+
+
+
+1
+Origin https://...replit.dev not found on Allowlist
+Go to https://cloud.reown.com → Project Settings → Allowed Origins → Add:
+
+
+
+1
+https://*.replit.dev
+This allows all Replit previews to connect via WalletConnect.
+
+✅ Final Checklist
+STEP
+DONE?
+1️⃣ Added
+"start": "next start -p 5000"
+to
+package.json
+✅
+2️⃣ Updated
+.replit
+with env vars and
+run = "pnpm run build && pnpm run start"
+✅
+3️⃣ Added all required secrets in Replit Secrets tab
+✅
+4️⃣ Ran
+pnpm run build
+successfully
+✅
+5️⃣ Fixed
+ChunkErrorRecoveryWrapper
+export/import
+✅
+6️⃣ Whitelisted
+https://*.replit.dev
+on
+cloud.reown.com
+✅
+
+🎉 After this, your app will:
+
+Build successfully
+Run in production mode
+Connect to WalletConnect
+Deploy without security blocks
+Let me know when you’ve updated .replit — I’ll help verify it’s ready to go live!
