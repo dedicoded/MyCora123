@@ -25,7 +25,7 @@ localPort = 5000
 externalPort = 5000
 
 [workflows]
-runButton = "Build and Start"
+runButton = "Optimized Build"
 
 [[workflows.workflow]]
 name = "Build and Start"
@@ -35,6 +35,19 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run start"
+
+[[workflows.workflow]]
+name = "Optimized Build"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_OPTIONS=\"--max-old-space-size=2048\" pnpm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
