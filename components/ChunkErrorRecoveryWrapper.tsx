@@ -1,4 +1,3 @@
-
 'use client'
 
 import dynamic from 'next/dynamic'
@@ -7,4 +6,6 @@ const ChunkErrorRecovery = dynamic(() => import('@/components/client-chunk-error
   ssr: false
 })
 
-export default ChunkErrorRecovery
+export default function ChunkErrorRecoveryWrapper({ children }: { children: React.ReactNode }) {
+  return <ChunkErrorRecovery>{children}</ChunkErrorRecovery>
+}

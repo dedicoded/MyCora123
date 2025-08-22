@@ -1,4 +1,3 @@
-
 'use client'
 
 import React from 'react'
@@ -14,7 +13,7 @@ interface Props {
   fallback?: React.ComponentType<{ error: Error; reset: () => void }>
 }
 
-export class ClientErrorBoundary extends React.Component<Props, ErrorBoundaryState> {
+export default class ClientErrorBoundary extends React.Component<Props, ErrorBoundaryState> {
   constructor(props: Props) {
     super(props)
     this.state = { hasError: false }
@@ -41,8 +40,8 @@ export class ClientErrorBoundary extends React.Component<Props, ErrorBoundarySta
 
       if (Fallback && this.state.error) {
         return (
-          <Fallback 
-            error={this.state.error} 
+          <Fallback
+            error={this.state.error}
             reset={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
           />
         )

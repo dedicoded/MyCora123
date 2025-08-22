@@ -6,8 +6,8 @@ import { WagmiProvider } from 'wagmi'
 import { sepolia, polygon } from 'wagmi/chains'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '../components/theme-provider'
-import { ChunkErrorRecoveryWrapper } from '../components/ChunkErrorRecoveryWrapper'
-import { ClientErrorBoundary } from '../components/client-error-boundary'
+import ChunkErrorRecoveryWrapper from '../components/ChunkErrorRecoveryWrapper'
+import ClientErrorBoundary from '../components/client-error-boundary'
 import { useEffect, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import type { Config } from 'wagmi'
@@ -34,7 +34,7 @@ const getStableConfig = () => {
 
 const config = getStableConfig()
 
-export default function ProvidersComponent({
+export default function Providers({
   children,
 }: {
   children: React.ReactNode

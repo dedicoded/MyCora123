@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Providers } from './providers'
+import Providers from './providers'
 import ChunkErrorRecovery from '@/components/ChunkErrorRecovery'
 import ClientErrorBoundary from '@/components/client-error-boundary'
 
