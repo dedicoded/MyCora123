@@ -315,3 +315,20 @@ export const defaultSecurityConfig = {
 
 // Auto-cleanup every 5 minutes
 setInterval(() => securityEngine.cleanup(), 5 * 60 * 1000)
+
+export const securityEngine = new SecurityEngine()
+
+// Export the default configuration for external use
+export const defaultSecurityConfig = {
+  maxRequestsPerMinute: 60,
+  maxRequestsPerHour: 1000,
+  allowedOrigins: [
+    process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5000',
+    'https://*.replit.dev',
+    'https://*.repl.co'
+  ],
+  apiKeyRequired: false
+}
+
+// Auto-cleanup every 5 minutes
+setInterval(() => securityEngine.cleanup(), 5 * 60 * 1000)
