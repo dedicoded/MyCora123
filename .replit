@@ -37,7 +37,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm run dev"
+args = "npm run dev"
 
 [[workflows.workflow]]
 name = "Deploy Ready Check"
@@ -103,3 +103,16 @@ args = "pnpm install --force"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm run dev:clean"
+
+[[workflows.workflow]]
+name = "Dev Server with pnpm"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install -g pnpm"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run dev"
