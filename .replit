@@ -1,12 +1,16 @@
+
 modules = ["nodejs-20", "web"]
-run = "npm run dev"
+
+[env]
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
 
 [nix]
 channel = "stable-25_05"
 packages = ["run"]
 
 [deployment]
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "pnpm run build && pnpm start"]
+build = "pnpm run build"
 
 [[ports]]
 localPort = 3000
@@ -19,3 +23,19 @@ externalPort = 3001
 [[ports]]
 localPort = 5000
 externalPort = 5000
+
+[workflows]
+runButton = "Build and Start"
+
+[[workflows.workflow]]
+name = "Build and Start"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run start"
