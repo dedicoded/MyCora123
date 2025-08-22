@@ -20,13 +20,13 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query']
   },
-  
+
   serverExternalPackages: ['sharp'],
 
   async headers() {
     return [
       {
-        source: '/_next/static/(.*)',
+        source: '/<_next/static/(.*)>',
         headers: [
           {
             key: 'Cache-Control',
