@@ -1,118 +1,16 @@
-modules = ["nodejs-20", "web", "postgresql-16"]
+modules = ["nodejs-20", "web"]
 run = "npm run dev"
 
 [nix]
 channel = "stable-25_05"
 
 [deployment]
-run = ["sh", "-c", "npm start"]
-build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm run dev"]
 
 [[ports]]
-localPort = 5000
+localPort = 3000
 externalPort = 80
 
 [[ports]]
 localPort = 3001
-
-[[ports]]
-localPort = 3002
-externalPort = 3002
-
-[[ports]]
-localPort = 3003
-externalPort = 3003
-
-[[ports]]
-localPort = 5000
-externalPort = 5000
-
-[workflows]
-runButton = "Dev Server"
-
-[[workflows.workflow]]
-name = "Dev Server"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-
-[[workflows.workflow]]
-name = "Deploy Ready Check"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run validate"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run build"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run test"
-
-[[workflows.workflow]]
-name = "Clean Dev Server"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm run dev:clean"
-
-[[workflows.workflow]]
-name = "Restart Dev Server"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pkill -f \"next dev\" || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev:clean"
-
-[[workflows.workflow]]
-name = "Quick Restart"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pkill -f \"next dev\" || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-
-[[workflows.workflow]]
-name = "Clean Install and Start"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm install --force"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm run dev:clean"
-
-[[workflows.workflow]]
-name = "Dev Server with pnpm"
-author = 46065244
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm install -g pnpm"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm run dev"
+externalPort = 3001
