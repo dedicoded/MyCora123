@@ -1,0 +1,119 @@
+et’s scaffold a clean, audit-grade ESLint + Hardhat setup that aligns with your TypeScript-first, reproducible dev environment. I’ll keep it modular, frictionless, and ready for onboarding or investor-grade collateral.
+
+🧱 1. Project Structure
+Assuming your repo is already initialized (pnpm init or similar), here’s the ideal layout:
+my-dapp/
+├── contracts/           # Solidity contracts
+├── scripts/             # Deployment & interaction scripts
+├── test/                # Hardhat tests
+├── typechain-types/     # Auto-generated TypeScript bindings
+├── hardhat.config.ts    # Hardhat config
+├── .eslintrc.json       # ESLint config
+├── tsconfig.json        # TypeScript config
+└── package.json
+
+
+
+📦 2. Install Dependencies
+Run this to install everything in one go:
+pnpm add -D hardhat typescript ts-node \
+  @nomicfoundation/hardhat-toolbox \
+  @typechain/hardhat typechain \
+  @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint prettier
+
+
+
+⚙️ 3. ESLint Config (.eslintrc.json)
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-explicit-any": "off"
+  }
+}
+
+
+
+🧠 4. TypeScript Config (tsconfig.json)
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "types": ["node", "hardhat"]
+  },
+  "include": ["./scripts", "./test", "./typechain-types", "./contracts"]
+}
+
+
+
+🛠️ 5. Hardhat Config (hardhat.config.ts)
+import { HardhatUserConfig } from "hardhat/config"
+import "@nomicfoundation/hardhat-toolbox"
+import "@typechain/hardhat"
+
+const config: HardhatUserConfig = {
+  solidity: "0.8.21",
+  typechain: {
+    outDir: "typechain-types",
+    target: "ethers-v6"
+  }
+}
+
+export default config
+
+
+
+🧪 6. Sample Test (test/Counter.ts)
+import { expect } from "chai"
+import { ethers } from "hardhat"
+
+describe("Counter", function () {
+  it("should increment", async function () {
+    const Counter = await ethers.getContractFactory("Counter")
+    const counter = await Counter.deploy()
+    await counter.increment()
+    expect(await counter.getCount()).to.equal(1)
+  })
+})
+
+
+
+🧼 7. Scripts for Clean Dev Flow
+Add these to package.json:
+"scripts": {
+  "lint": "eslint . --ext .ts",
+  "format": "prettier --write .",
+  "compile": "hardhat compile",
+  "test": "hardhat test",
+  "typechain": "hardhat typechain"
+}
+
+
+
+🧾 8. Optional: .prettierrc
+{
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2
+}
+
+
+
+Ready to go. This setup is reproducible, audit-grade, and onboarding-friendly. 
