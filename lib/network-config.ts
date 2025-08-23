@@ -21,19 +21,19 @@ export const NETWORK_CONFIGS: Record<string, NetworkConfig> = {
   mainnet: {
     chainId: 1,
     name: "Ethereum Mainnet",
-    rpcUrl: process.env.ETHEREUM_RPC_URL || "",
+    rpcUrl: safeGetEnv('ETHEREUM_RPC_URL', ''),
     blockExplorer: "https://etherscan.io",
     contracts: {
-      myCoraCoin: process.env.ETHEREUM_MYCORA_COIN_ADDRESS || "",
-      trustToken: process.env.ETHEREUM_TRUST_TOKEN_ADDRESS || "",
-      securityToken: process.env.ETHEREUM_SECURITY_TOKEN_ADDRESS || "",
-      utilityToken: process.env.ETHEREUM_UTILITY_TOKEN_ADDRESS || "",
-      puffPassRewards: process.env.ETHEREUM_PUFFPASS_REWARDS_ADDRESS || "",
-      paymentProcessor: process.env.ETHEREUM_PAYMENT_PROCESSOR_ADDRESS || "",
-      complianceRegistry: process.env.ETHEREUM_COMPLIANCE_REGISTRY_ADDRESS || "",
-      badgeRegistry: process.env.ETHEREUM_BADGE_REGISTRY_ADDRESS || "",
-      mccStaking: process.env.ETHEREUM_MCC_STAKING_ADDRESS || "",
-      fiatRailsController: process.env.ETHEREUM_FIAT_RAILS_CONTROLLER_ADDRESS || "",
+      myCoraCoin: safeGetEnv('ETHEREUM_MYCORA_COIN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      trustToken: safeGetEnv('ETHEREUM_TRUST_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      securityToken: safeGetEnv('ETHEREUM_SECURITY_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      utilityToken: safeGetEnv('ETHEREUM_UTILITY_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      puffPassRewards: safeGetEnv('ETHEREUM_PUFFPASS_REWARDS_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      paymentProcessor: safeGetEnv('ETHEREUM_PAYMENT_PROCESSOR_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      complianceRegistry: safeGetEnv('ETHEREUM_COMPLIANCE_REGISTRY_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      badgeRegistry: safeGetEnv('ETHEREUM_BADGE_REGISTRY_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      mccStaking: safeGetEnv('ETHEREUM_MCC_STAKING_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      fiatRailsController: safeGetEnv('ETHEREUM_FIAT_RAILS_CONTROLLER_ADDRESS', '0x0000000000000000000000000000000000000000'),
     },
   },
   polygon: {
@@ -75,29 +75,52 @@ export const NETWORK_CONFIGS: Record<string, NetworkConfig> = {
   sepolia: {
     chainId: 11155111,
     name: "Sepolia Testnet",
-    rpcUrl: process.env.SEPOLIA_RPC_URL || "",
+    rpcUrl: safeGetEnv('SEPOLIA_RPC_URL', ''),
     blockExplorer: "https://sepolia.etherscan.io",
     contracts: {
-      myCoraCoin: process.env.SEPOLIA_MYCORA_COIN_ADDRESS || "",
-      trustToken: process.env.SEPOLIA_TRUST_TOKEN_ADDRESS || "",
-      securityToken: process.env.SEPOLIA_SECURITY_TOKEN_ADDRESS || "",
-      utilityToken: process.env.SEPOLIA_UTILITY_TOKEN_ADDRESS || "",
-      puffPassRewards: process.env.SEPOLIA_PUFFPASS_REWARDS_ADDRESS || "",
-      paymentProcessor: process.env.SEPOLIA_PAYMENT_PROCESSOR_ADDRESS || "",
-      complianceRegistry: process.env.SEPOLIA_COMPLIANCE_REGISTRY_ADDRESS || "",
-      badgeRegistry: process.env.SEPOLIA_BADGE_REGISTRY_ADDRESS || "",
-      mccStaking: process.env.SEPOLIA_MCC_STAKING_ADDRESS || "",
-      fiatRailsController: process.env.SEPOLIA_FIAT_RAILS_CONTROLLER_ADDRESS || "",
+      myCoraCoin: safeGetEnv('SEPOLIA_MYCORA_COIN_ADDRESS', '0x6C7Bb1ABF40C62cEbF95a8c57E24F0b8d7a88888'),
+      trustToken: safeGetEnv('SEPOLIA_TRUST_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      securityToken: safeGetEnv('SEPOLIA_SECURITY_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      utilityToken: safeGetEnv('SEPOLIA_UTILITY_TOKEN_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      puffPassRewards: safeGetEnv('SEPOLIA_PUFFPASS_REWARDS_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      paymentProcessor: safeGetEnv('SEPOLIA_PAYMENT_PROCESSOR_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      complianceRegistry: safeGetEnv('SEPOLIA_COMPLIANCE_REGISTRY_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      badgeRegistry: safeGetEnv('SEPOLIA_BADGE_REGISTRY_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      mccStaking: safeGetEnv('SEPOLIA_MCC_STAKING_ADDRESS', '0x0000000000000000000000000000000000000000'),
+      fiatRailsController: safeGetEnv('SEPOLIA_FIAT_RAILS_CONTROLLER_ADDRESS', '0x0000000000000000000000000000000000000000'),
     },
   },
 }
 
+// Safe environment variable getter
+const safeGetEnv = (key: string, fallback: string = ""): string => {
+  const value = process.env[key]
+  if (!value || value.trim() === '' || value === 'undefined' || value === 'null') {
+    return fallback
+  }
+  return value
+}
+
 export function getCurrentNetworkConfig(): NetworkConfig {
-  const currentNetwork = process.env.NEXT_PUBLIC_NETWORK || "sepolia"
-  return NETWORK_CONFIGS[currentNetwork] || NETWORK_CONFIGS.sepolia
+  const currentNetwork = safeGetEnv('NEXT_PUBLIC_NETWORK', 'sepolia')
+  const config = NETWORK_CONFIGS[currentNetwork]
+  
+  if (!config) {
+    console.warn(`Network ${currentNetwork} not found, falling back to sepolia`)
+    return NETWORK_CONFIGS.sepolia
+  }
+  
+  return config
 }
 
 export function getContractAddress(contractName: keyof NetworkConfig["contracts"]): string {
   const config = getCurrentNetworkConfig()
-  return config.contracts[contractName] || ""
+  const address = config.contracts[contractName]
+  
+  // Return null address if not set properly to prevent ENS errors
+  if (!address || address.trim() === '' || address === 'undefined') {
+    return '0x0000000000000000000000000000000000000000'
+  }
+  
+  return address
 }

@@ -2,9 +2,22 @@
 // Contract address configuration for different networks
 // Fallback for empty contract addresses to prevent ENS errors
 const getValidAddress = (address: string | undefined): string => {
-  if (!address || address.trim() === '' || address === 'undefined' || address === 'null') {
+  if (!address || 
+      address.trim() === '' || 
+      address === 'undefined' || 
+      address === 'null' ||
+      address === '${' ||  // Handles unresolved template literals
+      address.includes('${') ||  // Handles partial template literals
+      address.length < 10) {  // Too short to be a valid address
     return '0x0000000000000000000000000000000000000000'
   }
+  
+  // Ensure it starts with 0x and is 42 characters long
+  if (!address.startsWith('0x') || address.length !== 42) {
+    console.warn(`Invalid address format: ${address}`)
+    return '0x0000000000000000000000000000000000000000'
+  }
+  
   return address
 }
 
