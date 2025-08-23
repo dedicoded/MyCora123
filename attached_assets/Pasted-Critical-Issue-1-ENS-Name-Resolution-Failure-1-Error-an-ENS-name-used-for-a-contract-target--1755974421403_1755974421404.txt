@@ -1,0 +1,265 @@
+Critical Issue 1: ENS Name Resolution Failure
+
+
+1
+Error: an ENS name used for a contract target must be correctly configured (value="", code=UNCONFIGURED_NAME)
+This means your application is trying to resolve an ENS name (like mycora.eth) as a contract address, but it's finding an empty string ("").
+
+🧠 Why This Is Happening
+From your codebase, I can see this is happening in your API routes (likely app/api/token-balance/route.ts and similar files). You're probably doing something like:
+
+ts
+
+
+1
+2
+// ❌ Problematic code
+const contract = new ethers.Contract("mycora.eth", abi, provider);
+But:
+
+The ENS name isn't configured properly
+Or the environment variable containing it is empty
+Or you're trying to resolve ENS during static generation (which happens at build time)
+✅ How to Fix It
+1. Use Direct Contract Addresses Instead of ENS
+In your .env file:
+
+env
+
+
+1
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS=0xYourContractAddressHere
+Then in your code:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+⌄
+// ✅ Correct approach
+const contractAddress = process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS;
+if (!contractAddress) {
+  throw new Error("Contract address not configured");
+}
+
+const contract = new ethers.Contract(contractAddress, abi, provider);
+2. Move ENS Resolution to Client-Side Code
+If you must use ENS, do it in client components only:
+
+tsx
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+⌄
+⌄
+⌄
+⌄
+⌄
+⌄
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function TokenBalance() {
+  const [balance, setBalance] = useState(0);
+  
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const address = await provider.resolveName("mycora.eth");
+        
+        if (!address) {
+          throw new Error("ENS name not configured");
+        }
+        
+        const contract = new ethers.Contract(address, abi, provider);
+        const balance = await contract.balanceOf(userAddress);
+        setBalance(ethers.utils.formatUnits(balance, 18));
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+      }
+    };
+    
+    fetchBalance();
+  }, []);
+  
+  return <div>Balance: {balance} MCC</div>;
+}
+⚠️ Never do ENS resolution during next build - it happens at build time and will cause failures like you're seeing. 
+
+🔴 Critical Issue 2: Deployment Timeout
+
+
+1
+Deployment timed out. Check the Logs tab for more details.
+This is happening because:
+
+Your build is taking 4 minutes (Compiled successfully in 4.0min)
+The ENS resolution attempts are causing delays during build
+Next.js is trying to pre-render pages that depend on network calls
+✅ How to Fix It
+1. Disable Telemetry (Saves Build Time)
+Add to your .replit file:
+
+ini
+
+
+1
+2
+[env]
+NEXT_TELEMETRY_DISABLED = "1"
+Or run:
+
+bash
+
+
+1
+npx next telemetry disable
+This prevents Next.js from pausing to ask about telemetry during builds.
+
+2. Add allowedDevOrigins to next.config.mjs
+To prevent future cross-origin issues:
+
+js
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+⌄
+⌄
+// next.config.mjs
+export default {
+  allowedDevOrigins: [
+    'localhost:5000',
+    '127.0.0.1:5000',
+    '*.replit.dev',
+    '*.worf.replit.dev'
+  ],
+}
+3. Fix Your Build Scripts
+Update your .replit file:
+
+ini
+
+
+1
+2
+3
+4
+5
+[env]
+NEXT_TELEMETRY_DISABLED = "1"
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
+
+run = "pnpm run build && pnpm run start"
+And ensure your package.json has:
+
+json
+
+
+1
+2
+3
+4
+5
+⌄
+"scripts": {
+  "dev": "next dev -p 5000 -H 0.0.0.0",
+  "build": "next build",
+  "start": "next start -p 5000 -H 0.0.0.0"
+}
+✅ Summary of Fixes Needed
+ISSUE
+SOLUTION
+ENS Name Resolution
+Replace with direct contract addresses from env vars
+Empty Contract Address
+Verify
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS
+is set
+Build Timeouts
+Disable telemetry, add allowedDevOrigins
+Server-Side ENS Calls
+Move to client components only
+
+🛠️ Immediate Action Steps
+Verify your environment variables are set in Replit Secrets:
+
+
+1
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS=0xYourRealAddress
+Update your API routes to use direct addresses instead of ENS:
+ts
+
+
+1
+2
+3
+4
+5
+⌄
+// app/api/token-balance/route.ts
+const contractAddress = process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS;
+if (!contractAddress) {
+  return Response.json({ error: "Contract not configured" }, { status: 500 });
+}
+Add this to next.config.mjs:
+js
+
+
+1
+2
+3
+⌄
+export default {
+  allowedDevOrigins: ['*.replit.dev', 'localhost:5000']
+}
+Update your .replit file with:
+ini
+
+
+1
+NEXT_TELEMETRY_DISABLED 

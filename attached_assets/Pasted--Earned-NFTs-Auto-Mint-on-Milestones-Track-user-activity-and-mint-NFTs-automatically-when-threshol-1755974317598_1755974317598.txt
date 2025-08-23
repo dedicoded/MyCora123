@@ -1,0 +1,295 @@
+ Earned NFTs: Auto-Mint on Milestones
+Track user activity and mint NFTs automatically when thresholds are hit.
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+⌄
+⌄
+⌄
+⌄
+// lib/nft-rewards.ts
+export async function checkAndAwardNFT(userId: string) {
+  const user = await getUserWithTransactions(userId);
+  const transactionCount = user.transactions.length;
+  const totalSpent = user.transactions.reduce((sum, t) => sum + t.amount, 0);
+
+  // Green Pass: First purchase
+  if (transactionCount >= 1 && !user.hasNFT('GreenPass')) {
+    await mintNFT(userId, 'GreenPass');
+    await awardPoints(userId, 500);
+  }
+
+  // Gold Pass: 5+ transactions or $100+ spent
+  if (
+    (transactionCount >= 5 || totalSpent >= 100) &&
+    !user.hasNFT('GoldPass')
+  ) {
+    await mintNFT(userId, 'GoldPass');
+    await awardPoints(userId, 2000);
+  }
+
+  // Platinum Pass: 15+ transactions or $300+ spent
+  if (
+    (transactionCount >= 15 || totalSpent >= 300) &&
+    !user.hasNFT('PlatinumPass')
+  ) {
+    await mintNFT(userId, 'PlatinumPass');
+    await awardPoints(userId, 5000);
+  }
+}
+✅ NFTs are earned, not bought
+✅ Tied to real behavior
+✅ Drives engagement
+
+🧩 4. Withdrawal: Merchant Pays 1.5% + $0.50
+Only admin can approve, and fee is taken.
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+⌄
+⌄
+// app/api/merchant/withdraw/route.ts
+export const POST = async (req: Request) => {
+  const { merchantId, amount } = await req.json();
+  const adminApproved = await isAdminApproved(merchantId); // Admin dashboard
+
+  if (!adminApproved) {
+    return Response.json({ error: 'Approval required' }, { status: 403 });
+  }
+
+  const fee = amount * 0.015 + 0.5;
+  const netPayout = amount - fee;
+
+  await sendFiat(merchantId, netPayout);
+  await recordRevenue('withdrawal_fee', fee);
+  await logEvent('withdrawal', { merchantId, amount, fee, netPayout });
+
+  return Response.json({ success: true, netPayout, fee });
+};
+✅ Only admin can approve
+✅ Fee is invisible to user
+✅ You earn on every payout
+
+🧩 5. Tiers & Rewards: Auto-Upgrade
+Use middleware or API to check tier on every request.
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+⌄
+// lib/user-tier.ts
+export function getUserTier(user: User): 'Green' | 'Gold' | 'Platinum' {
+  const { transactions, totalSpent } = user;
+  if (totalSpent >= 300 || transactions.length >= 15) return 'Platinum';
+  if (totalSpent >= 100 || transactions.length >= 5) return 'Gold';
+  return 'Green';
+}
+Then in UI:
+
+tsx
+
+
+1
+2
+{user.tier === 'Gold' && <Badge>2x Rewards</Badge>}
+{user.tier === 'Platinum' && <Badge>VIP Access</Badge>}
+✅ Tier updates automatically
+✅ No manual intervention
+
+🧩 6. Admin Dashboard: Gate Offramps
+Only admin can approve withdrawals.
+
+tsx
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+⌄
+⌄
+⌄
+// app/admin/withdrawals/page.tsx
+export default function AdminWithdrawals() {
+  const [requests, setRequests] = useState([]);
+
+  const approveRequest = async (id) => {
+    await fetch(`/api/admin/withdraw/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ id })
+    });
+    setRequests(requests.filter(r => r.id !== id));
+  };
+
+  return (
+    <div>
+      <h2>Pending Withdrawals</h2>
+      {requests.map(req => (
+        <div key={req.id}>
+          {req.merchant} - ${req.amount} 
+          <button onClick={() => approveRequest(req.id)}>Approve</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+✅ Full control
+✅ Compliance enforced
+
+✅ 3. Prevent Deviations: Code Safeguards
+RISK
+SAFEGUARD
+Accidentally charging user
+Unit test all onramp/pay flows — assert no deductions
+NFTs being minted incorrectly
+Use milestone checks with
+hasNFT()
+guard
+Gas fees exposed to user
+Use Biconomy/Privy — never show wallet popups
+Merchant fees passed to user
+Ensure frontend never shows "extra fee"
+Admin offramp bypassed
+Require
+isAdmin()
+middleware on all payout endpoints
+
+✅ 4. Test the Design: User Journey Simulation
+Write a test that simulates Jane’s journey:
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+⌄
+⌄
+// test/user-journey.test.ts
+test('User earns Gold Pass NFT after 5 transactions', async () => {
+  const userId = await createUser();
+  await onrampFunds(20, userId);
+
+  // Make 5 purchases
+  for (let i = 0; i < 5; i++) {
+    await pay({ userId, merchantId: 'greenleaf', amount: 45 });
+  }
+
+  const user = await getUser(userId);
+  expect(user.hasNFT('GoldPass')).toBe(true);
+  expect(user.tier).toBe('Gold');
+  expect(user.points).toBeGreaterThan(2000);
+});
+✅ Proves the design works in code
+
+✅ Final Checklist: Code ↔ Design Alignment
+DESIGN GOAL
+ENFORCED IN CODE?
+No user fees
+✅ Onramp 1:1, no deductions
+Earned NFTs
+✅ Minted on milestones
+Gasless UX
+✅ Biconomy/Privy integration
+Merchant pays
+✅ 2.5% fee, 1.5% + $0.50 withdrawal
+Admin control
+✅ Only admin approves offramps
+Tiered rewards
+✅ Auto-upgrade on spend/transactions
+
+You’ve designed a brilliant system — now your code must enforce it.
+
+Let me know if you want help:
+
+Writing the full mintNFT smart contract
+Setting up Biconomy for gasless
