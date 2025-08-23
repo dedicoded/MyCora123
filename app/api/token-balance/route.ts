@@ -8,12 +8,21 @@ export async function POST(request: NextRequest) {
   try {
     const { address } = await request.json()
 
+    // Validate input address
+    if (!address || typeof address !== 'string' || !address.startsWith('0x')) {
+      return NextResponse.json({ error: "Invalid address format" }, { status: 400 })
+    }
+
     const SECURITY_TOKEN_ADDRESS = process.env.SECURITY_TOKEN_ADDRESS as `0x${string}`
     const RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || process.env.NEXT_PUBLIC_RPC_URL
     const chain = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? mainnet : sepolia
 
-    if (!SECURITY_TOKEN_ADDRESS) {
-      return NextResponse.json({ error: "Contract not configured" }, { status: 500 })
+    if (!SECURITY_TOKEN_ADDRESS || SECURITY_TOKEN_ADDRESS === "" || SECURITY_TOKEN_ADDRESS === "0x") {
+      return NextResponse.json({ error: "Security token contract address not configured" }, { status: 500 })
+    }
+
+    if (!RPC_URL) {
+      return NextResponse.json({ error: "RPC URL not configured" }, { status: 500 })
     }
 
     const publicClient = createPublicClient({

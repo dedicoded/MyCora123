@@ -4,12 +4,14 @@ const nextConfig = {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1c711c0584ef1a9b8f4e34aa99c21658',
     NEXT_PUBLIC_MCC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS || '0x6C7Bb1ABF40C62cEbF95a8c57E24F0b8d7a88888',
     NEXT_PUBLIC_NETWORK: process.env.NEXT_PUBLIC_NETWORK || 'sepolia',
-    PROJECT_ID: process.env.PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1c711c0584ef1a9b8f4e34aa99c21658'
+    PROJECT_ID: process.env.PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '1c711c0584ef1a9b8f4e34aa99c21658',
+    NEXT_TELEMETRY_DISABLED: '1'
   },
 
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['@mui/material', 'react-icons', '@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query', 'framer-motion', 'lucide-react'],
+    serverComponentsExternalPackages: ['@web3modal/wagmi']
   },
 
   async headers() {
@@ -57,6 +59,7 @@ const nextConfig = {
         crypto: false,
       }
     }
+    config.externals.push('pino-pretty', 'lokijs', 'encoding')
     return config
   },
 

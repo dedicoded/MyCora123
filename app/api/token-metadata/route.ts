@@ -7,12 +7,21 @@ export async function POST(request: NextRequest) {
   try {
     const { tokenId } = await request.json()
 
+    // Validate input
+    if (tokenId === undefined || tokenId === null) {
+      return NextResponse.json({ error: "Token ID is required" }, { status: 400 })
+    }
+
     const UTILITY_TOKEN_ADDRESS = process.env.UTILITY_TOKEN_ADDRESS as `0x${string}`
     const RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || process.env.NEXT_PUBLIC_RPC_URL
     const chain = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? mainnet : sepolia
 
-    if (!UTILITY_TOKEN_ADDRESS) {
-      return NextResponse.json({ error: "Contract not configured" }, { status: 500 })
+    if (!UTILITY_TOKEN_ADDRESS || UTILITY_TOKEN_ADDRESS === "" || UTILITY_TOKEN_ADDRESS === "0x") {
+      return NextResponse.json({ error: "Utility token contract address not configured" }, { status: 500 })
+    }
+
+    if (!RPC_URL) {
+      return NextResponse.json({ error: "RPC URL not configured" }, { status: 500 })
     }
 
     const publicClient = createPublicClient({
