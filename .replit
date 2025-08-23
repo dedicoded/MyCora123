@@ -109,7 +109,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "NODE_OPTIONS=\"--max-old-space-size=3072\" NEXT_TELEMETRY_DISABLED=1 pnpm run build"
+args = "NODE_OPTIONS=\"--max-old-space-size=4096\" NEXT_TELEMETRY_DISABLED=1 pnpm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

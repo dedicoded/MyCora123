@@ -10,9 +10,10 @@ const nextConfig = {
 
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@mui/material', 'react-icons', '@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query', 'framer-motion', 'lucide-react'],
-    serverComponentsExternalPackages: ['@web3modal/wagmi']
+    optimizePackageImports: ['@mui/material', 'react-icons', '@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query', 'framer-motion', 'lucide-react']
   },
+
+  serverExternalPackages: ['@web3modal/wagmi'],
 
   async headers() {
     return [

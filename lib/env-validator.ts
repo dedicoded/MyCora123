@@ -1,10 +1,9 @@
-
 export function validateContractAddresses(): {
   valid: boolean;
   errors: string[];
 } {
   const errors: string[] = [];
-  
+
   const requiredAddresses = {
     SECURITY_TOKEN_ADDRESS: process.env.SECURITY_TOKEN_ADDRESS,
     UTILITY_TOKEN_ADDRESS: process.env.UTILITY_TOKEN_ADDRESS,
@@ -38,10 +37,29 @@ export function getContractAddress(contractName: string): string | null {
   };
 
   const address = addresses[contractName as keyof typeof addresses];
-  
+
   if (!address || address === "" || address === "0x") {
     return null;
   }
 
   return address;
 }
+
+// Environment Variable Validator
+export const validateEnvironment = () => {
+  const required = [
+    'NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID',
+    'NEXT_PUBLIC_MCC_CONTRACT_ADDRESS',
+    'NEXT_PUBLIC_NETWORK',
+    'RPC_URL'
+  ];
+
+  const missing = required.filter(key => !process.env[key]);
+
+  if (missing.length > 0) {
+    console.warn('Missing environment variables:', missing);
+    return false;
+  }
+
+  return true;
+};
