@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createPublicClient, http } from "viem"
 import { mainnet, sepolia } from "viem/chains"
-import { UTILITY_ABI } from "../../../UTILITY_ABI"
+import utilityABI from '@/lib/abi/Utility.json';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     const tokenURI = await publicClient.readContract({
       address: UTILITY_TOKEN_ADDRESS,
-      abi: UTILITY_ABI,
+      abi: utilityABI,
       functionName: "tokenURI",
       args: [BigInt(tokenId)],
     })

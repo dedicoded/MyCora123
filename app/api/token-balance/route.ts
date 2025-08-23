@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createPublicClient, http } from "viem"
 import { mainnet, sepolia } from "viem/chains"
-import { SECURITY_ABI } from "../../../SECURITY_ABI"
+import securityABI from '@/lib/abi/Security.json';
+import utilityABI from '@/lib/abi/Utility.json';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     const balance = await publicClient.readContract({
       address: SECURITY_TOKEN_ADDRESS,
-      abi: SECURITY_ABI,
+      abi: securityABI,
       functionName: "balanceOf",
       args: [address],
     })
