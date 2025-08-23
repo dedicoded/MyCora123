@@ -10,8 +10,8 @@ channel = "stable-25_05"
 packages = ["run"]
 
 [deployment]
-run = ["sh", "-c", "pnpm run build && pnpm start"]
-build = "pnpm run build"
+run = ["sh", "-c", "pnpm run start"]
+build = ["sh", "-c", "NODE_OPTIONS='--max-old-space-size=3072' pnpm run build"]
 
 [[ports]]
 localPort = 3000
@@ -26,7 +26,7 @@ localPort = 5000
 externalPort = 5000
 
 [workflows]
-runButton = "Minimal Build"
+runButton = "Production Ready"
 
 [[workflows.workflow]]
 name = "Build and Start"
@@ -97,6 +97,19 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_OPTIONS=\"--max-old-space-size=3072\" REPLIT_DISABLE_PACKAGE_LAYER=1 pnpm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run start"
+
+[[workflows.workflow]]
+name = "Production Ready"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_OPTIONS=\"--max-old-space-size=3072\" NEXT_TELEMETRY_DISABLED=1 pnpm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

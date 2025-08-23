@@ -9,8 +9,7 @@ const nextConfig = {
 
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@mui/material', 'react-icons', '@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query'],
-    serverComponentsExternalPackages: ['hardhat'],
+    optimizePackageImports: ['@mui/material', 'react-icons', '@rainbow-me/rainbowkit', 'wagmi', '@tanstack/react-query', 'framer-motion', 'lucide-react'],
   },
 
   async headers() {
