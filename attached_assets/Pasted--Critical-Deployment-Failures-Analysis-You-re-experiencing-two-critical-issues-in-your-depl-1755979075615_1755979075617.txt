@@ -1,0 +1,121 @@
+# 🔴 Critical Deployment Failures Analysis
+
+You're experiencing **two critical issues** in your deployment:
+
+## 1. ❌ ENS Name Resolution Failure (Critical)
+```
+Error: an ENS name used for a contract target must be correctly configured (value="", code=UNCONFIGURED_NAME)
+```
+
+This is happening because **your code is trying to resolve an ENS name** (like `mycora.eth`) during **static generation**, but the value is empty.
+
+### 📚 Why This Is Happening (Based on Next.js Documentation)
+According to the Next.js documentation on [Module Not Found](https://nextjs.org/docs/messages/module-not-found), this error occurs when:
+> "The module you're trying to import uses Node.js specific modules, for example `dns`, outside of `getStaticProps`/`getStaticPaths`/`getServerSideProps`"
+
+In your case, ENS resolution is a **Node.js-specific operation** that's being attempted during static generation.
+
+### ✅ How to Fix It
+1. **Stop using ENS names** in your contract interactions
+2. **Use direct contract addresses** from environment variables:
+   ```ts
+   // Instead of:
+   const contract = new ethers.Contract("mycora.eth", abi, provider);
+   
+   // Use:
+   const contractAddress = process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS;
+   if (!contractAddress) {
+     throw new Error("Contract address not configured");
+   }
+   const contract = new ethers.Contract(contractAddress, abi, provider);
+   ```
+3. **Verify your environment variables** are properly set in Replit Secrets
+
+## 2. ❌ Memory Issue (Exit Code 137 - OOM)
+```
+Killed
+ ELIFECYCLE  Command failed with exit code 137.
+```
+
+This means your build **exceeded Replit's memory limits** (512MB on free tier).
+
+### 📚 Why This Is Happening
+The build took **4.2 minutes** to compile, which indicates it's too heavy for Replit's resources. This is common when:
+- Building complex Web3 applications with many dependencies
+- Using large libraries like ethers.js, hardhat, etc.
+- Running Next.js in development mode during build
+
+### ✅ How to Fix It
+
+#### A. Optimize Your Build Process
+```ini
+# .replit
+[env]
+NEXT_TELEMETRY_DISABLED = "1"
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
+ALLOWED_DEV_ORIGINS = "*.replit.dev,*.worf.replit.dev"
+
+run = "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' pnpm run build && pnpm run start"
+```
+
+#### B. Update next.config.mjs (Critical Fix)
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@mui/material', 'react-icons']
+  },
+  // Add this to prevent cross-origin issues
+  allowedDevOrigins: [
+    'localhost:5000',
+    '127.0.0.1:5000',
+    '*.replit.dev',
+    '*.worf.replit.dev'
+  ]
+};
+
+export default nextConfig;
+```
+
+#### C. Fix the ENS Issue in Your Code
+1. Locate where you're using ENS names (likely in `app/api/token-balance/route.ts` and similar files)
+2. Replace with direct contract addresses:
+   ```ts
+   // app/api/token-balance/route.ts
+   export const GET = async (req: Request) => {
+     const contractAddress = process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS;
+     
+     if (!contractAddress) {
+       return Response.json({ error: "Contract not configured" }, { status: 500 });
+     }
+     
+     // Rest of your code using contractAddress directly
+   };
+   ```
+
+#### D. Add Memory Optimization
+Create a `.npmrc` file:
+```
+maxsockets=5
+fetch-retries=3
+fetch-retry-factor=2
+fetch-retry-mintimeout=10000
+```
+
+---
+
+## 🚀 Final Action Plan
+
+1. **Fix ENS resolution** by using direct contract addresses
+2. **Add allowedDevOrigins** to next.config.mjs
+3. **Disable telemetry** in .replit
+4. **Optimize memory usage** with NODE_OPTIONS
+5. **Reduce build size** by removing unused dependencies
+
+After these changes, your build should:
+- Complete within memory limits
+- No longer fail on ENS resolution
+- Deploy successfully to Replit
+
+Let me know if you need help finding the specific files where ENS resolution is happening!
