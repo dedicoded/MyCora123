@@ -3,6 +3,7 @@ modules = ["nodejs-20", "web"]
 
 [env]
 REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
+NEXT_TELEMETRY_DISABLED = "1"
 
 [nix]
 channel = "stable-25_05"
@@ -25,7 +26,7 @@ localPort = 5000
 externalPort = 5000
 
 [workflows]
-runButton = "Build and Start"
+runButton = "Minimal Build"
 
 [[workflows.workflow]]
 name = "Build and Start"
@@ -87,3 +88,16 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build"
+
+[[workflows.workflow]]
+name = "Minimal Build"
+author = 46065244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_OPTIONS=\"--max-old-space-size=3072\" REPLIT_DISABLE_PACKAGE_LAYER=1 pnpm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run start"
