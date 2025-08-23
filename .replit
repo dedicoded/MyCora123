@@ -34,7 +34,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm run build"
+args = "NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
