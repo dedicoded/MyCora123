@@ -1,0 +1,77 @@
+2025-08-23T18:42:22Z info: Deployment: 13e84ff5-2964-44e9-b117-df0dc29baa1e
+2025-08-23T18:42:22Z info: Build: 9ba0fdbc-2ae4-419a-bb42-afe43292c759
+2025-08-23T18:42:22Z info: Connecting to builder
+2025-08-23T18:42:24Z info: Builder connected
+2025-08-23T18:42:25Z info: Installing packages
+--> pnpm install
+
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 10.12.4 → 10.15.0.   │
+   │   Changelog: https://pnpm.io/v/10.15.0   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+
+Lockfile is up to date, resolution step is skipped
+
+Already up to date
+
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: @reown/appkit, @tailwindcss/oxide, bufferutil,      │
+│   esbuild, keccak, protobufjs, secp256k1, sharp, utf-8-validate.             │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+
+> my-v0-project@0.1.0 prepare /home/runner/workspace
+> echo 'Skipping prepare script in deployment'
+
+
+2025-08-23T18:42:36Z info: Starting Build
+
+> my-v0-project@0.1.0 build /home/runner/workspace
+> next build
+
+
+ ⚠     Unrecognized key(s) in object: 'serverComponentsExternalPackages' at "experimental"
+
+     · serverComponentsExternalPackages
+
+   Creating an optimized production build ...
+
+ ✓ Compiled successfully in 4.2min
+
+   Skipping linting
+
+   Collecting page data ...
+
+Error: an ENS name used for a contract target must be correctly configured (value="", code=UNCONFIGURED_NAME, version=6.15.0)
+    at i (.next/server/chunks/4017.js:1:2945)
+    at <unknown> (.next/server/chunks/6713.js:1:163616) {
+  code: 'UNCONFIGURED_NAME',
+  value: '',
+  shortMessage: 'an ENS name used for a contract target must be correctly configured'
+}
+
+Error: an ENS name used for a contract target must be correctly configured (value="", code=UNCONFIGURED_NAME, version=6.15.0)
+    at i (.next/server/chunks/4017.js:1:2945)
+    at <unknown> (.next/server/chunks/6713.js:1:163616) {
+  code: 'UNCONFIGURED_NAME',
+  value: '',
+  shortMessage: 'an ENS name used for a contract target must be correctly configured'
+}
+
+   Generating static pages (0/42) ...
+
+Killed
+
+ ELIFECYCLE  Command failed with exit code 137.
+

@@ -1,0 +1,122 @@
+To resolve the deployment issues and ensure your MyCora-PuffPass application runs smoothly, follow these steps:
+
+✅ 1. Fix ENS Name Resolution Errors
+Problem: Your code is trying to resolve ENS names (like mycora.eth) during the build, which fails because ENS resolution isn't supported server-side.
+
+Fix:
+
+Replace ENS names with direct contract addresses in your API routes and smart contract interactions.
+Store contract addresses in environment variables:
+env
+
+
+1
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS=0xYourRealAddressHere
+Update your code to use the env var:
+ts
+
+
+1
+2
+3
+4
+⌄
+const contractAddress = process.env.NEXT_PUBLIC_MCC_CONTRACT_ADDRESS;
+if (!contractAddress) {
+  throw new Error("Contract address not configured");
+}
+✅ 2. Disable Next.js Telemetry
+Problem: Telemetry prompts during builds cause timeouts.
+
+Fix:
+
+Add to your .replit file:
+ini
+
+
+1
+2
+[env]
+NEXT_TELEMETRY_DISABLED = "1"
+Or run:
+bash
+
+
+1
+npx next telemetry disable
+✅ 3. Add allowedDevOrigins to next.config.mjs
+Problem: Cross-origin requests blocked in development.
+
+Fix:
+
+js
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+⌄
+⌄
+// next.config.mjs
+export default {
+  allowedDevOrigins: [
+    'localhost:5000',
+    '127.0.0.1:5000',
+    '*.replit.dev',
+    '*.worf.replit.dev'
+  ],
+}
+✅ 4. Optimize Build Time
+Problem: Long build times causing timeouts.
+
+Fix:
+
+Remove unused dependencies.
+Ensure no client-side code uses Node.js-only modules (e.g., dns, fs).
+Use optimizePackageImports in next.config.mjs:
+js
+
+
+1
+2
+3
+4
+5
+⌄
+⌄
+export default {
+  experimental: {
+    optimizePackageImports: true,
+  },
+}
+✅ 5. Verify Environment Variables
+Ensure all required env vars are set in Replit Secrets:
+
+env
+
+
+1
+2
+NEXT_PUBLIC_MCC_CONTRACT_ADDRESS=0xYourRealAddress
+NEXT_TELEMETRY_DISABLED=1
+✅ 6. Update Files as Suggested
+Apply the edits to:
+
+next.config.mjs
+app/api/token-balance/route.ts
+lib/nft-rewards.ts
+app/api/pay/route.ts
+app/api/onramp/route.ts
+✅ Final Command to Run
+bash
+
+
+1
+npx next telemetry disable
+With these changes, your deployment should succeed without timeouts or ENS errors. Let me know if you need help with specific file updates! 
