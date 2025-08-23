@@ -1,0 +1,142 @@
+Root Cause
+In app/api/token-balance/route.ts and app/api/token-metadata/route.ts, you have:
+
+ts
+
+
+1
+2
+import SECURITY_ABI from '../../../SECURITY_ABI';
+import UTILITY_ABI from '../../../UTILITY_ABI';
+But:
+
+The files SECURITY_ABI.js and UTILITY_ABI.js do not exist at that path.
+Or they’re named differently (e.g., Security.json, UtilityToken.json)
+Or they’re in a different folder
+✅ How to Fix It
+1. ✅ Check Where Your ABIs Are Located
+Look for these files:
+
+SECURITY_ABI.js
+UTILITY_ABI.js
+They should be in your project — likely in:
+
+
+
+1
+2
+3
+lib/abi/
+├── Security.json
+└── UtilityToken.json
+Or:
+
+
+
+1
+2
+3
+contracts/
+├── Security.sol
+└── UtilityToken.sol
+If they’re in lib/abi/, rename them to .json and use:
+
+ts
+
+
+1
+2
+import securityABI from '@/lib/abi/Security.json';
+import utilityABI from '@/lib/abi/UtilityToken.json';
+❌ Don’t use .js unless it’s a JavaScript module. 
+
+2. ✅ Create Missing ABI Files
+If the files are missing, generate them using Hardhat:
+
+bash
+
+
+1
+npx hardhat compile
+Then copy the ABI from artifacts/contracts/Security.sol/Security.json to lib/abi/Security.json.
+
+3. ✅ Update Import Paths
+Update your route files:
+
+app/api/token-balance/route.ts
+
+ts
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+⌄
+import { Security } from '@/lib/abi/Security.json';
+// or if using ethers
+import { ethers } from 'ethers';
+import securityABI from '@/lib/abi/Security.json';
+
+export const GET = async (req: Request) => {
+  // Use securityABI here
+};
+app/api/token-metadata/route.ts
+
+ts
+
+
+1
+2
+3
+4
+5
+⌄
+import utilityABI from '@/lib/abi/UtilityToken.json';
+
+export const GET = async (req: Request) => {
+  // Use utilityABI here
+};
+4. ✅ Ensure File Extensions Match
+If file is Security.json, import as:
+ts
+
+
+1
+import securityABI from '@/lib/abi/Security.json';
+If file is Security.js, ensure it exports the ABI:
+js
+
+
+1
+2
+3
+export default [
+  { "inputs": [...], "name": "transfer", ... }
+];
+✅ Final Checklist
+STEP
+ACTION
+1️⃣
+Find
+SECURITY_ABI
+and
+UTILITY_ABI
+files
+2️⃣
+Move them to
+lib/abi/
+and rename to
+.json
+3️⃣
+Update imports in
+route.ts
+files
+4️⃣
+Run
+pnpm run build
+to verify
